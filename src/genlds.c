@@ -89,7 +89,8 @@ int genlds(int argc, char **argv)
         }
 
         /* resource section is not directly recompilable even if it doesn't move, use re2obj command instead */
-        if (strcmp(buf, ".rsrc") == 0) {
+        /* relocation section is not currently supported so we'll remove it */
+        if (strcmp(buf, ".rsrc") == 0 || strcmp(buf, ".reloc") == 0) {
             fprintf(ofh, "    /DISCARD/                  : { %s(%s) }\n", file_basename(argv[1]), buf);
 
 
