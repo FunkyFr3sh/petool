@@ -1,5 +1,15 @@
-CC = i686-w64-mingw32-gcc
-STRIP = i686-w64-mingw32-strip
+
+REV    = UNKNOWN
+
+# FIXME
+GIT  = C:\Program\ Files\Microsoft\ Visual\ Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team\ Explorer\Git\mingw64\bin\git.exe
+
+GIT2 = "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin\git.exe"
+
+ifneq ("$(wildcard $(GIT))","")
+    REV     = $(shell $(GIT2) rev-parse --short @{0})
+endif
+
 TARGET = petool.exe
 
 -include Makefile
