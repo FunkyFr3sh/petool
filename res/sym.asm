@@ -5,9 +5,9 @@
 
 ; functions
 
-;setcglob 0x004D2A80, org_WinMain
+setcglob 0x00000000, org_WinMain
 
 ; imports
 
-;setcglob 0x0058F984, _imp__LoadLibraryA
-;setcglob 0x0058F988, _imp__GetProcAddress
+setcglob 0x00000000, _imp__LoadLibraryA
+setcglob 0x00000000, _imp__GetProcAddress
