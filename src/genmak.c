@@ -78,6 +78,13 @@ int genmak(int argc, char **argv)
     if (nt_hdr->OptionalHeader.Subsystem == 2)
         fprintf(ofh, " --subsystem=windows");
 
+    fprintf(ofh, " --enable-stdcall-fixup");
+
+    fprintf(ofh, "\n");
+
+    fprintf(ofh, "NFLAGS      = -f elf -Iinc/\n");
+    fprintf(ofh, "CFLAGS      = -std=c99 -Iinc/ -O2 -march=i486\n");
+
     fprintf(ofh, "\n\n");
 
     fprintf(ofh, "OBJS        = ");
@@ -88,9 +95,14 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "\n\n");
 
     fprintf(ofh, "PETOOL     ?= petool\n");
-    fprintf(ofh, "STRIP      ?= strip\n\n");
+    fprintf(ofh, "STRIP      ?= strip\n");
+    fprintf(ofh, "NASM       ?= nasm\n");
+    fprintf(ofh, "WINDRES    ?= windres\n\n");
 
     fprintf(ofh, "all: $(OUTPUT)\n\n");
+
+    fprintf(ofh, "%%.o: %%.asm\n");
+    fprintf(ofh, "	$(NASM) $(NFLAGS) -o $@ $<\n\n");
 
     if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
@@ -99,13 +111,13 @@ int genmak(int argc, char **argv)
     }
 
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
-    fprintf(ofh, "\t$(LD) $(LDFLAGS) -T $(LDS) -o $@ $(OBJS)\n");
+    fprintf(ofh, "\t$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS)\n");
     fprintf(ofh, "ifneq (,$(IMPORTS))\n");
-    fprintf(ofh, "\t$(PETOOL) setdd $@ 1 $(IMPORTS) || ($(RM) $@ && exit 1)\n");
+    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
-    fprintf(ofh, "\t$(PETOOL) patch $@ || ($(RM) $@ && exit 1)\n");
-    fprintf(ofh, "\t$(STRIP) -R .patch $@ || ($(RM) $@ && exit 1)\n");
-    fprintf(ofh, "\t$(PETOOL) dump $@\n\n");
+    fprintf(ofh, "\t$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "\t$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "\t$(PETOOL) dump \"$@\"\n\n");
 
     fprintf(ofh, "clean:\n");
     fprintf(ofh, "\t$(RM) $(OUTPUT) $(OBJS)\n");
