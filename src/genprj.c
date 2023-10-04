@@ -74,7 +74,7 @@ int genprj(int argc, char **argv)
     }
     else
     {
-        snprintf(dir, sizeof dir, "%sp", base);
+        snprintf(dir, sizeof dir, "%s", base);
     }
 
     printf("Input file      : %s\n", argv[1]);
@@ -82,7 +82,7 @@ int genprj(int argc, char **argv)
 
     FAIL_IF_PERROR(_mkdir(dir) == -1, "Failed to create output directory");
 
-    snprintf(buf, sizeof buf, "%s/%s", dir, file_basename(argv[1]));
+    snprintf(buf, sizeof buf, "%s/%s.dat", dir, base);
     printf("Copying %s -> %s...\n", argv[1], buf);
     FAIL_IF(file_copy(argv[1], buf) != EXIT_SUCCESS, "Failed to copy file\n");
 
@@ -94,7 +94,7 @@ int genprj(int argc, char **argv)
     fputs(patch_s, fh);
     fclose(fh);
 
-    snprintf(buf, sizeof buf, "%s/%sp.lds", dir, base);
+    snprintf(buf, sizeof buf, "%s/%s.lds", dir, base);
     printf("Generating %s...\n", buf);
     FAIL_IF(genlds(3, cmd_argv) != EXIT_SUCCESS, "Failed to create linker script\n");
 

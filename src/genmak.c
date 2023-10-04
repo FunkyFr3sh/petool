@@ -54,7 +54,7 @@ int genmak(int argc, char **argv)
     FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE, "File DOS signature invalid.\n");
     FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE, "File NT signature invalid.\n");
 
-    strcpy(base, file_basename(argv[1]));
+    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
     char *p = strrchr(base, '.');
     if (p)
     {
@@ -62,9 +62,9 @@ int genmak(int argc, char **argv)
     }
 
     fprintf(ofh, "-include config.mk\n\n");
-    fprintf(ofh, "INPUT       = %s\n", file_basename(argv[1]));
-    fprintf(ofh, "OUTPUT      = %sp.exe\n", base);
-    fprintf(ofh, "LDS         = %sp.lds\n", base);
+    fprintf(ofh, "INPUT       = %s.dat\n", base);
+    fprintf(ofh, "OUTPUT      = %s.exe\n", base);
+    fprintf(ofh, "LDS         = %s.lds\n", base);
 
     fprintf(ofh, "IMPORTS     =");
     if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress)

@@ -32,10 +32,11 @@
 int genlds(int argc, char **argv)
 {
     // decleration before more meaningful initialization for cleanup
-    int     ret   = EXIT_SUCCESS;
-    FILE   *fh    = NULL;
-    FILE   *ofh   = stdout;
-    int8_t *image = NULL;
+    int     ret           = EXIT_SUCCESS;
+    FILE   *fh            = NULL;
+    FILE   *ofh           = stdout;
+    int8_t *image         = NULL;
+    char   inputname[256] = { '\0' };
 
     FAIL_IF(argc < 2, "usage: petool genlds <image> [ofile]\n");
 
@@ -63,7 +64,14 @@ int genlds(int argc, char **argv)
         FAIL_IF(nt_hdr->FileHeader.Machine != 0x014C, "No valid signatures found.\n");
     }
 
-    fprintf(ofh, "/* GNU ld linker script for %s */\n", file_basename(argv[1]));
+    strncpy(inputname, file_basename(argv[1]), sizeof(inputname) - 1);
+    char* p = strrchr(inputname, '.');
+    if (p)
+    {
+        strncpy(p, ".dat", sizeof(inputname) - strlen(inputname) - 1);
+    }
+
+    fprintf(ofh, "/* GNU ld linker script for %s */\n", inputname);
     fprintf(ofh, "start = 0x%"PRIX32";\n", nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint);
     fprintf(ofh, "ENTRY(start);\n");
     fprintf(ofh, "SECTIONS\n");
@@ -83,7 +91,7 @@ int genlds(int argc, char **argv)
         memcpy(buf, cur_sct->Name, 8);
 
         if (cur_sct->Characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA && !(cur_sct->Characteristics & IMAGE_SCN_CNT_INITIALIZED_DATA)) {
-            fprintf(ofh, "    /DISCARD/                  : { %s(%s) }\n", file_basename(argv[1]), buf);
+            fprintf(ofh, "    /DISCARD/                  : { %s(%s) }\n", inputname, buf);
             fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { . = . + 0x%"PRIX32"; }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, cur_sct->Misc.VirtualSize ? cur_sct->Misc.VirtualSize : cur_sct->SizeOfRawData);
             continue;
         }
@@ -91,7 +99,7 @@ int genlds(int argc, char **argv)
         /* resource section is not directly recompilable even if it doesn't move, use re2obj command instead */
         /* relocation section is not currently supported so we'll remove it */
         if (strcmp(buf, ".rsrc") == 0 || strcmp(buf, ".reloc") == 0) {
-            fprintf(ofh, "    /DISCARD/                  : { %s(%s) }\n", file_basename(argv[1]), buf);
+            fprintf(ofh, "    /DISCARD/                  : { %s(%s) }\n", inputname, buf);
 
 
             if (i < nt_hdr->FileHeader.NumberOfSections - 1) {
@@ -107,12 +115,12 @@ int genlds(int argc, char **argv)
         }
 
         if (cur_sct->Misc.VirtualSize > cur_sct->SizeOfRawData) {
-            fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) . = ALIGN(0x%"PRIX32"); }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, file_basename(argv[1]), buf, nt_hdr->OptionalHeader.SectionAlignment);
+            fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) . = ALIGN(0x%"PRIX32"); }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf, nt_hdr->OptionalHeader.SectionAlignment);
             fprintf(ofh, "    .bss      %16s : { . = . + 0x%"PRIX32"; }\n", align, cur_sct->Misc.VirtualSize - cur_sct->SizeOfRawData);
             continue;
         }
 
-        fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, file_basename(argv[1]), buf);
+        fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf);
     }
 
     fprintf(ofh, "\n");
