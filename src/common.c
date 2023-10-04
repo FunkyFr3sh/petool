@@ -68,13 +68,47 @@ const char *file_basename(const char *path)
     strncpy(basebuf, path + i, sizeof basebuf - 1);
     basebuf[sizeof basebuf - 1] = '\0';
 
-    char* p = strrchr(basebuf, ' ');
+    char* p = strchr(basebuf, ' ');
     if (p)
     {
         do 
         {
             *p = '_';
-        } while ((p = strrchr(p, ' ')));
+        } while ((p = strchr(p, ' ')));
+    }
+
+    return basebuf;
+}
+
+const char* file_escaped_basename(const char* path)
+{
+    static char basebuf[4096];
+    size_t i;
+
+    if (path == NULL)
+        return NULL;
+
+    for (i = strlen(path); i > 0; i--)
+    {
+        if (path[i] == '/' || path[i] == '\\')
+        {
+            i++;
+            break;
+        }
+    }
+
+    strncpy(basebuf, path + i, sizeof basebuf - 1);
+    basebuf[sizeof basebuf - 1] = '\0';
+
+    char* p = strchr(basebuf, ' ');
+    if (p)
+    {
+        do
+        {
+            memmove(p + 1, p, strlen(p) + 1);
+
+            *p++ = '\\';
+        } while ((p = strchr(++p, ' ')));
     }
 
     return basebuf;
