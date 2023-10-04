@@ -1,6 +1,8 @@
-#ifndef NOVA_H 
-#define NOVA_H
+#ifndef ORG_H 
+#define ORG_H
 
+// This header works with sym.asm which defines the Vanilla symbols
+// This header will be split up as it becomes larger
 
 // ### Variables ###
 
