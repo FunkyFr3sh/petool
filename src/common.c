@@ -74,7 +74,7 @@ const char *file_basename(const char *path)
         do 
         {
             *p = '_';
-        } while (strrchr(p, ' '));
+        } while ((p = strrchr(p, ' ')));
     }
 
     return basebuf;
