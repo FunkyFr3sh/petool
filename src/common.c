@@ -68,6 +68,15 @@ const char *file_basename(const char *path)
     strncpy(basebuf, path + i, sizeof basebuf - 1);
     basebuf[sizeof basebuf - 1] = '\0';
 
+    char* p = strrchr(basebuf, ' ');
+    if (p)
+    {
+        do 
+        {
+            *p = '_';
+        } while (strrchr(p, ' '));
+    }
+
     return basebuf;
 }
 
