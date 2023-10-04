@@ -87,12 +87,17 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n\n");
 
-    fprintf(ofh, "OBJS        = ");
+    fprintf(ofh, "OBJS        = sym.o \\\n");
+
     if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
-        fprintf(ofh, "rsrc.o");
+        fprintf(ofh, "              rsrc.o \\\n");
     }
-    fprintf(ofh, "\n\n");
+
+    fprintf(ofh, "              imports.o \\\n");
+    fprintf(ofh, "              src/winmain.o\n");
+
+    fprintf(ofh, "\n");
 
     fprintf(ofh, "PETOOL     ?= petool\n");
     fprintf(ofh, "STRIP      ?= strip\n");
