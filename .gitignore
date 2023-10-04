@@ -6,3 +6,6 @@
 /petool
 
 .vs
+
+*.o
+*.aps
