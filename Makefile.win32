@@ -1,5 +1,5 @@
 
-REV    = UNKNOWN
+REV     = UNKNOWN
 
 # FIXME: Remove user specific git path from makefile - Adding git path to PATH env does not work if there are spaces in the path
 
@@ -11,6 +11,7 @@ ifneq ("$(wildcard $(GIT))","")
     REV     = $(shell $(GIT2) rev-parse --short @{0})
 endif
 
-TARGET = petool.exe
+TARGET  = petool.exe
+WINDRES = windres
 
 -include Makefile
