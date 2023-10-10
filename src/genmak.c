@@ -41,7 +41,6 @@ int genmak(int argc, char **argv)
         FAIL_IF_PERROR(ofh == NULL, "%s");
     }
 
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
 
     fclose(fh);
@@ -87,17 +86,25 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n\n");
 
-    fprintf(ofh, "OBJS        = sym.o \\\n");
+    fprintf(ofh, "OBJS        =");
+
+    if (strcmp(argv[0], "genmak") != 0)
+    {
+        fprintf(ofh, " \\\n              sym.o");
+    }
 
     if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
-        fprintf(ofh, "              rsrc.o \\\n");
+        fprintf(ofh, " \\\n              rsrc.o");
     }
 
-    fprintf(ofh, "              imports.o \\\n");
-    fprintf(ofh, "              src/winmain.o\n");
+    if (strcmp(argv[0], "genmak") != 0)
+    {
+        fprintf(ofh, " \\\n              imports.o");
+        fprintf(ofh, " \\\n              src/winmain.o");
+    }
 
-    fprintf(ofh, "\n");
+    fprintf(ofh, "\n\n");
 
     fprintf(ofh, "PETOOL     ?= petool\n");
     fprintf(ofh, "STRIP      ?= strip\n");
