@@ -1,5 +1,5 @@
-#ifndef ORG_H 
-#define ORG_H
+#ifndef APP_H 
+#define APP_H
 
 // This header works with sym.asm which defines the Vanilla symbols
 // This header will be split up as it becomes larger
@@ -12,6 +12,6 @@
 
 // ### Functions ###
 
-int APIENTRY org_WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow);
+int APIENTRY app_WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow);
 
 #endif

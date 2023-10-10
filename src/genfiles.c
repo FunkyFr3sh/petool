@@ -68,11 +68,11 @@ int genfiles(char *dir)
     printf("Generating %s...\n", buf);
     extract_resource(1000 + 7, buf);
 
-    snprintf(buf, sizeof buf, "%s/inc/org.h", dir);
+    snprintf(buf, sizeof buf, "%s/inc/app.h", dir);
     printf("Generating %s...\n", buf);
     extract_resource(1000 + 8, buf);
 
-    snprintf(buf, sizeof buf, "%s/inc/org.inc", dir);
+    snprintf(buf, sizeof buf, "%s/inc/app.inc", dir);
     printf("Generating %s...\n", buf);
     extract_resource(1000 + 9, buf);
 

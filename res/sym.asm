@@ -5,7 +5,7 @@
 
 ; functions
 
-setcglob 0x00000000, org_WinMain
+setcglob 0x00000000, app_WinMain
 
 ; imports
 
