@@ -41,6 +41,7 @@ int genmak(int argc, char **argv)
         FAIL_IF_PERROR(ofh == NULL, "%s");
     }
 
+    uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
 
     fclose(fh);
