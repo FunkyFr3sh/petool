@@ -17,7 +17,7 @@
         %pop
         __SECT__
     %else
-        %error "no corrosponding `@PATCH'"
+        %error "no corresponding `@PATCH'"
     %endif
 %endmacro
 

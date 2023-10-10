@@ -1,7 +1,7 @@
-<GAME NAME> patch
+INSERT_GAME_NAME patch
 ==================
 
-Patches to <GAME NAME> 1.0.0.0
+Patches to INSERT_GAME_NAME 1.0.0.0
 
 Authors
 -------
