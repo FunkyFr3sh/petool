@@ -12,12 +12,7 @@ endif
 all: $(TARGET)
 
 $(TARGET): $(wildcard src/*.c)
-ifneq (,$(WINDRES))
-	$(WINDRES) -J rc petool.rc petool.rc.o
-	$(CC) $(CFLAGS) -o $@ $^ petool.rc.o
-else
 	$(CC) $(CFLAGS) -o $@ $^
-endif
 	$(STRIP) -s $@
 
 .PHONY: clean

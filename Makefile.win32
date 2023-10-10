@@ -12,6 +12,5 @@ ifneq ("$(wildcard $(GIT))","")
 endif
 
 TARGET  = petool.exe
-WINDRES = windres
 
 -include Makefile
