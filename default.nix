@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   meta = with stdenv.lib; {
-    homepage = http://github.com/cnc-patch/petool;
+    homepage = http://github.com/FunkyFr3sh/petool;
     description = "Tool to help rebuild, extend and patch 32-bit Windows applications.";
     # maintainers =
     license = map (builtins.getAttr "shortName") [ licenses.mit ];
