@@ -1,7 +1,7 @@
-INSERT_GAME_NAME patch
+INSERT_APP_NAME patch
 ==================
 
-Patches to INSERT_GAME_NAME 1.0.0.0
+Patches to INSERT_APP_NAME 1.0.0.0
 
 Authors
 -------

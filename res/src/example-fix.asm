@@ -1,7 +1,7 @@
 %include "macros/patch.inc"
 %include "macros/datatypes.inc"
 
-; example game patch - see inc/macros/patch for all available macros
+; example patch - see inc/macros/patch for all available macros
 
 @SET 0x004FDF74, { MOV EBX, [EDX+2] }
 @SET 0x004FDF79, { MOV EAX, [EDX+6] }
