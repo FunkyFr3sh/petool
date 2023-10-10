@@ -76,6 +76,10 @@ int genfiles(char *dir)
     printf("Generating %s...\n", buf);
     extract_resource(1000 + 9, buf);
 
+    snprintf(buf, sizeof buf, "%s/inc/patch.h", dir);
+    printf("Generating %s...\n", buf);
+    extract_resource(1000 + 17, buf);
+
     snprintf(buf, sizeof buf, "%s/inc/macros", dir);
     _mkdir(buf);
 
