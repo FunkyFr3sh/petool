@@ -72,8 +72,13 @@ int genlds(int argc, char **argv)
     }
 
     fprintf(ofh, "/* GNU ld linker script for %s */\n", inputname);
-    fprintf(ofh, "start = 0x%"PRIX32";\n", nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint);
-    fprintf(ofh, "ENTRY(start);\n");
+
+    if (strcmp(argv[0], "genlds") == 0)
+    {
+        fprintf(ofh, "_start = 0x%"PRIX32";\n", nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint);
+    }
+
+    fprintf(ofh, "ENTRY(_start);\n");
     fprintf(ofh, "SECTIONS\n");
     fprintf(ofh, "{\n");
 

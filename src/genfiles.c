@@ -35,7 +35,7 @@ extern const char res_build_cmd[];
 extern const char res_imports_asm[];
 extern const char res_readme_md[];
 extern const char res_src_example_fix_asm[];
-extern const char res_src_winmain_c[];
+extern const char res_src_start_c[];
 extern const char res_inc_imports_h[];
 extern const char res_inc_app_h[];
 extern const char res_inc_app_inc[];
@@ -69,9 +69,9 @@ extern const char res_inc_macros_watcall_inc[];
     "res_src_example_fix_asm:"
     ".incbin \"res/src/example-fix.asm\";"
     ".byte 0;"
-    "_res_src_winmain_c:"
-    "res_src_winmain_c:"
-    ".incbin \"res/src/winmain.c\";"
+    "_res_src_start_c:"
+    "res_src_start_c:"
+    ".incbin \"res/src/start.c\";"
     ".byte 0;"
     "_res_inc_imports_h:"
     "res_inc_imports_h:"
@@ -151,9 +151,9 @@ int genfiles(char *dir)
     printf("Generating %s...\n", buf);
     extract_resource(res_src_example_fix_asm, buf);
 
-    snprintf(buf, sizeof buf, "%s/src/winmain.c", dir);
+    snprintf(buf, sizeof buf, "%s/src/start.c", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_src_winmain_c, buf);
+    extract_resource(res_src_start_c, buf);
 
     snprintf(buf, sizeof buf, "%s/inc", dir);
     _mkdir(buf);

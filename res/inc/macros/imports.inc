@@ -29,7 +29,7 @@
 
 %macro load_library 1
     push str_%1_dll
-    call [_imp__LoadLibraryA]
+    call [ebx]
     mov esi, eax
 %endmacro
 

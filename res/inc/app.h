@@ -12,6 +12,6 @@
 
 // ### Functions ###
 
-int APIENTRY app_WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow);
+void app_start();
 
 #endif

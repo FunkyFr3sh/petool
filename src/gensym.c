@@ -49,14 +49,14 @@ int gensym(int argc, char **argv)
         FAIL_IF_PERROR(ofh == NULL, "%s");
     }
 
+    PIMAGE_DOS_HEADER dos_hdr = (void*)image;
+    PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
+
     fprintf(ofh, "%%include \"macros/setsym.inc\"\n\n\n");
     fprintf(ofh, "; vars\n\n\n");
     fprintf(ofh, "; functions\n\n");
-    fprintf(ofh, "setcglob 0x00000000, app_WinMain\n\n");
+    fprintf(ofh, "setcglob 0x%p, app_start\n\n", (void*)(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
     fprintf(ofh, "; imports\n\n");
-
-    PIMAGE_DOS_HEADER dos_hdr = (void *)image;
-    PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
 
     FAIL_IF (nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 2, "Not enough DataDirectories.\n");
 
@@ -64,6 +64,7 @@ int gensym(int argc, char **argv)
     IMAGE_IMPORT_DESCRIPTOR *i = (void *)(image + offset);
 
     int found_LoadLibraryA = 0;
+    int found_GetModuleHandleA = 0;
     int found_GetProcAddress = 0;
 
     while (i->OriginalFirstThunk) {
@@ -97,6 +98,9 @@ int gensym(int argc, char **argv)
                 if (strcmp((const char*)import->Name, "LoadLibraryA") == 0)
                     found_LoadLibraryA = 1;
 
+                if (strcmp((const char*)import->Name, "GetModuleHandleA") == 0)
+                    found_GetModuleHandleA = 1;
+
                 if (strcmp((const char*)import->Name, "GetProcAddress") == 0)
                     found_GetProcAddress = 1;
             }
@@ -122,10 +126,13 @@ int gensym(int argc, char **argv)
     
     /* make sure the project builds without any manual changes */
     if (!found_LoadLibraryA)
-        fprintf(ofh, "setcglob 0x00000000, _imp__LoadLibraryA\n");
+        fprintf(ofh, "\n\nsetcglob 0x00000000, _imp__LoadLibraryA\n");
+
+    if (!found_GetModuleHandleA)
+        fprintf(ofh, "\n\nsetcglob 0x00000000, _imp__GetModuleHandleA\n");
 
     if (!found_GetProcAddress)
-        fprintf(ofh, "setcglob 0x00000000, _imp__GetProcAddress\n");
+        fprintf(ofh, "\n\nsetcglob 0x00000000, _imp__GetProcAddress\n");
 
 cleanup:
     if (image) free(image);

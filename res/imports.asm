@@ -2,13 +2,15 @@
 %include "macros/imports.inc"
 
 cextern _imp__LoadLibraryA
+cextern _imp__GetModuleHandleA
 cextern _imp__GetProcAddress
 
 
 %macro importlist 1
-    %1_library kernel32
-    %1_import GetPrivateProfileStringA
-    %1_import GetPrivateProfileIntA
+; add new imports here, example:
+;    %1_library kernel32
+;    %1_import GetPrivateProfileStringA
+;    %1_import GetPrivateProfileIntA
     
     %1_library msvcrt
     %1_import $I10_OUTPUT
@@ -831,6 +833,22 @@ importlist define
 
 gfunction imports_init
     pushad
+    
+    mov ebx, _imp__LoadLibraryA 
+    test ebx, ebx
+    jnz .ok
+    
+    mov ebx, _imp__GetModuleHandleA
+    test ebx, ebx
+    jz .out
+    
+.ok:
+    mov eax, _imp__GetProcAddress 
+    test eax, eax
+    jz .out
+    
     importlist load
+    
+.out:
     popad
     retn
