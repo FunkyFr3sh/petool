@@ -67,6 +67,17 @@ int gensym(int argc, char **argv)
     int found_GetProcAddress = 0;
 
     while (i->OriginalFirstThunk) {
+        char name[260] = { 0 };
+
+        if (i->Name != 0) {
+            strncpy(
+                name,
+                (char*)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->Name, nt_hdr)),
+                sizeof name - 1
+            );
+
+            fprintf(ofh, "\n; %s\n", name);
+        }
 
         PIMAGE_THUNK_DATA32 oft =
             (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->OriginalFirstThunk, nt_hdr));
@@ -88,6 +99,18 @@ int gensym(int argc, char **argv)
 
                 if (strcmp((const char*)import->Name, "GetProcAddress") == 0)
                     found_GetProcAddress = 1;
+            }
+            else
+            {
+                char* p = strrchr(name, '.');
+                if (p)
+                {
+                    *p = '\0';
+                }
+
+                int ordinal = (oft->u1.Ordinal & ~IMAGE_ORDINAL_FLAG32) & 0xffff;
+
+                fprintf(ofh, "setcglob 0x%p, _imp__%s_Ordinal_%d\n", (void*)&ft_rva->u1.Function, name, ordinal);
             }
 
             oft++;
