@@ -104,12 +104,12 @@ int genprj(int argc, char **argv)
     printf("Generating %s...\n", buf);
     FAIL_IF(genmak(3, cmd_argv) != EXIT_SUCCESS, "Failed to create Makefile\n");
 
+    printf("Extracting optional files and examples...\n");
+    FAIL_IF(genfiles(dir) != EXIT_SUCCESS, "Failed to extract optional files and examples\n");
+
     snprintf(buf, sizeof buf, "%s/sym.asm", dir);
     printf("Generating %s...\n", buf);
     FAIL_IF(gensym(3, cmd_argv) != EXIT_SUCCESS, "Failed to create sym.asm\n");
-
-    printf("Extracting optional files and examples...\n");
-    FAIL_IF(genfiles(dir) != EXIT_SUCCESS, "Failed to extract optional files and examples\n");
 
 cleanup:
     return ret;
