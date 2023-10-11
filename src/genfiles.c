@@ -34,7 +34,6 @@ extern const char res_gitignore[];
 extern const char res_build_cmd[];
 extern const char res_imports_asm[];
 extern const char res_readme_md[];
-extern const char res_sym_asm[];
 extern const char res_src_example_fix_asm[];
 extern const char res_src_winmain_c[];
 extern const char res_inc_imports_h[];
@@ -65,10 +64,6 @@ extern const char res_inc_macros_watcall_inc[];
     "_res_readme_md:"
     "res_readme_md:"
     ".incbin \"res/readme.md\";"
-    ".byte 0;"
-    "_res_sym_asm:"
-    "res_sym_asm:"
-    ".incbin \"res/sym.asm\";"
     ".byte 0;"
     "_res_src_example_fix_asm:"
     "res_src_example_fix_asm:"
@@ -148,10 +143,6 @@ int genfiles(char *dir)
     snprintf(buf, sizeof buf, "%s/README.md", dir);
     printf("Generating %s...\n", buf);
     extract_resource(res_readme_md, buf);
-
-    snprintf(buf, sizeof buf, "%s/sym.asm", dir);
-    printf("Generating %s...\n", buf);
-    extract_resource(res_sym_asm, buf);
 
     snprintf(buf, sizeof buf, "%s/src", dir);
     _mkdir(buf);

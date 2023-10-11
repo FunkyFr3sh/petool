@@ -49,6 +49,8 @@
 #define IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT   13   // Delay Load Import Descriptors
 #define IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR 14   // COM Runtime descriptor
 
+#define IMAGE_ORDINAL_FLAG32 0x80000000
+
 #define FIELD_OFFSET(t,f) ((intptr_t)&(((t*)0)->f))
 
 #define IMAGE_SIZEOF_SHORT_NAME 8
@@ -180,5 +182,20 @@ typedef struct _IMAGE_RESOURCE_DATA_ENTRY {
     uint32_t CodePage;
     uint32_t Reserved;
 } IMAGE_RESOURCE_DATA_ENTRY, *PIMAGE_RESOURCE_DATA_ENTRY;
+
+typedef struct _IMAGE_THUNK_DATA32 {
+    union {
+        uint32_t ForwarderString;
+        uint32_t Function;
+        uint32_t Ordinal;
+        uint32_t AddressOfData;
+    } u1;
+} IMAGE_THUNK_DATA32;
+typedef IMAGE_THUNK_DATA32* PIMAGE_THUNK_DATA32;
+
+typedef struct _IMAGE_IMPORT_BY_NAME {
+    uint16_t Hint;
+    uint8_t Name[1];
+} IMAGE_IMPORT_BY_NAME, * PIMAGE_IMPORT_BY_NAME;
 
 #pragma pack(pop)
