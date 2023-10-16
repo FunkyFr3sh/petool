@@ -70,7 +70,7 @@ int import(int argc, char **argv)
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
     IMAGE_IMPORT_DESCRIPTOR *i = (void *)(image + offset);
 
-    if (strcmp(argv[0], "genmak") != 0) {
+    if (strcmp(argv[0], "import") != 0) {
         fprintf(ofh, "%%include \"macros/imports.inc\"\n");
         fprintf(ofh, "\n");
         fprintf(ofh, "\n");
