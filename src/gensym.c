@@ -63,10 +63,6 @@ int gensym(int argc, char **argv)
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
     IMAGE_IMPORT_DESCRIPTOR *i = (void *)(image + offset);
 
-    int found_LoadLibraryA = 0;
-    int found_GetModuleHandleA = 0;
-    int found_GetProcAddress = 0;
-
     while (i->OriginalFirstThunk) {
         char name[260] = { 0 };
 
@@ -93,16 +89,9 @@ int gensym(int argc, char **argv)
 
             if ((oft->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
             {
-                fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
-            
-                if (strcmp((const char*)import->Name, "LoadLibraryA") == 0)
-                    found_LoadLibraryA = 1;
-
-                if (strcmp((const char*)import->Name, "GetModuleHandleA") == 0)
-                    found_GetModuleHandleA = 1;
-
-                if (strcmp((const char*)import->Name, "GetProcAddress") == 0)
-                    found_GetProcAddress = 1;
+                if (_strcmpi(name, "MSVCRT.dll") != 0) {
+                    fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                }
             }
             else
             {
@@ -123,16 +112,6 @@ int gensym(int argc, char **argv)
 
         i++;
     }
-    
-    /* make sure the project builds without any manual changes */
-    if (!found_LoadLibraryA)
-        fprintf(ofh, "\n\nsetcglob 0x00000000, _imp__LoadLibraryA\n");
-
-    if (!found_GetModuleHandleA)
-        fprintf(ofh, "\n\nsetcglob 0x00000000, _imp__GetModuleHandleA\n");
-
-    if (!found_GetProcAddress)
-        fprintf(ofh, "\n\nsetcglob 0x00000000, _imp__GetProcAddress\n");
 
 cleanup:
     if (image) free(image);

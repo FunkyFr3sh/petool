@@ -116,7 +116,13 @@ int genlds(int argc, char **argv)
         }
 
         if (strcmp(buf, ".idata") == 0) {
-            idata_exists = true;
+            if (strcmp(argv[0], "genlds") == 0) {
+                idata_exists = true;
+            }
+            else {
+                fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) }\n", ".o_idata", cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf);
+                continue;
+            }
         }
 
         if (cur_sct->Misc.VirtualSize > cur_sct->SizeOfRawData) {

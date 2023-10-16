@@ -24,12 +24,12 @@
 #include "cleanup.h"
 #include "common.h"
 
-int genmak(int argc, char **argv)
+int genmak(int argc, char** argv)
 {
-    int     ret   = EXIT_SUCCESS;
-    FILE   *fh    = NULL;
-    int8_t *image = NULL;
-    FILE   *ofh   = stdout;
+    int     ret = EXIT_SUCCESS;
+    FILE* fh = NULL;
+    int8_t* image = NULL;
+    FILE* ofh = stdout;
     char   base[256] = { '\0' };
 
     FAIL_IF(argc < 2, "usage: petool genmak <image> [ofile]\n");
@@ -47,15 +47,15 @@ int genmak(int argc, char **argv)
     fclose(fh);
     fh = NULL; // for cleanup
 
-    PIMAGE_DOS_HEADER dos_hdr = (void *)image;
-    PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
+    PIMAGE_DOS_HEADER dos_hdr = (void*)image;
+    PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
 
-    FAIL_IF(length < 512,                            "File too small.\n");
+    FAIL_IF(length < 512, "File too small.\n");
     FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE, "File DOS signature invalid.\n");
     FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE, "File NT signature invalid.\n");
 
     strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
-    char *p = strrchr(base, '.');
+    char* p = strrchr(base, '.');
     if (p)
     {
         *p = '\0';
@@ -66,12 +66,14 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "OUTPUT      = %s\n", file_escaped_basename(argv[1]));
     fprintf(ofh, "LDS         = %s.lds\n", base);
 
-    fprintf(ofh, "IMPORTS     =");
-    if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress)
-    {
-        fprintf(ofh, " 0x%"PRIX32" %d", nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[1].Size);
+    if (strcmp(argv[0], "genmak") == 0) {
+        fprintf(ofh, "IMPORTS     =");
+        if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress)
+        {
+            fprintf(ofh, " 0x%"PRIX32" %d", nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[1].Size);
+        }
+        fprintf(ofh, "\n");
     }
-    fprintf(ofh, "\n");
 
     fprintf(ofh, "LDFLAGS     = --section-alignment=0x%"PRIX32, nt_hdr->OptionalHeader.SectionAlignment);
 

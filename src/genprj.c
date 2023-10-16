@@ -47,6 +47,7 @@ __asm(".data;"
 
 int genlds(int argc, char **argv);
 int genmak(int argc, char **argv);
+int import(int argc, char** argv);
 int gensym(int argc, char** argv);
 int genfiles(char* dir);
 
@@ -103,6 +104,10 @@ int genprj(int argc, char **argv)
     snprintf(buf, sizeof buf, "%s/Makefile", dir);
     printf("Generating %s...\n", buf);
     FAIL_IF(genmak(3, cmd_argv) != EXIT_SUCCESS, "Failed to create Makefile\n");
+
+    snprintf(buf, sizeof buf, "%s/imports.asm", dir);
+    printf("Generating %s...\n", buf);
+    FAIL_IF(import(3, cmd_argv) != EXIT_SUCCESS, "Failed to create imports.asm\n");
 
     printf("Extracting optional files and examples...\n");
     FAIL_IF(genfiles(dir) != EXIT_SUCCESS, "Failed to extract optional files and examples\n");
