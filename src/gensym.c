@@ -66,6 +66,7 @@ int gensym(int argc, char **argv)
     int found_LoadLibraryA = 0;
     int found_GetModuleHandleA = 0;
     int found_GetProcAddress = 0;
+    int found_MessageBoxA = 0;
 
     while (i->OriginalFirstThunk) {
         char name[260] = { 0 };
@@ -103,6 +104,9 @@ int gensym(int argc, char **argv)
 
                 if (strcmp((const char*)import->Name, "GetProcAddress") == 0)
                     found_GetProcAddress = 1;
+
+                if (strcmp((const char*)import->Name, "MessageBoxA") == 0)
+                    found_MessageBoxA = 1;
             }
             else
             {
@@ -133,6 +137,9 @@ int gensym(int argc, char **argv)
 
     if (!found_GetProcAddress)
         fprintf(ofh, "\n\nsetcglob 0x00000000, _imp__GetProcAddress\n");
+
+    if (!found_MessageBoxA)
+        fprintf(ofh, "\n\nsetcglob 0x00000000, _imp__MessageBoxA\n");
 
 cleanup:
     if (image) free(image);

@@ -6,6 +6,8 @@
 // entry point
 void start()
 {
-    imports_init();
+    if (!imports_init())
+        return;
+
     app_start();
 }
