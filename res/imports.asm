@@ -8,150 +8,14 @@ cextern _imp__MessageBoxA
 
 
 %macro importlist 1
-; add new imports here, example:
-;    %1_library kernel32
-;    %1_import GetPrivateProfileStringA
-;    %1_import GetPrivateProfileIntA
+   ; add new imports here, example:
+   ; %1_library kernel32
+   ; %1_import GetPrivateProfileStringA
+   ; %1_import GetPrivateProfileIntA
     
     %1_library msvcrt
-    %1_import $I10_OUTPUT
-    %1_import ??0__non_rtti_object@@QAE@ABV0@@Z
-    %1_import ??0__non_rtti_object@@QAE@PBD@Z
-    %1_import ??0bad_cast@@AAE@PBQBD@Z
-    %1_import ??0bad_cast@@QAE@ABV0@@Z
-    %1_import ??0bad_cast@@QAE@PBD@Z
-    %1_import ??0bad_typeid@@QAE@ABV0@@Z
-    %1_import ??0bad_typeid@@QAE@PBD@Z
-    %1_import ??0exception@@QAE@ABQBD@Z
-    %1_import ??0exception@@QAE@ABV0@@Z
-    %1_import ??0exception@@QAE@XZ
-    %1_import ??1__non_rtti_object@@UAE@XZ
-    %1_import ??1bad_cast@@UAE@XZ
-    %1_import ??1exception@@UAE@XZ
-    %1_import ??1type_info@@UAE@XZ
-    %1_import ??2@YAPAXI@Z
-    %1_import ??3@YAXPAX@Z
-    %1_import ??4__non_rtti_object@@QAEAAV0@ABV0@@Z
-    %1_import ??4exception@@QAEAAV0@ABV0@@Z
-    %1_import ??8type_info@@QBEHABV0@@Z
-    %1_import ??9type_info@@QBEHABV0@@Z
-    %1_import ??_7__non_rtti_object@@6B@
-    %1_import ??_7bad_cast@@6B@
-    %1_import ??_7bad_typeid@@6B@
-    %1_import ??_7exception@@6B@
-    %1_import ??_E__non_rtti_object@@UAEPAXI@Z
-    %1_import ??_Ebad_cast@@UAEPAXI@Z
-    %1_import ??_Eexception@@UAEPAXI@Z
-    %1_import ??_Fbad_cast@@QAEXXZ
-    %1_import ??_Fbad_typeid@@QAEXXZ
-    %1_import ??_G__non_rtti_object@@UAEPAXI@Z
-    %1_import ??_Gbad_cast@@UAEPAXI@Z
-    %1_import ??_Gexception@@UAEPAXI@Z
-    %1_import ??_U@YAPAXI@Z
-    %1_import ??_V@YAXPAX@Z
-    %1_import ?_query_new_handler@@YAP6AHI@ZXZ
-    %1_import ?_query_new_mode@@YAHXZ
-    %1_import ?_set_new_handler@@YAP6AHI@ZP6AHI@Z@Z
-    %1_import ?_set_new_mode@@YAHH@Z
-    %1_import ?_set_se_translator@@YAP6AXIPAU_EXCEPTION_POINTERS@@@ZP6AXI0@Z@Z
-    %1_import ?before@type_info@@QBEHABV1@@Z
-    %1_import ?name@type_info@@QBEPBDXZ
-    %1_import ?raw_name@type_info@@QBEPBDXZ
-    %1_import ?set_new_handler@@YAP6AXXZP6AXXZ@Z
-    %1_import ?set_terminate@@YAP6AXXZP6AXXZ@Z
-    %1_import ?set_unexpected@@YAP6AXXZP6AXXZ@Z
-    %1_import ?terminate@@YAXXZ
-    %1_import ?unexpected@@YAXXZ
-    %1_import ?what@exception@@UBEPBDXZ
-    %1_import ___lc_codepage_func
-    %1_import ___lc_handle_func
-    %1_import ___mb_cur_max_func
-    %1_import ___setlc_active_func
-    %1_import ___unguarded_readlc_active_add_func
-    %1_import __argc
-    %1_import __argv
-    %1_import __badioinfo
-    %1_import __crtCompareStringA
-    %1_import __crtCompareStringW
-    %1_import __crtGetLocaleInfoW
-    %1_import __crtGetStringTypeW
-    %1_import __crtLCMapStringA
-    %1_import __crtLCMapStringW
-    %1_import __CxxCallUnwindDtor
-    %1_import __CxxDetectRethrow
-    %1_import __CxxExceptionFilter
-    %1_import __CxxFrameHandler
-    %1_import __CxxLongjmpUnwind
-    %1_import __CxxQueryExceptionSize
-    %1_import __CxxRegisterExceptionObject
-    %1_import __CxxUnregisterExceptionObject
-    %1_import __DestructExceptionObject
-    %1_import __dllonexit
-    %1_import __doserrno
-    %1_import __fpecode
-    %1_import __getmainargs
-    %1_import __initenv
-    %1_import __iob_func
-    %1_import __isascii
-    %1_import __iscsym
-    %1_import __iscsymf
-    %1_import __lc_codepage
-    %1_import __lc_collate_cp
-    %1_import __lc_handle
-    %1_import __lconv_init
-    %1_import __mb_cur_max
-    %1_import __p___argc
-    %1_import __p___argv
-    %1_import __p___initenv
-    %1_import __p___mb_cur_max
-    %1_import __p___wargv
-    %1_import __p___winitenv
-    %1_import __p__acmdln
-    %1_import __p__amblksiz
-    %1_import __p__commode
-    %1_import __p__daylight
-    %1_import __p__dstbias
-    %1_import __p__environ
-    %1_import __p__fileinfo
-    %1_import __p__fmode
-    %1_import __p__mbcasemap
-    %1_import __p__mbctype
-    %1_import __p__osver
-    %1_import __p__pctype
-    %1_import __p__pgmptr
-    %1_import __p__pwctype
-    %1_import __p__timezone
-    %1_import __p__tzname
-    %1_import __p__wcmdln
-    %1_import __p__wenviron
-    %1_import __p__winmajor
-    %1_import __p__winminor
-    %1_import __p__winver
-    %1_import __p__wpgmptr
-    %1_import __pctype_func
-    %1_import __pioinfo
-    %1_import __pxcptinfoptrs
-    %1_import __RTCastToVoid
-    %1_import __RTDynamicCast
-    %1_import __RTtypeid
-    %1_import __set_app_type
-    %1_import __setlc_active
-    %1_import __setusermatherr
-    %1_import __STRINGTOLD
-    %1_import __threadhandle
-    %1_import __threadid
-    %1_import __toascii
-    %1_import __uncaught_exception
-    %1_import __unDName
-    %1_import __unDNameEx
-    %1_import __unguarded_readlc_active
-    %1_import __wargv
-    %1_import __wcserror
-    %1_import __wgetmainargs
-    %1_import __winitenv
     %1_import _abnormal_termination
     %1_import _access
-    %1_import _acmdln
     %1_import _adj_fdiv_m16i
     %1_import _adj_fdiv_m32
     %1_import _adj_fdiv_m32i
@@ -192,26 +56,9 @@ cextern _imp__MessageBoxA
     %1_import _chkesp
     %1_import _chmod
     %1_import _chsize
-    %1_import _CIacos
-    %1_import _CIasin
-    %1_import _CIatan
-    %1_import _CIatan2
-    %1_import _CIcos
-    %1_import _CIcosh
-    %1_import _CIexp
-    %1_import _CIfmod
-    %1_import _CIlog
-    %1_import _CIlog10
-    %1_import _CIpow
-    %1_import _CIsin
-    %1_import _CIsinh
-    %1_import _CIsqrt
-    %1_import _CItan
-    %1_import _CItanh
     %1_import _clearfp
     %1_import _close
     %1_import _commit
-    %1_import _commode
     %1_import _control87
     %1_import _controlfp
     %1_import _copysign
@@ -225,20 +72,15 @@ cextern _imp__MessageBoxA
     %1_import _cwait
     %1_import _cwprintf
     %1_import _cwscanf
-    %1_import _CxxThrowException
     %1_import _daylight
     %1_import _dstbias
     %1_import _dup
     %1_import _dup2
     %1_import _ecvt
-    %1_import _EH_prolog
     %1_import _endthread
     %1_import _endthreadex
     %1_import _environ
     %1_import _eof
-    %1_import _errno
-    %1_import _except_handler2
-    %1_import _except_handler3
     %1_import _execl
     %1_import _execle
     %1_import _execlp
@@ -254,7 +96,6 @@ cextern _imp__MessageBoxA
     %1_import _fdopen
     %1_import _fgetchar
     %1_import _fgetwchar
-    %1_import _filbuf
     %1_import _fileinfo
     %1_import _filelength
     %1_import _filelengthi64
@@ -267,7 +108,6 @@ cextern _imp__MessageBoxA
     %1_import _findnext64
     %1_import _findnexti64
     %1_import _finite
-    %1_import _flsbuf
     %1_import _flushall
     %1_import _fmode
     %1_import _fpclass
@@ -281,7 +121,6 @@ cextern _imp__MessageBoxA
     %1_import _fstati64
     %1_import _ftime
     %1_import _ftime64
-    %1_import _ftol
     %1_import _fullpath
     %1_import _futime
     %1_import _futime64
@@ -291,7 +130,6 @@ cextern _imp__MessageBoxA
     %1_import _getch
     %1_import _getche
     %1_import _getcwd
-    %1_import _Getdays
     %1_import _getdcwd
     %1_import _getdiskfree
     %1_import _getdllprocaddr
@@ -299,15 +137,12 @@ cextern _imp__MessageBoxA
     %1_import _getdrives
     %1_import _getmaxstdio
     %1_import _getmbcp
-    %1_import _Getmonths
     %1_import _getpid
     %1_import _getsystime
-    %1_import _Gettnames
     %1_import _getw
     %1_import _getwch
     %1_import _getwche
     %1_import _getws
-    %1_import _global_unwind2
     %1_import _gmtime64
     %1_import _heapadd
     %1_import _heapchk
@@ -364,19 +199,17 @@ cextern _imp__MessageBoxA
     %1_import _kbhit
     %1_import _lfind
     %1_import _loaddll
-    %1_import _local_unwind2
     %1_import _localtime64
     %1_import _lock
     %1_import _locking
     %1_import _logb
-    %1_import _longjmpex
     %1_import _lrotl
     %1_import _lrotr
     %1_import _lsearch
     %1_import _lseek
     %1_import _lseeki64
-    %1_import _ltoa
-    %1_import _ltow
+   ; %1_import _ltoa ; Removed in Windows 10
+   ; %1_import _ltow ; Removed in Windows 10
     %1_import _makepath
     %1_import _mbbtombc
     %1_import _mbbtype
@@ -390,7 +223,6 @@ cextern _imp__MessageBoxA
     %1_import _mbctolower
     %1_import _mbctombb
     %1_import _mbctoupper
-    %1_import _mbctype
     %1_import _mbsbtype
     %1_import _mbscat
     %1_import _mbschr
@@ -449,7 +281,6 @@ cextern _imp__MessageBoxA
     %1_import _outpd
     %1_import _outpw
     %1_import _pclose
-    %1_import _pctype
     %1_import _pgmptr
     %1_import _pipe
     %1_import _popen
@@ -459,7 +290,6 @@ cextern _imp__MessageBoxA
     %1_import _putw
     %1_import _putwch
     %1_import _putws
-    %1_import _pwctype
     %1_import _read
     %1_import _resetstkoflw
     %1_import _rmdir
@@ -472,13 +302,11 @@ cextern _imp__MessageBoxA
     %1_import _scprintf
     %1_import _scwprintf
     %1_import _searchenv
-    %1_import _seh_longjmp_unwind
     %1_import _set_error_mode
     %1_import _set_sbh_threshold
     %1_import _set_SSE2_enable
     %1_import _seterrormode
     %1_import _setjmp
-    %1_import _setjmp3
     %1_import _setmaxstdio
     %1_import _setmbcp
     %1_import _setmode
@@ -505,7 +333,6 @@ cextern _imp__MessageBoxA
     %1_import _strcmpi
     %1_import _strdate
     %1_import _strerror
-    %1_import _Strftime
     %1_import _stricoll
     %1_import _strlwr
     %1_import _strncoll
@@ -538,7 +365,6 @@ cextern _imp__MessageBoxA
     %1_import _ungetch
     %1_import _ungetwch
     %1_import _unlink
-    %1_import _unloaddll
     %1_import _unlock
     %1_import _utime
     %1_import _utime64
@@ -550,7 +376,6 @@ cextern _imp__MessageBoxA
     %1_import _wasctime
     %1_import _wchdir
     %1_import _wchmod
-    %1_import _wcmdln
     %1_import _wcreat
     %1_import _wcsdup
     %1_import _wcserror
@@ -658,7 +483,7 @@ cextern _imp__MessageBoxA
     %1_import ctime
     %1_import difftime
     %1_import div
-    %1_import entry
+   ; %1_import entry ; Not working in Windows 7
     %1_import exit
     %1_import exp
     %1_import fabs
@@ -690,11 +515,11 @@ cextern _imp__MessageBoxA
     %1_import fwprintf
     %1_import fwrite
     %1_import fwscanf
-    %1_import getchar
+   ; %1_import getchar ; Removed in Windows 10
     %1_import getenv
     %1_import gets
     %1_import getwc
-    %1_import getwchar
+   ; %1_import getwchar ; Removed in Windows 10
     %1_import gmtime
     %1_import is_wctype
     %1_import isalnum
@@ -783,7 +608,7 @@ cextern _imp__MessageBoxA
     %1_import strtol
     %1_import strtoul
     %1_import strxfrm
-    %1_import swprintf
+   ; %1_import swprintf ; Removed in Windows 7
     %1_import swscanf
     %1_import system
     %1_import tan
@@ -801,7 +626,7 @@ cextern _imp__MessageBoxA
     %1_import vfwprintf
     %1_import vprintf
     %1_import vsprintf
-    %1_import vswprintf
+   ; %1_import vswprintf ; Removed in Windows 7
     %1_import vwprintf
     %1_import wcscat
     %1_import wcschr
