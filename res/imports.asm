@@ -49,7 +49,7 @@ cextern _imp__MessageBoxA
     %1_import _callnewh
     %1_import _cexit
     %1_import _cgets
-    %1_import _cgetws
+   ; %1_import _cgetws ; Not available in wine-8.0.2
     %1_import _chdir
     %1_import _chdrive
     %1_import _chgsign
@@ -96,7 +96,7 @@ cextern _imp__MessageBoxA
     %1_import _fdopen
     %1_import _fgetchar
     %1_import _fgetwchar
-    %1_import _fileinfo
+   ; %1_import _fileinfo ; Not available in wine-8.0.2
     %1_import _filelength
     %1_import _filelengthi64
     %1_import _fileno
@@ -213,7 +213,7 @@ cextern _imp__MessageBoxA
     %1_import _makepath
     %1_import _mbbtombc
     %1_import _mbbtype
-    %1_import _mbcasemap
+   ; %1_import _mbcasemap ; Not available in wine-8.0.2
     %1_import _mbccpy
     %1_import _mbcjistojms
     %1_import _mbcjmstojis
