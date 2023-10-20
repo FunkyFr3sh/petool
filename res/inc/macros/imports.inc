@@ -9,9 +9,13 @@
     sstring str_%1, ___TmpStringX_
     gint _imp__%1, 0
 
+    ; Jump table
     global _%1
-    sfunction _%1
+    [section .text]
+    align 4, db 0xCC
+    _%1:
         jmp [_imp__%1]
+    __SECT__
 %endmacro
 
 %macro load_import 1
