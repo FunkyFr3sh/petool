@@ -63,10 +63,10 @@ int gensym(int argc, char **argv)
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
     IMAGE_IMPORT_DESCRIPTOR *i = (void *)(image + offset);
 
-    int found_LoadLibraryA = 0;
-    int found_GetModuleHandleA = 0;
-    int found_GetProcAddress = 0;
-    int found_MessageBoxA = 0;
+    bool found_LoadLibraryA = false;
+    bool found_GetModuleHandleA = false;
+    bool found_GetProcAddress = false;
+    bool found_MessageBoxA = false;
 
     while (i->OriginalFirstThunk) {
         char name[260] = { 0 };
@@ -99,16 +99,16 @@ int gensym(int argc, char **argv)
                 }
 
                 if (strcmp((const char*)import->Name, "LoadLibraryA") == 0)
-                    found_LoadLibraryA = 1;
+                    found_LoadLibraryA = true;
 
                 if (strcmp((const char*)import->Name, "GetModuleHandleA") == 0)
-                    found_GetModuleHandleA = 1;
+                    found_GetModuleHandleA = true;
 
                 if (strcmp((const char*)import->Name, "GetProcAddress") == 0)
-                    found_GetProcAddress = 1;
+                    found_GetProcAddress = true;
 
                 if (strcmp((const char*)import->Name, "MessageBoxA") == 0)
-                    found_MessageBoxA = 1;
+                    found_MessageBoxA = true;
             }
             else
             {
