@@ -134,7 +134,7 @@ int genlds(int argc, char **argv)
         fprintf(ofh, "    .idata    %16s : { *(.idata) }\n\n", align);
     }
 
-    fprintf(ofh, "    /DISCARD/                  : { *(.drectve) *(.rdata$zzz) }\n");
+    fprintf(ofh, "    /DISCARD/                  : { *(.drectve) *(.rdata$zzz) *(.reloc) }\n");
     fprintf(ofh, "    .p_text   %16s : { *(.text) }\n", align);
     fprintf(ofh, "    .p_rdata  %16s : { *(.rdata) }\n", align);
     fprintf(ofh, "    .p_data   %16s : { *(.data) }\n", align);
