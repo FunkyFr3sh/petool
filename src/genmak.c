@@ -78,7 +78,7 @@ int genmak(int argc, char **argv)
     if (nt_hdr->OptionalHeader.Subsystem == 2)
         fprintf(ofh, " --subsystem=windows");
 
-    fprintf(ofh, " --enable-stdcall-fixup");
+    fprintf(ofh, " --enable-stdcall-fixup --disable-dynamicbase --disable-nxcompat");
 
     fprintf(ofh, "\n");
 
