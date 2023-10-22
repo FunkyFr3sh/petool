@@ -116,7 +116,8 @@ extern const char res_inc_macros_watcall_inc[];
     "_res_inc_macros_watcall_inc:"
     "res_inc_macros_watcall_inc:"
     ".incbin \"res/inc/macros/watcall.inc\";"
-    ".byte 0"
+    ".byte 0;"
+    ".text"
     );
 
 void extract_resource(const char* src, char* file_path);

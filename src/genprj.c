@@ -43,7 +43,8 @@ __asm(".data;"
       "_patch_s:"
       "patch_s:"
       ".incbin \"patch.s\";"
-      ".byte 0");
+      ".byte 0;"
+      ".text");
 
 int genlds(int argc, char **argv);
 int genmak(int argc, char **argv);
