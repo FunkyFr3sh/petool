@@ -83,7 +83,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "\n");
 
     fprintf(ofh, "NFLAGS      = -f elf -Iinc/\n");
-    fprintf(ofh, "CFLAGS      = -std=c99 -Iinc/ -O2 -march=i486\n");
+    fprintf(ofh, "CFLAGS      = -std=c99 -Iinc/ -O2 -march=i486 -fno-asynchronous-unwind-tables\n");
 
     fprintf(ofh, "\n\n");
 
