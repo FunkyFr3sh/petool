@@ -122,10 +122,6 @@ int genlds(int argc, char **argv)
             continue;
         }
 
-        if (strcmp(buf, ".idata") == 0) {
-            idata_exists = true;
-        }
-
         if (cur_sct->Misc.VirtualSize > cur_sct->SizeOfRawData) {
             fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) . = ALIGN(0x%"PRIX32"); }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf, nt_hdr->OptionalHeader.SectionAlignment);
             fprintf(ofh, "    .bss      %16s : { . = . + 0x%"PRIX32"; }\n", align, cur_sct->Misc.VirtualSize - cur_sct->SizeOfRawData);
@@ -136,10 +132,6 @@ int genlds(int argc, char **argv)
     }
 
     fprintf(ofh, "\n");
-
-    if (!idata_exists) {
-        fprintf(ofh, "    .idata    %16s : { *(.idata) }\n\n", align);
-    }
 
     fprintf(ofh, "    /DISCARD/                  : { *(.rdata$zzz) }\n\n");
 
