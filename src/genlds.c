@@ -303,7 +303,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "    KEEP (*(.rsrc))\n");
     fprintf(ofh, "    KEEP (*(.rsrc$*))\n");
     fprintf(ofh, "  }\n");
-    fprintf(ofh, "  .reloc BLOCK(__section_alignment__) :\n");
+    fprintf(ofh, "  .p_reloc BLOCK(__section_alignment__) :\n");
     fprintf(ofh, "  {\n");
     fprintf(ofh, "    *(.reloc)\n");
     fprintf(ofh, "  }\n");
