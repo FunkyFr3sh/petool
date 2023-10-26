@@ -12,7 +12,7 @@ void start()
     app_start();
 }
 
-7/* Required for c++ - Hook WinMain here and make sure to add the symbol for the real WinMain to sym.asm
+/* Required for c++ - Hook WinMain here and make sure to add the symbol for the real WinMain to sym.asm
 CALL(0x00000000, _fake_WinMain);
 
 int WinMainCRTStartup (void);
