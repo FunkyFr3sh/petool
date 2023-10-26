@@ -69,6 +69,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "INPUT       = %s.dat\n", base);
     fprintf(ofh, "OUTPUT      = %s\n", file_escaped_basename(argv[1]));
     fprintf(ofh, "LDS         = %s.lds\n", base);
+    fprintf(ofh, "GCCVERSION  = $(shell gcc --version | grep ^gcc | sed 's/^.* //g')\n");
 
     fprintf(ofh, "IMPORTS     =");
     if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress)
@@ -93,9 +94,10 @@ int genmak(int argc, char **argv)
     if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryA)
     {
         fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32\n");
+        fprintf(ofh, "#CXXLIBS     = =/../i686-w64-mingw32/lib/crt2.o -lstdc++ -lgcc -lpthread -lmingw32 -lmoldname -lmingwex -lgcc\n");
     }
 
-    fprintf(ofh, "\n\n");
+    fprintf(ofh, "\n");
 
     fprintf(ofh, "OBJS        =");
 
@@ -137,7 +139,7 @@ int genmak(int argc, char **argv)
     }
 
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
-    fprintf(ofh, "\t$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(LIBS)\n");
+    fprintf(ofh, "\t$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(CXXLIBS) $(LIBS) -L=/../lib/gcc/i686-w64-mingw32/$(GCCVERSION)\n");
     fprintf(ofh, "ifneq (,$(IMPORTS))\n");
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
