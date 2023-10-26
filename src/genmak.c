@@ -69,6 +69,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "INPUT       = %s.dat\n", base);
     fprintf(ofh, "OUTPUT      = %s\n", file_escaped_basename(argv[1]));
     fprintf(ofh, "LDS         = %s.lds\n", base);
+
     fprintf(ofh, "GCCVERSION  = $(shell gcc --version | grep ^gcc | sed 's/^.* //g')\n");
 
     fprintf(ofh, "IMPORTS     =");
