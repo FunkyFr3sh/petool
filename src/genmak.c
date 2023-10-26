@@ -141,6 +141,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "ifneq (,$(IMPORTS))\n");
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
+    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 12 0 0 || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "\t$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "\t$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "\t$(PETOOL) dump \"$@\"\n\n");
