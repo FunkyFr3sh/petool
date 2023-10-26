@@ -89,7 +89,6 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "SECTIONS\n");
     fprintf(ofh, "{\n");
 
-    bool idata_exists = false;
     uint16_t filln = 0;
 
     char align[64];
@@ -281,7 +280,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "     at the end of section.  This is important because _tls_start MUST\n");
     fprintf(ofh, "     be at the beginning of the section to enable SECREL32 relocations with TLS\n");
     fprintf(ofh, "     data.  */\n");
-    fprintf(ofh, "  .tls BLOCK(__section_alignment__) :\n");
+    fprintf(ofh, "  .p_tls BLOCK(__section_alignment__) :\n");
     fprintf(ofh, "  {\n");
     fprintf(ofh, "    ___tls_start__ = . ;\n");
     fprintf(ofh, "    KEEP (*(.tls$AAA))\n");

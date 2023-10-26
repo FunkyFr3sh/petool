@@ -27,12 +27,14 @@
 #define _mkdir(a) mkdir(a, 0777)
 #endif
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 extern const char res_gitignore[];
 extern const char res_build_cmd[];
-extern const char res_imports_asm[];
+extern const char res_imports_c[];
+extern const char res_imports_dummy_c[];
 extern const char res_readme_md[];
 extern const char res_src_example_fix_asm[];
 extern const char res_src_start_c[];
@@ -42,7 +44,6 @@ extern const char res_inc_app_inc[];
 extern const char res_inc_patch_h[];
 extern const char res_inc_macros_datatypes_inc[];
 extern const char res_inc_macros_extern_inc[];
-extern const char res_inc_macros_imports_inc[];
 extern const char res_inc_macros_patch_h[];
 extern const char res_inc_macros_patch_inc[];
 extern const char res_inc_macros_setsym_inc[];
@@ -57,9 +58,13 @@ extern const char res_inc_macros_watcall_inc[];
     "res_build_cmd:"
     ".incbin \"res/build.cmd\";"
     ".byte 0;"
-    "_res_imports_asm:"
-    "res_imports_asm:"
-    ".incbin \"res/imports.asm\";"
+    "_res_imports_c:"
+    "res_imports_c:"
+    ".incbin \"res/imports.c\";"
+    ".byte 0;"
+    "_res_imports_dummy_c:"
+    "res_imports_dummy_c:"
+    ".incbin \"res/imports_dummy.c\";"
     ".byte 0;"
     "_res_readme_md:"
     "res_readme_md:"
@@ -97,10 +102,6 @@ extern const char res_inc_macros_watcall_inc[];
     "res_inc_macros_extern_inc:"
     ".incbin \"res/inc/macros/extern.inc\";"
     ".byte 0;"
-    "_res_inc_macros_imports_inc:"
-    "res_inc_macros_imports_inc:"
-    ".incbin \"res/inc/macros/imports.inc\";"
-    ".byte 0;"
     "_res_inc_macros_patch_h:"
     "res_inc_macros_patch_h:"
     ".incbin \"res/inc/macros/patch.h\";"
@@ -122,6 +123,9 @@ extern const char res_inc_macros_watcall_inc[];
 
 void extract_resource(const char* src, char* file_path);
 
+extern bool g_sym_got_LoadLibraryA;
+extern bool g_sym_got_GetProcAddress;
+
 int genfiles(char *dir)
 {
     int     ret   = EXIT_SUCCESS;
@@ -137,9 +141,18 @@ int genfiles(char *dir)
     printf("Generating %s...\n", buf);
     extract_resource(res_build_cmd, buf);
 
-    snprintf(buf, sizeof buf, "%s/imports.asm", dir);
-    printf("Generating %s...\n", buf);
-    extract_resource(res_imports_asm, buf);
+    if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryA)
+    {
+        snprintf(buf, sizeof buf, "%s/imports.c", dir);
+        printf("Generating %s...\n", buf);
+        extract_resource(res_imports_c, buf);
+    }
+    else
+    {
+        snprintf(buf, sizeof buf, "%s/imports.c", dir);
+        printf("Generating %s...\n", buf);
+        extract_resource(res_imports_dummy_c, buf);
+    }
 
     snprintf(buf, sizeof buf, "%s/README.md", dir);
     printf("Generating %s...\n", buf);
@@ -185,10 +198,6 @@ int genfiles(char *dir)
     snprintf(buf, sizeof buf, "%s/inc/macros/extern.inc", dir);
     printf("Generating %s...\n", buf);
     extract_resource(res_inc_macros_extern_inc, buf);
-
-    snprintf(buf, sizeof buf, "%s/inc/macros/imports.inc", dir);
-    printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_imports_inc, buf);
 
     snprintf(buf, sizeof buf, "%s/inc/macros/patch.h", dir);
     printf("Generating %s...\n", buf);

@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
@@ -23,6 +24,9 @@
 #include "pe.h"
 #include "cleanup.h"
 #include "common.h"
+
+extern bool g_sym_got_LoadLibraryA;
+extern bool g_sym_got_GetProcAddress;
 
 int genmak(int argc, char **argv)
 {
@@ -84,7 +88,12 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "NFLAGS      = -f elf -Iinc/\n");
     fprintf(ofh, "CFLAGS      = -std=c99 -Iinc/ -O2 -march=i486\n");
-    fprintf(ofh, "CXXFLAGS    = -Iinc/ -O2 -march=i486 \n");
+    fprintf(ofh, "CXXFLAGS    = -Iinc/ -O2 -march=i486\n");
+
+    if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryA)
+    {
+        fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32\n");
+    }
 
     fprintf(ofh, "\n\n");
 
@@ -119,7 +128,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "	$(NASM) $(NFLAGS) -o $@ $<\n\n");
 
     fprintf(ofh, "%%.o: %%.cpp\n");
-    fprintf(ofh, "	$(CXX) $(CXXFLAGS) -c -o $@ $< \n\n");
+    fprintf(ofh, "	$(CXX) $(CXXFLAGS) -c -o $@ $<\n\n");
 
     if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
@@ -128,7 +137,7 @@ int genmak(int argc, char **argv)
     }
 
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
-    fprintf(ofh, "\t$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS)\n");
+    fprintf(ofh, "\t$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(LIBS)\n");
     fprintf(ofh, "ifneq (,$(IMPORTS))\n");
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
