@@ -94,7 +94,7 @@ int genmak(int argc, char **argv)
 
     if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryA)
     {
-        fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32 -lgdí32\n");
+        fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32 -lgdi32\n");
         fprintf(ofh, "#CXXLIBS     = =/../i686-w64-mingw32/lib/crt2.o -lstdc++ -lgcc -lpthread -lmingw32 -lmoldname -lmingwex -lgcc\n");
     }
 
