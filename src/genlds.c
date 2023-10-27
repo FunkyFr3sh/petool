@@ -128,7 +128,7 @@ int genlds(int argc, char **argv)
             fprintf(ofh, "\n");
             fprintf(ofh, "  %s 0x%-6"PRIX32" :\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase);
             fprintf(ofh, "  {\n");
-            fprintf(ofh, "     %s(%s)\n", inputname, buf);
+            fprintf(ofh, "    %s(%s)\n", inputname, buf);
             fprintf(ofh, "    ___crt_xc_start__ = . ;\n");
             fprintf(ofh, "    KEEP (*(SORT(.CRT$XC*)))  /* C initialization */\n");
             fprintf(ofh, "    ___crt_xc_end__ = . ;\n");

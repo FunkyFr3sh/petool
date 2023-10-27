@@ -26,6 +26,8 @@
 #include "common.h"
 
 extern bool g_sym_got_LoadLibraryA;
+extern bool g_sym_got_GetModuleHandleA;
+extern bool g_sym_got_GetModuleHandleW;
 extern bool g_sym_got_GetProcAddress;
 
 int genmak(int argc, char **argv)
@@ -92,7 +94,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "CFLAGS      = -std=c99 -Iinc/ -O2 -march=i486\n");
     fprintf(ofh, "CXXFLAGS    = -Iinc/ -O2 -march=i486\n");
 
-    if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryA)
+    if (g_sym_got_GetProcAddress && (g_sym_got_LoadLibraryA || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
     {
         fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32 -lgdi32\n");
         fprintf(ofh, "CXXLIBS     = =/../i686-w64-mingw32/lib/crt2.o -lstdc++ -lgcc -lpthread -lmingw32 -lmoldname -lmingwex -lgcc\n");

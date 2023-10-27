@@ -30,6 +30,8 @@
 uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
 
 bool g_sym_got_LoadLibraryA;
+bool g_sym_got_GetModuleHandleA;
+bool g_sym_got_GetModuleHandleW;
 bool g_sym_got_GetProcAddress;
 
 int gensym(int argc, char **argv)
@@ -99,6 +101,18 @@ int gensym(int argc, char **argv)
                 {
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     g_sym_got_LoadLibraryA = true;
+                }
+
+                if (strcmp((const char*)import->Name, "GetModuleHandleA") == 0)
+                {
+                    fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                    g_sym_got_GetModuleHandleA = true;
+                }
+
+                if (strcmp((const char*)import->Name, "GetModuleHandleW") == 0)
+                {
+                    fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                    g_sym_got_GetModuleHandleW = true;
                 }
 
                 if (strcmp((const char*)import->Name, "GetProcAddress") == 0)

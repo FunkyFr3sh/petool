@@ -22,6 +22,20 @@ LoadLibraryA_p(
 );
 
 WINBASEAPI
+HMODULE
+WINAPI
+GetModuleHandleA_p(
+    __in_opt LPCSTR lpModuleName
+);
+    
+WINBASEAPI
+HMODULE
+WINAPI
+GetModuleHandleW_p(
+    __in_opt LPCWSTR lpModuleName
+);
+
+WINBASEAPI
 FARPROC
 WINAPI
 GetProcAddress_p(
