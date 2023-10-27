@@ -61,7 +61,9 @@ Patching
 
 Generating the patch set can be done with macros. There are macros available for 
 C/C++ in `inc/macros/patch.h`, several macros for `NASM` in `inc/macros/*.inc` and
-macros for `GNU as` in `inc/macros/patch.s`.
+macros for `GNU as` in `inc/macros/patch.s`. Runtime patching is supported as well
+via `inc/patch.h` (Not recommended, unless you have no other choice).
+
 Below are some C/C++ examples for how these macros are used in practice.
 
 ### Jump
