@@ -121,6 +121,33 @@ int genlds(int argc, char **argv)
             continue;
         }
 
+        if (strcmp(buf, ".CRT") == 0) {
+            /* We need to squeeze it in here, otherwise it doesn't work (EV Nova) */
+
+            fprintf(ofh, "\n");
+            fprintf(ofh, "  %s 0x%-6"PRIX32" :\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase);
+            fprintf(ofh, "  {\n");
+            fprintf(ofh, "     %s(%s)\n", inputname, buf);
+            fprintf(ofh, "    ___crt_xc_start__ = . ;\n");
+            fprintf(ofh, "    KEEP (*(SORT(.CRT$XC*)))  /* C initialization */\n");
+            fprintf(ofh, "    ___crt_xc_end__ = . ;\n");
+            fprintf(ofh, "    ___crt_xi_start__ = . ;\n");
+            fprintf(ofh, "    KEEP (*(SORT(.CRT$XI*)))  /* C++ initialization */\n");
+            fprintf(ofh, "    ___crt_xi_end__ = . ;\n");
+            fprintf(ofh, "    ___crt_xl_start__ = . ;\n");
+            fprintf(ofh, "    KEEP (*(SORT(.CRT$XL*)))  /* TLS callbacks */\n");
+            fprintf(ofh, "    /* ___crt_xl_end__ is defined in the TLS Directory support code */\n");
+            fprintf(ofh, "    ___crt_xp_start__ = . ;\n");
+            fprintf(ofh, "    KEEP (*(SORT(.CRT$XP*)))  /* Pre-termination */\n");
+            fprintf(ofh, "    ___crt_xp_end__ = . ;\n");
+            fprintf(ofh, "    ___crt_xt_start__ = . ;\n");
+            fprintf(ofh, "    KEEP (*(SORT(.CRT$XT*)))  /* Termination */\n");
+            fprintf(ofh, "    ___crt_xt_end__ = . ;\n");
+            fprintf(ofh, "  }\n\n");
+
+            continue;
+        }
+
         if (cur_sct->Misc.VirtualSize > cur_sct->SizeOfRawData) {
             fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) . = ALIGN(0x%"PRIX32"); }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf, nt_hdr->OptionalHeader.SectionAlignment);
             fprintf(ofh, "    .bss      %16s : { . = . + 0x%"PRIX32"; }\n", align, cur_sct->Misc.VirtualSize - cur_sct->SizeOfRawData);
@@ -258,7 +285,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "    KEEP (SORT(*)(.idata$6))\n");
     fprintf(ofh, "    KEEP (SORT(*)(.idata$7))\n");
     fprintf(ofh, "  }\n");
-    fprintf(ofh, "  .p_CRT BLOCK(__section_alignment__) :\n");
+    fprintf(ofh, "  .CRT BLOCK(__section_alignment__) :\n");
     fprintf(ofh, "  {\n");
     fprintf(ofh, "    ___crt_xc_start__ = . ;\n");
     fprintf(ofh, "    KEEP (*(SORT(.CRT$XC*)))  /* C initialization */\n");
