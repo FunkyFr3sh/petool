@@ -59,71 +59,63 @@ modifications.
 Patching
 --------------------------------------------------------------------------------
 
-Generating the patch set can be done with `GNU as` using the included `patch.s`
-macros. Below are examples how these macros are used in practice.
+Generating the patch set can be done with macros. There are macros available for 
+C/C++ in `inc/macros/patch.h`, several macros for `NASM` in `inc/macros/*.inc` and
+macros for `GNU as` in `inc/macros/patch.s`. Runtime patching is supported as well
+via `inc/patch.h` (Not recommended, unless you have no other choice).
+
+Below are some C/C++ examples for how these macros are used in practice.
 
 ### Jump
 
-    memsjmp <from> <to>
-    memljmp <from> <to>
+    LJMP(<from>, <to>);
+    SJMP(<from>, <to>);
 
 Both short (near) and long (far) variants are included. Jumping to an absolute
 address is supported and is converted to relative by the linker. No overflow
 checks are done so do pre-calculate which one you need.
 
-Example: `memljmp 0x410000 doMagic /* Do a (far) jump from 0x410000 to label doMagic */`
+Example: `LJMP(0x410000, _doMagic); /* Do a (far) jump from 0x410000 to label doMagic */`
 
 ### Call
 
-    memcall <from> <to>
+    CALL(<from>, <to>);
 
-The memcall macro writes a CALL instruction at _from_ to _to_. Absolute
+The CALL macro writes a CALL instruction at _from_ to _to_. Absolute
 addresses are converted to relative by the linker.
 
-Example: `memcall 0x410000 doMagic /* Make a call from 0x410000 to label doMagic */`
+Example: `CALL(0x410000, _doMagic); /* Make a call from 0x410000 to label doMagic */`
 
 ### Clear
 
-    memset <from> <byte> <to>
+    CLEAR(<from>, <byte>, <to>);
 
 Sets all bytes between _from_ and _to_ (not inclusive) to the 8-bit argument
 _byte_.
 
-When you make a `memljmp` or anything else over the original code that would
+When you make a `LJMP` or anything else over the original code that would
 leave some instructions broken or a dead code block, consider clearing the area
 before writing the jump. It ensures when you or someone else is following the
 code in a disassembler or a debugger that they will not get confused by sudden
 far jumps which have broken instructions just after them.
 
-Example: `memset 0x410000 0x90 0x410005 /* NOP 5 bytes starting from 0x410000 */`
+Example: `CLEAR(0x410000, 0x90, 0x410005); /* NOP 5 bytes starting from 0x410000 */`
 
-### Data
+### Existing symbols in original executable (sym.asm)
 
-    memcpy <address> "<inst>"
-
-This macro will write the given instructions directly on the specified _address_
-in the executable. Anything the assembler understands can be used as the _inst_
-argument.
-
-Example: `memcpy 0x410000 ".long 1; .long 2; .long 3" /* Write three DWORDs to 0x410000 (12 bytes) */`
-
-### Existing symbols in original executable
-
-    .global _printf
-    .equ _printf, 0x4B8EE0
+    setcglob 0x004D2A80, WinMain
 
 When you need to refer to existing symbols inside the executable, you can export
 global symbols from assembly source. Symbols can be any named memory address:
-function, data, uninitialized variable. As long as you define them global, you can
-use them anywhere. Remember decorations if you're referring to exported global
-symbols from C code.
+function, data, uninitialized variable. As long as you define them in sym.asm, 
+you can use them anywhere.
 
 Compiling new code
 --------------------------------------------------------------------------------
 
 You can use any compilable language that can produce an COFF or ELF object or
-whatever your build of `GNU binutils` supports. `GNU as` and `GNU cc` are the
-most compatible tools.
+whatever your build of `GNU binutils` supports. `GNU as`, `GNU cc`, `GNU g++`
+and `NASM` are the most compatible tools and supported by `w64devkit` out of the box.
 
 When mixing already compiled executable with new code, you need to make sure of
 the calling convention of your functions and compiler can be made compatible
