@@ -90,6 +90,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "{\n");
 
     uint16_t filln = 0;
+    bool got_crt_section = false;
 
     char align[64];
     sprintf(align, "ALIGN(0x%-4"PRIX32")", nt_hdr->OptionalHeader.SectionAlignment);
@@ -145,6 +146,7 @@ int genlds(int argc, char **argv)
             fprintf(ofh, "    ___crt_xt_end__ = . ;\n");
             fprintf(ofh, "  }\n\n");
 
+            got_crt_section = true;
             continue;
         }
 
@@ -285,24 +287,29 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "    KEEP (SORT(*)(.idata$6))\n");
     fprintf(ofh, "    KEEP (SORT(*)(.idata$7))\n");
     fprintf(ofh, "  }\n");
-    fprintf(ofh, "  .CRT BLOCK(__section_alignment__) :\n");
-    fprintf(ofh, "  {\n");
-    fprintf(ofh, "    ___crt_xc_start__ = . ;\n");
-    fprintf(ofh, "    KEEP (*(SORT(.CRT$XC*)))  /* C initialization */\n");
-    fprintf(ofh, "    ___crt_xc_end__ = . ;\n");
-    fprintf(ofh, "    ___crt_xi_start__ = . ;\n");
-    fprintf(ofh, "    KEEP (*(SORT(.CRT$XI*)))  /* C++ initialization */\n");
-    fprintf(ofh, "    ___crt_xi_end__ = . ;\n");
-    fprintf(ofh, "    ___crt_xl_start__ = . ;\n");
-    fprintf(ofh, "    KEEP (*(SORT(.CRT$XL*)))  /* TLS callbacks */\n");
-    fprintf(ofh, "    /* ___crt_xl_end__ is defined in the TLS Directory support code */\n");
-    fprintf(ofh, "    ___crt_xp_start__ = . ;\n");
-    fprintf(ofh, "    KEEP (*(SORT(.CRT$XP*)))  /* Pre-termination */\n");
-    fprintf(ofh, "    ___crt_xp_end__ = . ;\n");
-    fprintf(ofh, "    ___crt_xt_start__ = . ;\n");
-    fprintf(ofh, "    KEEP (*(SORT(.CRT$XT*)))  /* Termination */\n");
-    fprintf(ofh, "    ___crt_xt_end__ = . ;\n");
-    fprintf(ofh, "  }\n");
+
+    if (!got_crt_section)
+    {
+        fprintf(ofh, "  .CRT BLOCK(__section_alignment__) :\n");
+        fprintf(ofh, "  {\n");
+        fprintf(ofh, "    ___crt_xc_start__ = . ;\n");
+        fprintf(ofh, "    KEEP (*(SORT(.CRT$XC*)))  /* C initialization */\n");
+        fprintf(ofh, "    ___crt_xc_end__ = . ;\n");
+        fprintf(ofh, "    ___crt_xi_start__ = . ;\n");
+        fprintf(ofh, "    KEEP (*(SORT(.CRT$XI*)))  /* C++ initialization */\n");
+        fprintf(ofh, "    ___crt_xi_end__ = . ;\n");
+        fprintf(ofh, "    ___crt_xl_start__ = . ;\n");
+        fprintf(ofh, "    KEEP (*(SORT(.CRT$XL*)))  /* TLS callbacks */\n");
+        fprintf(ofh, "    /* ___crt_xl_end__ is defined in the TLS Directory support code */\n");
+        fprintf(ofh, "    ___crt_xp_start__ = . ;\n");
+        fprintf(ofh, "    KEEP (*(SORT(.CRT$XP*)))  /* Pre-termination */\n");
+        fprintf(ofh, "    ___crt_xp_end__ = . ;\n");
+        fprintf(ofh, "    ___crt_xt_start__ = . ;\n");
+        fprintf(ofh, "    KEEP (*(SORT(.CRT$XT*)))  /* Termination */\n");
+        fprintf(ofh, "    ___crt_xt_end__ = . ;\n");
+        fprintf(ofh, "  }\n");
+    }
+    
     fprintf(ofh, "  /* Windows TLS expects .tls$AAA to be at the start and .tls$ZZZ to be\n");
     fprintf(ofh, "     at the end of section.  This is important because _tls_start MUST\n");
     fprintf(ofh, "     be at the beginning of the section to enable SECREL32 relocations with TLS\n");
