@@ -106,8 +106,7 @@ Example: `CLEAR(0x410000, 0x90, 0x410005); /* NOP 5 bytes starting from 0x410000
 When you need to refer to existing symbols inside the executable, you can export
 global symbols from assembly source. Symbols can be any named memory address:
 function, data, uninitialized variable. As long as you define them in sym.asm, 
-you can use them anywhere. Remember decorations in the header files if you're 
-referring to exported global symbols from C/C++ code.
+you can use them anywhere.
 
 Compiling new code
 --------------------------------------------------------------------------------
