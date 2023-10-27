@@ -59,7 +59,7 @@ int gensym(int argc, char **argv)
     fprintf(ofh, "; vars\n\n\n");
     fprintf(ofh, "; functions\n\n");
     fprintf(ofh, "setcglob 0x%p, app_start\n", (void*)(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
-    fprintf(ofh, "setcglob 0x00000000, WinMain\n\n");
+    fprintf(ofh, "setcglob 0x00000000, WinMain ; <- <FIX_ME>\n\n");
     fprintf(ofh, "; imports\n\n");
 
     FAIL_IF (nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 2, "Not enough DataDirectories.\n");

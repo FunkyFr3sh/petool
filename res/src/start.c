@@ -12,12 +12,11 @@ void start()
     app_start();
 }
 
-/* Required for c++ - Hook WinMain here and make sure to add the symbol for the real WinMain to sym.asm
-CALL(0x00000000, _fake_WinMain);
+// Required for c++ - You must hook WinMain here and make sure you also update the address for the real WinMain in sym.asm
+//CALL(0x00000000 <- <FIX_ME>, _fake_WinMain);
 
-int WinMainCRTStartup (void);
+int WinMainCRTStartup(void);
 int APIENTRY fake_WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow)
 {
     return WinMainCRTStartup();
 }
-*/
