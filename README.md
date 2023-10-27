@@ -75,7 +75,7 @@ Both short (near) and long (far) variants are included. Jumping to an absolute
 address is supported and is converted to relative by the linker. No overflow
 checks are done so do pre-calculate which one you need.
 
-Example: `LJMP(0x410000, doMagic); /* Do a (far) jump from 0x410000 to label doMagic */`
+Example: `LJMP(0x410000, _doMagic); /* Do a (far) jump from 0x410000 to label doMagic */`
 
 ### Call
 
@@ -84,7 +84,7 @@ Example: `LJMP(0x410000, doMagic); /* Do a (far) jump from 0x410000 to label doM
 The CALL macro writes a CALL instruction at _from_ to _to_. Absolute
 addresses are converted to relative by the linker.
 
-Example: `CALL(0x410000, doMagic); /* Make a call from 0x410000 to label doMagic */`
+Example: `CALL(0x410000, _doMagic); /* Make a call from 0x410000 to label doMagic */`
 
 ### Clear
 
