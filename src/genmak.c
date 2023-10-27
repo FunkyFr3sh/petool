@@ -81,6 +81,8 @@ int genmak(int argc, char **argv)
     }
     fprintf(ofh, "\n");
 
+    fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
+
     fprintf(ofh, "LDFLAGS     = --section-alignment=0x%"PRIX32, nt_hdr->OptionalHeader.SectionAlignment);
 
     if (nt_hdr->OptionalHeader.Subsystem == 2)
@@ -149,7 +151,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "ifneq (,$(IMPORTS))\n");
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
-    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 9 0 0 || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 12 0 0 || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "\t$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "\t$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
