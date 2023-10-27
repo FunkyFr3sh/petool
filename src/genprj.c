@@ -37,14 +37,6 @@
 #include "cleanup.h"
 #include "common.h"
 
-/* embed patch.s */
-extern const char patch_s[];
-__asm(".data;"
-      "_patch_s:"
-      "patch_s:"
-      ".incbin \"patch.s\";"
-      ".byte 0;"
-      ".text");
 
 int genlds(int argc, char **argv);
 int genmak(int argc, char **argv);
@@ -88,14 +80,6 @@ int genprj(int argc, char **argv)
     snprintf(buf, sizeof buf, "%s/%s.dat", dir, base);
     printf("Copying %s -> %s...\n", argv[1], buf);
     FAIL_IF(file_copy(argv[1], buf) != EXIT_SUCCESS, "Failed to copy file\n");
-
-    snprintf(buf, sizeof buf, "%s/patch.s", dir);
-    printf("Extracting %s...\n", buf);
-
-    FILE *fh;
-    FAIL_IF_PERROR((fh = fopen(buf, "wb")) == NULL, "Failed to create patch.s");
-    fputs(patch_s, fh);
-    fclose(fh);
 
     snprintf(buf, sizeof buf, "%s/%s.lds", dir, base);
     printf("Generating %s...\n", buf);

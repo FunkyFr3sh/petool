@@ -133,6 +133,9 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "%%.o: %%.cpp\n");
     fprintf(ofh, "	$(CXX) $(CXXFLAGS) -c -o $@ $<\n\n");
 
+    fprintf(ofh, "%%.o: %%.s\n");
+    fprintf(ofh, "	$(AS) $(ASFLAGS) -o $@ $<\n\n");
+
     if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
         fprintf(ofh, "rsrc.o: $(INPUT)\n");

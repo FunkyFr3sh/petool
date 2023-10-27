@@ -48,6 +48,7 @@ extern const char res_inc_macros_patch_h[];
 extern const char res_inc_macros_patch_inc[];
 extern const char res_inc_macros_setsym_inc[];
 extern const char res_inc_macros_watcall_inc[];
+extern const char res_inc_macros_patch_s[];
 
     __asm(".data;"
     "_res_gitignore:"
@@ -117,6 +118,10 @@ extern const char res_inc_macros_watcall_inc[];
     "_res_inc_macros_watcall_inc:"
     "res_inc_macros_watcall_inc:"
     ".incbin \"res/inc/macros/watcall.inc\";"
+    ".byte 0;"
+    "_res_inc_macros_patch_s:"
+    "res_inc_macros_patch_s:"
+    ".incbin \"res/inc/macros/patch.s\";"
     ".byte 0;"
     ".text"
     );
@@ -214,6 +219,10 @@ int genfiles(char *dir)
     snprintf(buf, sizeof buf, "%s/inc/macros/watcall.inc", dir);
     printf("Generating %s...\n", buf);
     extract_resource(res_inc_macros_watcall_inc, buf);
+
+    snprintf(buf, sizeof buf, "%s/inc/macros/patch.s", dir);
+    printf("Generating %s...\n", buf);
+    extract_resource(res_inc_macros_patch_s, buf);
 
     return ret;
 }
