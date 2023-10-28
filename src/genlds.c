@@ -151,8 +151,20 @@ int genlds(int argc, char **argv)
         }
 
         if (cur_sct->Misc.VirtualSize > cur_sct->SizeOfRawData) {
+
+            /* Borland Fix - VirtualSize is aligned to SectionAlignment */
+
+            uint32_t aligned_raw_size = cur_sct->SizeOfRawData;
+
+            while (aligned_raw_size % nt_hdr->OptionalHeader.SectionAlignment)
+                aligned_raw_size++;
+
             fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) . = ALIGN(0x%"PRIX32"); }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf, nt_hdr->OptionalHeader.SectionAlignment);
-            fprintf(ofh, "    .bss      %16s : { . = . + 0x%"PRIX32"; }\n", align, cur_sct->Misc.VirtualSize - cur_sct->SizeOfRawData);
+
+            if (cur_sct->Misc.VirtualSize > aligned_raw_size) {
+                fprintf(ofh, "    .bss      %16s : { . = . + 0x%"PRIX32"; }\n", align, cur_sct->Misc.VirtualSize - aligned_raw_size);
+            }
+
             continue;
         }
 
