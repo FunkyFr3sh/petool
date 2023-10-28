@@ -99,7 +99,7 @@ int genmak(int argc, char **argv)
     if (g_sym_got_GetProcAddress && (g_sym_got_LoadLibraryA || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
     {
         fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32 -lgdi32\n");
-        fprintf(ofh, "CXXLIBS     = =/../i686-w64-mingw32/lib/crt2.o -lstdc++ -lgcc -lpthread -lmingw32 -lmoldname -lmingwex -lgcc\n");
+        fprintf(ofh, "CXXLIBS     = =./lib/crt2.o -lstdc++ -lgcc -lpthread -lmingw32 -lmoldname -lmingwex -lgcc\n");
     }
 
     fprintf(ofh, "\n");
@@ -147,7 +147,7 @@ int genmak(int argc, char **argv)
     }
 
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
-    fprintf(ofh, "\t$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(CXXLIBS) $(LIBS) -L=/../lib/gcc/i686-w64-mingw32/$(GCCVERSION) -L/mingw32/lib/gcc/i686-w64-mingw32/$(GCCVERSION)\n");
+    fprintf(ofh, "\t$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(CXXLIBS) $(LIBS) -L=./../lib/gcc/i686-w64-mingw32/$(GCCVERSION) -L=./lib/gcc/i686-w64-mingw32/$(GCCVERSION)\n");
     fprintf(ofh, "ifneq (,$(IMPORTS))\n");
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
