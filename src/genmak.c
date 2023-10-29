@@ -82,6 +82,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "\n");
 
     fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
+    fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[12].Size);
 
     fprintf(ofh, "LDFLAGS     = --section-alignment=0x%"PRIX32, nt_hdr->OptionalHeader.SectionAlignment);
 
@@ -96,8 +97,8 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "\n");
 
     fprintf(ofh, "NFLAGS      = -f elf -Iinc/\n");
-    fprintf(ofh, "CFLAGS      = -std=c99 -Iinc/ -O2 -march=i486\n");
-    fprintf(ofh, "CXXFLAGS    = -Iinc/ -O2 -march=i486\n");
+    fprintf(ofh, "CFLAGS      = -std=c99 -Iinc/ -O2 -march=i486 -Wall -Wextra\n");
+    fprintf(ofh, "CXXFLAGS    = -Iinc/ -O2 -march=i486 -Wall -Wextra\n");
 
     if (g_sym_got_GetProcAddress && (g_sym_got_LoadLibraryA || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
     {
@@ -155,7 +156,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 12 0 0 || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "\t$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "\t$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "\t$(PETOOL) dump \"$@\"\n\n");
