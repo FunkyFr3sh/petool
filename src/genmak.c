@@ -106,15 +106,21 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "OBJS        =");
 
-    fprintf(ofh, " \\\n              sym.o");
+    if (strcmp(argv[0], "genmak") != 0)
+    {
+        fprintf(ofh, " \\\n              sym.o");
+    }
 
     if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
         fprintf(ofh, " \\\n              rsrc.o");
     }
 
-    fprintf(ofh, " \\\n              imports.o");
-    fprintf(ofh, " \\\n              src/start.o");
+    if (strcmp(argv[0], "genmak") != 0)
+    {
+        fprintf(ofh, " \\\n              imports.o");
+        fprintf(ofh, " \\\n              src/start.o");
+    }
 
     fprintf(ofh, "\n\n");
 
