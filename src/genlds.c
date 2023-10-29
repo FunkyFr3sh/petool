@@ -90,6 +90,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "{\n");
 
     uint16_t filln = 0;
+    uint16_t udatan = 0;
     bool got_crt_section = false;
 
     char align[64];
@@ -162,7 +163,14 @@ int genlds(int argc, char **argv)
             fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) . = ALIGN(0x%"PRIX32"); }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf, nt_hdr->OptionalHeader.SectionAlignment);
 
             if (cur_sct->Misc.VirtualSize > aligned_raw_size) {
-                fprintf(ofh, "    .bss      %16s : { . = . + 0x%"PRIX32"; }\n", align, cur_sct->Misc.VirtualSize - aligned_raw_size);
+                if (udatan++ == 0) {
+                    sprintf(buf, ".bss");
+                }
+                else {
+                    sprintf(buf, ".udata%d", udatan);
+                }
+
+                fprintf(ofh, "    %-8s  %16s : { . = . + 0x%"PRIX32"; }\n", buf, align, cur_sct->Misc.VirtualSize - aligned_raw_size);
             }
 
             continue;
