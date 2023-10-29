@@ -69,7 +69,7 @@ int gensym(int argc, char **argv)
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
     IMAGE_IMPORT_DESCRIPTOR *i = (void *)(image + offset);
 
-    while (i->OriginalFirstThunk) {
+    while (i->FirstThunk) {
         char name[260] = { 0 };
 
         if (i->Name != 0) {
@@ -82,18 +82,18 @@ int gensym(int argc, char **argv)
             //fprintf(ofh, "\n; %s\n", name);
         }
 
-        PIMAGE_THUNK_DATA32 oft =
-            (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->OriginalFirstThunk, nt_hdr));
+        PIMAGE_THUNK_DATA32 ft =
+            (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->FirstThunk, nt_hdr));
 
         PIMAGE_THUNK_DATA32 ft_rva =
             (PIMAGE_THUNK_DATA32)(nt_hdr->OptionalHeader.ImageBase + i->FirstThunk);
 
-        while (oft->u1.AddressOfData)
+        while (ft->u1.AddressOfData)
         {
             PIMAGE_IMPORT_BY_NAME import =
-                (PIMAGE_IMPORT_BY_NAME)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + oft->u1.AddressOfData, nt_hdr));
+                (PIMAGE_IMPORT_BY_NAME)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + ft->u1.AddressOfData, nt_hdr));
 
-            if ((oft->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
+            if ((ft->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
             {
                 if (strcmp((const char*)import->Name, "LoadLibraryA") == 0 && !g_sym_got_LoadLibraryA)
                 {
@@ -125,7 +125,7 @@ int gensym(int argc, char **argv)
             }
 
 
-            oft++;
+            ft++;
             ft_rva++;
         }
 
