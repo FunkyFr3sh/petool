@@ -95,8 +95,13 @@ int gensym(int argc, char **argv)
 
             if ((oft->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
             {
-                fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
-                
+                if (_strcmpi(name, "MSVCRT.dll") == 0) {
+                    fprintf(ofh, ";setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                }
+                else {
+                    fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                }
+
                 if (strcmp((const char*)import->Name, "LoadLibraryA") == 0)
                 {
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
