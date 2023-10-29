@@ -16,7 +16,11 @@ void start()
 //CALL(0x00000000 <- <FIX_ME>, _fake_WinMain);
 
 int WinMainCRTStartup(void);
-int APIENTRY fake_WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow)
+int APIENTRY fake_WinMain(
+    __attribute__((unused)) HINSTANCE hInst, 
+    __attribute__((unused)) HINSTANCE hInstPrev, 
+    __attribute__((unused)) PSTR cmdline, 
+    __attribute__((unused)) int cmdshow)
 {
     return WinMainCRTStartup();
 }
