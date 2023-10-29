@@ -88,7 +88,10 @@ int genmak(int argc, char **argv)
     if (nt_hdr->OptionalHeader.Subsystem == 2)
         fprintf(ofh, " --subsystem=windows");
 
-    fprintf(ofh, " --enable-stdcall-fixup --disable-dynamicbase --disable-nxcompat --disable-reloc-section");
+    if (!(nt_hdr->OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NX_COMPAT))
+        fprintf(ofh, " --disable-nxcompat");
+
+    fprintf(ofh, " --enable-stdcall-fixup --disable-dynamicbase --disable-reloc-section");
 
     fprintf(ofh, "\n");
 

@@ -51,6 +51,8 @@
 
 #define IMAGE_ORDINAL_FLAG32 0x80000000
 
+#define IMAGE_DLLCHARACTERISTICS_NX_COMPAT 0x0100
+
 #define FIELD_OFFSET(t,f) ((intptr_t)&(((t*)0)->f))
 
 #define IMAGE_SIZEOF_SHORT_NAME 8
