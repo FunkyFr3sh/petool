@@ -97,8 +97,8 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "\n");
 
     fprintf(ofh, "NFLAGS      = -f elf -Iinc/\n");
-    fprintf(ofh, "CFLAGS      = -std=c99 -Iinc/ -O2 -march=i486 -Wall -Wextra\n");
-    fprintf(ofh, "CXXFLAGS    = -Iinc/ -O2 -march=i486 -Wall -Wextra\n");
+    fprintf(ofh, "CFLAGS      = -Iinc/ -O2 -march=pentium4 -Wall\n");
+    fprintf(ofh, "CXXFLAGS    = -Iinc/ -O2 -march=pentium4 -Wall\n");
 
     if (g_sym_got_GetProcAddress && (g_sym_got_LoadLibraryA || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
     {
