@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <_mingw.h>
 #include "macros/patch.h"
 #include "app.h"
 #include "imports.h"
@@ -17,10 +18,10 @@ void start()
 
 int WinMainCRTStartup(void);
 int APIENTRY fake_WinMain(
-    __attribute__((unused)) HINSTANCE hInst, 
-    __attribute__((unused)) HINSTANCE hInstPrev, 
-    __attribute__((unused)) PSTR cmdline, 
-    __attribute__((unused)) int cmdshow)
+    HINSTANCE __UNUSED_PARAM(hInst), 
+    HINSTANCE __UNUSED_PARAM(hInstPrev), 
+    PSTR __UNUSED_PARAM(cmdline), 
+    int __UNUSED_PARAM(cmdshow))
 {
     return WinMainCRTStartup();
 }
