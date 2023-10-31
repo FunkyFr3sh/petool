@@ -24,6 +24,13 @@ LoadLibraryA_p(
 WINBASEAPI
 HMODULE
 WINAPI
+LoadLibraryW_p(
+    _In_ LPCWSTR lpLibFileName
+);
+
+WINBASEAPI
+HMODULE
+WINAPI
 GetModuleHandleA_p(
     __in_opt LPCSTR lpModuleName
 );
