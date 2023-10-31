@@ -72,7 +72,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "OUTPUT      = %s\n", file_escaped_basename(argv[1]));
     fprintf(ofh, "LDS         = %s.lds\n", base);
 
-    fprintf(ofh, "GCCVERSION  = $(shell gcc --version | grep ^gcc | sed 's/^.* //g')\n");
+    fprintf(ofh, "\n");
 
     fprintf(ofh, "IMPORTS     =");
     if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress)
@@ -90,6 +90,8 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
     fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[12].Size);
+
+    fprintf(ofh, "\n");
 
     fprintf(ofh, "LDFLAGS     =");
 
@@ -114,12 +116,17 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "CFLAGS      = -Iinc/ -O2 -march=pentium4 -Wall\n");
     fprintf(ofh, "CXXFLAGS    = -Iinc/ -O2 -march=pentium4 -Wall\n");
 
+    fprintf(ofh, "\n");
+
     if (g_sym_got_GetProcAddress && (g_sym_got_LoadLibraryA || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
     {
         fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32 -lgdi32\n");
         fprintf(ofh, "CXXLIBS     = =./lib/crt2.o -lstdc++ -lgcc -lpthread -lmingw32 -lmoldname -lmingwex -lgcc\n");
     }
 
+    fprintf(ofh, "\n");
+
+    fprintf(ofh, "GCCVERSION  = $(shell gcc --version | grep ^gcc | sed 's/^.* //g')\n");
     fprintf(ofh, "SEARCHDIRS  = -L=./../lib/gcc/i686-w64-mingw32/$(GCCVERSION) -L=./lib/gcc/i686-w64-mingw32/$(GCCVERSION)\n");
 
     fprintf(ofh, "\n");
