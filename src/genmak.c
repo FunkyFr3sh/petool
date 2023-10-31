@@ -109,6 +109,7 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
+    fprintf(ofh, "ASFLAGS     = -Iinc/\n");
     fprintf(ofh, "NFLAGS      = -f elf -Iinc/\n");
     fprintf(ofh, "CFLAGS      = -Iinc/ -O2 -march=pentium4 -Wall\n");
     fprintf(ofh, "CXXFLAGS    = -Iinc/ -O2 -march=pentium4 -Wall\n");
@@ -150,6 +151,9 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "%%.o: %%.asm\n");
     fprintf(ofh, "	$(NASM) $(NFLAGS) -o $@ $<\n\n");
+
+    fprintf(ofh, "%%.o: %%.c\n");
+    fprintf(ofh, "	$(CC) $(CFLAGS) -c -o $@ $<\n\n");
 
     fprintf(ofh, "%%.o: %%.cpp\n");
     fprintf(ofh, "	$(CXX) $(CXXFLAGS) -c -o $@ $<\n\n");
