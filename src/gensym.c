@@ -82,8 +82,10 @@ int gensym(int argc, char **argv)
             //fprintf(ofh, "\n; %s\n", name);
         }
 
+        uint32_t thunk = i->OriginalFirstThunk ? i->OriginalFirstThunk : i->FirstThunk;
+
         PIMAGE_THUNK_DATA32 ft =
-            (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->FirstThunk, nt_hdr));
+            (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + thunk, nt_hdr));
 
         PIMAGE_THUNK_DATA32 ft_rva =
             (PIMAGE_THUNK_DATA32)(nt_hdr->OptionalHeader.ImageBase + i->FirstThunk);
