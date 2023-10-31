@@ -48,6 +48,7 @@ void help(char *progname)
             "    import -- dump the import table as assembly"                   "\n"
             "    re2obj -- convert the resource section into COFF object"       "\n"
             "    genmak -- generate project Makefile"                           "\n"
+            "    gensym -- generate full sym.asm with all imports"              "\n"
             "    genprj -- generate full project directory"                     "\n"
             "    help   -- this information"                                    "\n"
     );
@@ -71,6 +72,7 @@ int main(int argc, char **argv)
     else if (strcmp(argv[1], "import") == 0) return import (argc - 1, argv + 1);
     else if (strcmp(argv[1], "re2obj") == 0) return re2obj (argc - 1, argv + 1);
     else if (strcmp(argv[1], "genmak") == 0) return genmak (argc - 1, argv + 1);
+    else if (strcmp(argv[1], "gensym") == 0) return gensym (argc - 1, argv + 1);
     else if (strcmp(argv[1], "genprj") == 0) return genprj (argc - 1, argv + 1);
     else if (strcmp(argv[1], "help")   == 0)
     {

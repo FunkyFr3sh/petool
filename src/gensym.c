@@ -79,7 +79,10 @@ int gensym(int argc, char **argv)
                 sizeof name - 1
             );
 
-            //fprintf(ofh, "\n; %s\n", name);
+            if (strcmp(argv[0], "gensym") == 0)
+            {
+                fprintf(ofh, "\n; %s\n", name);
+            }
         }
 
         uint32_t thunk = i->OriginalFirstThunk ? i->OriginalFirstThunk : i->FirstThunk;
@@ -97,33 +100,46 @@ int gensym(int argc, char **argv)
 
             if ((ft->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
             {
-                if (strcmp((const char*)import->Name, "LoadLibraryA") == 0 && !g_sym_got_LoadLibraryA)
+                if (strcmp(argv[0], "gensym") == 0)
+                {
+                    fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                }
+                else if (strcmp((const char*)import->Name, "LoadLibraryA") == 0 && !g_sym_got_LoadLibraryA)
                 {
                     fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     g_sym_got_LoadLibraryA = true;
                 }
-
-                if (strcmp((const char*)import->Name, "GetModuleHandleA") == 0 && !g_sym_got_GetModuleHandleA)
+                else if (strcmp((const char*)import->Name, "GetModuleHandleA") == 0 && !g_sym_got_GetModuleHandleA)
                 {
                     fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     g_sym_got_GetModuleHandleA = true;
                 }
-
-                if (strcmp((const char*)import->Name, "GetModuleHandleW") == 0 && !g_sym_got_GetModuleHandleW)
+                else if (strcmp((const char*)import->Name, "GetModuleHandleW") == 0 && !g_sym_got_GetModuleHandleW)
                 {
                     fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     g_sym_got_GetModuleHandleW = true;
                 }
-
-                if (strcmp((const char*)import->Name, "GetProcAddress") == 0 && !g_sym_got_GetProcAddress)
+                else if (strcmp((const char*)import->Name, "GetProcAddress") == 0 && !g_sym_got_GetProcAddress)
                 {
                     fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     g_sym_got_GetProcAddress = true;
                 }
+            }
+            else if (strcmp(argv[0], "gensym") == 0)
+            {
+                char* p = strrchr(name, '.');
+                if (p)
+                {
+                    *p = '\0';
+                }
+
+                int ordinal = (ft->u1.Ordinal & ~IMAGE_ORDINAL_FLAG32) & 0xffff;
+
+                fprintf(ofh, "setcglob 0x%p, _imp__%s_Ordinal_%d\n", (void*)&ft_rva->u1.Function, name, ordinal);
             }
 
 

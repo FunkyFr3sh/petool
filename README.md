@@ -15,6 +15,7 @@ Tool to help rebuild and patch 32-bit Windows applications.
  - `import` - dump the import table as assembly
  - `re2obj` - convert the resource section into COFF object
  - `genmak` - generate project Makefile
+ - `gensym` - generate full sym.asm with all imports
  - `genprj` - generate full project directory (default)
 
 Building
