@@ -81,6 +81,13 @@ int genmak(int argc, char **argv)
     }
     fprintf(ofh, "\n");
 
+    fprintf(ofh, "LOADCONFIG  =");
+    if (nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
+    {
+        fprintf(ofh, " 0x%"PRIX32" %d", nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[10].Size);
+    }
+    fprintf(ofh, "\n");
+
     fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
     fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[12].Size);
 
@@ -160,6 +167,9 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "\t$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(CXXLIBS) $(LIBS) -L=./../lib/gcc/i686-w64-mingw32/$(GCCVERSION) -L=./lib/gcc/i686-w64-mingw32/$(GCCVERSION)\n");
     fprintf(ofh, "ifneq (,$(IMPORTS))\n");
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "endif\n");
+    fprintf(ofh, "ifneq (,$(LOADCONFIG))\n");
+    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 10 $(LOADCONFIG) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
