@@ -90,7 +90,7 @@ int genmak(int argc, char **argv)
         fprintf(ofh, " --section-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.SectionAlignment);
 
     if (nt_hdr->OptionalHeader.ImageBase != 0x00400000)
-        fprintf(ofh, " --image-base=0x%08X", nt_hdr->OptionalHeader.ImageBase);
+        fprintf(ofh, " --image-base=0x%08"PRIX32"", nt_hdr->OptionalHeader.ImageBase);
 
     if (nt_hdr->OptionalHeader.Subsystem == 2)
         fprintf(ofh, " --subsystem=windows");
