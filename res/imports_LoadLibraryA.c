@@ -22,7 +22,7 @@ int __attribute__((optimize("O0"))) imports_strcmp(const char* s1, const char* s
 
 FARPROC __attribute__((optimize("O0"))) imports_get_proc_address(HMODULE hModule, LPCSTR lpProcName)
 {
-    if (hModule == NULL)
+    if (!hModule)
         return NULL;
 
     PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)hModule;
@@ -54,7 +54,7 @@ FARPROC __attribute__((optimize("O0"))) imports_get_proc_address(HMODULE hModule
 
         if (imports_strcmp(lpProcName, name) == 0)
         {
-            char* func = (void*)((DWORD)dos_header + functions[ordinals[i]]);
+            char* func = (char*)((DWORD)dos_header + functions[ordinals[i]]);
 
             // is forwarder?
             if (func > (char*)export_dir && func < (char*)export_dir + export_dir_size)
