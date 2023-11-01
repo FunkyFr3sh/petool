@@ -174,25 +174,25 @@ int genmak(int argc, char **argv)
     if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
         fprintf(ofh, "rsrc.o: $(INPUT)\n");
-        fprintf(ofh, "\t$(PETOOL) re2obj $(INPUT) $@\n\n");
+        fprintf(ofh, "	$(PETOOL) re2obj $(INPUT) $@\n\n");
     }
 
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
-    fprintf(ofh, "\t$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(CXXLIBS) $(LIBS) $(SEARCHDIRS)\n");
+    fprintf(ofh, "	$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(CXXLIBS) $(LIBS) $(SEARCHDIRS)\n");
     fprintf(ofh, "ifneq (,$(IMPORTS))\n");
-    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "	$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
     fprintf(ofh, "ifneq (,$(LOADCONFIG))\n");
-    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 10 $(LOADCONFIG) || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "	$(PETOOL) setdd \"$@\" 10 $(LOADCONFIG) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
-    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "\t$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "\t$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "\t$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "\t$(PETOOL) dump \"$@\"\n\n");
+    fprintf(ofh, "	$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "	$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "	$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "	$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "	$(PETOOL) dump \"$@\"\n\n");
 
     fprintf(ofh, "clean:\n");
-    fprintf(ofh, "\t$(RM) $(OUTPUT) $(OBJS)\n");
+    fprintf(ofh, "	$(RM) $(OUTPUT) $(OBJS)\n");
 
 cleanup:
     if (argc > 2)
