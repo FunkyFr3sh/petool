@@ -73,6 +73,9 @@ BOOL __attribute__((optimize("O0"))) imports_init()
         (void*)imports_get_proc_address(GetModuleHandleW_p(L"kernel32.dll"), "GetProcAddress");
 
     if (!get_proc_address)
+        get_proc_address = (void*)imports_get_proc_address(GetModuleHandleW_p(L"kernelbase.dll"), "GetProcAddress");
+
+    if (!get_proc_address)
         return FALSE;
 
     HMODULE(WINAPI * load_library)(LPCSTR) =
