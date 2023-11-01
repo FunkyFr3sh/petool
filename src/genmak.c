@@ -123,9 +123,9 @@ int genmak(int argc, char **argv)
     {
         fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32 -lgdi32\n");
         fprintf(ofh, "CXXLIBS     = =./lib/crt2.o -lstdc++ -lgcc -lpthread -lmingw32 -lmoldname -lmingwex -lgcc\n");
-    }
 
-    fprintf(ofh, "\n");
+        fprintf(ofh, "\n");
+    }
 
     fprintf(ofh, "GCCVERSION  = $(shell gcc --version | grep ^gcc | sed 's/^.* //g')\n");
     fprintf(ofh, "SEARCHDIRS  = -L=./../lib/gcc/i686-w64-mingw32/$(GCCVERSION) -L=./lib/gcc/i686-w64-mingw32/$(GCCVERSION)\n");
