@@ -33,7 +33,6 @@
 
 extern const char res_gitignore[];
 extern const char res_build_cmd[];
-extern const char res_imports_c[];
 extern const char res_imports_dummy_c[];
 extern const char res_imports_LoadLibraryA_c[];
 extern const char res_imports_LoadLibraryA_GetProcAddress_c[];
