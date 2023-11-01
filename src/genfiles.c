@@ -190,7 +190,7 @@ int genfiles(char *dir)
         printf("Generating %s...\n", buf);
         extract_resource(res_imports_LoadLibraryA_GetProcAddress_c, buf);
     }
-    if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryW)
+    else if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryW)
     {
         snprintf(buf, sizeof buf, "%s/imports.c", dir);
         printf("Generating %s...\n", buf);
