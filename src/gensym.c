@@ -156,8 +156,7 @@ int gensym(int argc, char **argv)
 
         i++;
     }
-
-    if (!(g_sym_got_GetProcAddress && (g_sym_got_LoadLibraryA || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW)))
+    if (!(g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
     {
         fprintf(ofh, "\n\n");
         fprintf(ofh, "setcglob 0x00000000, WinMainCRTStartup ; C++ not available - Dummy symbol allows the project to build\n");

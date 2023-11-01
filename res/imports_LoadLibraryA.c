@@ -70,13 +70,13 @@ FARPROC __attribute__((optimize("O0"))) imports_get_proc_address(HMODULE hModule
 BOOL __attribute__((optimize("O0"))) imports_init()
 {
     FARPROC(WINAPI * get_proc_address)(HMODULE, LPCSTR) =
-        (void*)imports_get_proc_address(GetModuleHandleA_p("kernel32.dll"), "GetProcAddress");
+        (void*)imports_get_proc_address(LoadLibraryA_p("kernel32.dll"), "GetProcAddress");
 
     if (!get_proc_address)
         return FALSE;
 
     HMODULE(WINAPI * load_library)(LPCSTR) =
-        (void*)get_proc_address(GetModuleHandleA_p("kernel32.dll"), "LoadLibraryA");
+        (void*)get_proc_address(LoadLibraryA_p("kernel32.dll"), "LoadLibraryA");
 
     if (!load_library)
         return FALSE;

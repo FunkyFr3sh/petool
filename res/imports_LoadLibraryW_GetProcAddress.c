@@ -6,6 +6,11 @@ extern char _p_idata_start__, _image_base__;
 
 BOOL __attribute__((optimize("O0"))) imports_init()
 {
+    HMODULE (WINAPI * load_library)(LPCSTR) = (void*)GetProcAddress_p(LoadLibraryW_p(L"kernel32.dll"), "LoadLibraryA");
+
+    if (!load_library)
+        return FALSE;
+
     char* failed_mod = NULL;
     char* failed_func = NULL;
 
@@ -17,7 +22,7 @@ BOOL __attribute__((optimize("O0"))) imports_init()
         {
             char* mod_name = (char*)((DWORD)&_image_base__ + import_desc->Name);
 
-            HMODULE mod = LoadLibraryA_p(mod_name);
+            HMODULE mod = load_library(mod_name);
 
             if (mod)
             {
@@ -25,7 +30,7 @@ BOOL __attribute__((optimize("O0"))) imports_init()
 
                 while (first_thunk->u1.AddressOfData)
                 {
-                    if ((first_thunk->u1.Ordinal & IMAGE_ORDINAL_FLAG) == 0)
+                    if ((first_thunk->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
                     {
                         PIMAGE_IMPORT_BY_NAME func = (void*)((DWORD)&_image_base__ + first_thunk->u1.AddressOfData);
 

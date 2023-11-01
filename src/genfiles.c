@@ -35,8 +35,14 @@ extern const char res_gitignore[];
 extern const char res_build_cmd[];
 extern const char res_imports_c[];
 extern const char res_imports_dummy_c[];
+extern const char res_imports_LoadLibraryA_c[];
+extern const char res_imports_LoadLibraryA_GetProcAddress_c[];
+extern const char res_imports_LoadLibraryW_c[];
+extern const char res_imports_LoadLibraryW_GetProcAddress_c[];
 extern const char res_imports_GetModuleHandleA_c[];
+extern const char res_imports_GetModuleHandleA_GetProcAddress_c[];
 extern const char res_imports_GetModuleHandleW_c[];
+extern const char res_imports_GetModuleHandleW_GetProcAddress_c[];
 extern const char res_readme_md[];
 extern const char res_src_example_fix_asm[];
 extern const char res_src_start_c[];
@@ -61,21 +67,41 @@ extern const char res_inc_macros_patch_s[];
     "res_build_cmd:"
     ".incbin \"res/build.cmd\";"
     ".byte 0;"
-    "_res_imports_c:"
-    "res_imports_c:"
-    ".incbin \"res/imports.c\";"
-    ".byte 0;"
     "_res_imports_dummy_c:"
     "res_imports_dummy_c:"
     ".incbin \"res/imports_dummy.c\";"
+    ".byte 0;"
+    "_res_imports_LoadLibraryA_c:"
+    "res_imports_LoadLibraryA_c:"
+    ".incbin \"res/imports_LoadLibraryA.c\";"
+    ".byte 0;"
+    "_res_imports_LoadLibraryA_GetProcAddress_c:"
+    "res_imports_LoadLibraryA_GetProcAddress_c:"
+    ".incbin \"res/imports_LoadLibraryA_GetProcAddress.c\";"
+    ".byte 0;"
+    "_res_imports_LoadLibraryW_c:"
+    "res_imports_LoadLibraryW_c:"
+    ".incbin \"res/imports_LoadLibraryW.c\";"
+    ".byte 0;"
+    "_res_imports_LoadLibraryW_GetProcAddress_c:"
+    "res_imports_LoadLibraryW_GetProcAddress_c:"
+    ".incbin \"res/imports_LoadLibraryW_GetProcAddress.c\";"
     ".byte 0;"
     "_res_imports_GetModuleHandleA_c:"
     "res_imports_GetModuleHandleA_c:"
     ".incbin \"res/imports_GetModuleHandleA.c\";"
     ".byte 0;"
+    "_res_imports_GetModuleHandleA_GetProcAddress_c:"
+    "res_imports_GetModuleHandleA_GetProcAddress_c:"
+    ".incbin \"res/imports_GetModuleHandleA_GetProcAddress.c\";"
+    ".byte 0;"
     "_res_imports_GetModuleHandleW_c:"
     "res_imports_GetModuleHandleW_c:"
     ".incbin \"res/imports_GetModuleHandleW.c\";"
+    ".byte 0;"
+    "_res_imports_GetModuleHandleW_GetProcAddress_c:"
+    "res_imports_GetModuleHandleW_GetProcAddress_c:"
+    ".incbin \"res/imports_GetModuleHandleW_GetProcAddress.c\";"
     ".byte 0;"
     "_res_readme_md:"
     "res_readme_md:"
@@ -139,6 +165,7 @@ extern const char res_inc_macros_patch_s[];
 void extract_resource(const char* src, char* file_path);
 
 extern bool g_sym_got_LoadLibraryA;
+extern bool g_sym_got_LoadLibraryW;
 extern bool g_sym_got_GetModuleHandleA;
 extern bool g_sym_got_GetModuleHandleW;
 extern bool g_sym_got_GetProcAddress;
@@ -162,19 +189,49 @@ int genfiles(char *dir)
     {
         snprintf(buf, sizeof buf, "%s/imports.c", dir);
         printf("Generating %s...\n", buf);
-        extract_resource(res_imports_c, buf);
+        extract_resource(res_imports_LoadLibraryA_GetProcAddress_c, buf);
+    }
+    if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryW)
+    {
+        snprintf(buf, sizeof buf, "%s/imports.c", dir);
+        printf("Generating %s...\n", buf);
+        extract_resource(res_imports_LoadLibraryW_GetProcAddress_c, buf);
     }
     else if (g_sym_got_GetProcAddress && g_sym_got_GetModuleHandleA)
     {
         snprintf(buf, sizeof buf, "%s/imports.c", dir);
         printf("Generating %s...\n", buf);
-        extract_resource(res_imports_GetModuleHandleA_c, buf);
+        extract_resource(res_imports_GetModuleHandleA_GetProcAddress_c, buf);
     }
     else if (g_sym_got_GetProcAddress && g_sym_got_GetModuleHandleW)
     {
         snprintf(buf, sizeof buf, "%s/imports.c", dir);
         printf("Generating %s...\n", buf);
+        extract_resource(res_imports_GetModuleHandleW_GetProcAddress_c, buf);
+    }
+    else if (g_sym_got_GetModuleHandleA)
+    {
+        snprintf(buf, sizeof buf, "%s/imports.c", dir);
+        printf("Generating %s...\n", buf);
+        extract_resource(res_imports_GetModuleHandleA_c, buf);
+    }
+    else if (g_sym_got_GetModuleHandleW)
+    {
+        snprintf(buf, sizeof buf, "%s/imports.c", dir);
+        printf("Generating %s...\n", buf);
         extract_resource(res_imports_GetModuleHandleW_c, buf);
+    }
+    else if (g_sym_got_LoadLibraryA)
+    {
+        snprintf(buf, sizeof buf, "%s/imports.c", dir);
+        printf("Generating %s...\n", buf);
+        extract_resource(res_imports_LoadLibraryA_c, buf);
+    }
+    else if (g_sym_got_LoadLibraryW)
+    {
+        snprintf(buf, sizeof buf, "%s/imports.c", dir);
+        printf("Generating %s...\n", buf);
+        extract_resource(res_imports_LoadLibraryW_c, buf);
     }
     else
     {

@@ -4,9 +4,79 @@
 
 extern char _p_idata_start__, _image_base__;
 
+int __attribute__((optimize("O0"))) imports_strcmp(const char* s1, const char* s2)
+{
+    register unsigned char u1, u2;
+
+    while (TRUE)
+    {
+        u1 = (unsigned char)*s1++;
+        u2 = (unsigned char)*s2++;
+        if (u1 != u2)
+            return u1 - u2;
+        if (u1 == '\0')
+            return 0;
+    }
+    return 0;
+}
+
+FARPROC __attribute__((optimize("O0"))) imports_get_proc_address(HMODULE hModule, LPCSTR lpProcName)
+{
+    if (hModule == NULL)
+        return NULL;
+
+    PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)hModule;
+    if (dos_header->e_magic != IMAGE_DOS_SIGNATURE)
+        return NULL;
+
+    PIMAGE_NT_HEADERS nt_headers = (PIMAGE_NT_HEADERS)((DWORD)dos_header + (DWORD)dos_header->e_lfanew);
+    if (nt_headers->Signature != IMAGE_NT_SIGNATURE)
+        return NULL;
+
+    DWORD export_dir_rva = nt_headers->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
+    DWORD export_dir_size = nt_headers->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].Size;
+
+    if (export_dir_rva == 0 || export_dir_size == 0)
+        return NULL;
+
+    PIMAGE_EXPORT_DIRECTORY export_dir = (PIMAGE_EXPORT_DIRECTORY)((DWORD)dos_header + export_dir_rva);
+
+    if (export_dir->AddressOfFunctions == 0 || export_dir->AddressOfNames == 0 || export_dir->AddressOfNameOrdinals == 0)
+        return NULL;
+
+    DWORD* functions = (DWORD*)((DWORD)dos_header + export_dir->AddressOfFunctions);
+    DWORD* names = (DWORD*)((DWORD)dos_header + export_dir->AddressOfNames);
+    WORD* ordinals = (WORD*)((DWORD)dos_header + export_dir->AddressOfNameOrdinals);
+
+    for (int i = 0; i < export_dir->NumberOfNames; i++)
+    {
+        char* name = (char*)((DWORD)dos_header + names[i]);
+
+        if (imports_strcmp(lpProcName, name) == 0)
+        {
+            char* func = (void*)((DWORD)dos_header + functions[ordinals[i]]);
+
+            // is forwarder?
+            if (func > (char*)export_dir && func < (char*)export_dir + export_dir_size)
+                return NULL;
+
+            return (FARPROC)func;
+        }
+    }
+
+    return NULL;
+}
+
 BOOL __attribute__((optimize("O0"))) imports_init()
 {
-    HMODULE (WINAPI * load_library)(LPCSTR) = (void*)GetProcAddress_p(GetModuleHandleW_p(L"kernel32.dll"), "LoadLibraryA");
+    FARPROC(WINAPI * get_proc_address)(HMODULE, LPCSTR) =
+        (void*)imports_get_proc_address(GetModuleHandleW_p(L"kernel32.dll"), "GetProcAddress");
+
+    if (!get_proc_address)
+        return FALSE;
+
+    HMODULE(WINAPI * load_library)(LPCSTR) =
+        (void*)get_proc_address(GetModuleHandleW_p(L"kernel32.dll"), "LoadLibraryA");
 
     if (!load_library)
         return FALSE;
@@ -30,11 +100,11 @@ BOOL __attribute__((optimize("O0"))) imports_init()
 
                 while (first_thunk->u1.AddressOfData)
                 {
-                    if ((first_thunk->u1.Ordinal & IMAGE_ORDINAL_FLAG) == 0)
+                    if ((first_thunk->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
                     {
                         PIMAGE_IMPORT_BY_NAME func = (void*)((DWORD)&_image_base__ + first_thunk->u1.AddressOfData);
 
-                        first_thunk->u1.Function = (DWORD)GetProcAddress_p(mod, (const char*)func->Name);
+                        first_thunk->u1.Function = (DWORD)get_proc_address(mod, (const char*)func->Name);
 
                         if (!first_thunk->u1.Function)
                         {
@@ -46,7 +116,7 @@ BOOL __attribute__((optimize("O0"))) imports_init()
                     {
                         int ordinal = (first_thunk->u1.Ordinal & ~IMAGE_ORDINAL_FLAG32) & 0xffff;
 
-                        first_thunk->u1.Function = (DWORD)GetProcAddress_p(mod, MAKEINTRESOURCEA(ordinal));
+                        first_thunk->u1.Function = (DWORD)get_proc_address(mod, MAKEINTRESOURCEA(ordinal));
 
                         if (!first_thunk->u1.Function)
                         {
