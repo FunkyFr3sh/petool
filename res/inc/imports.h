@@ -1,8 +1,9 @@
 #ifndef IMPORTS_H 
 #define IMPORTS_H
 
-// This header is used for patches
-// This header will be split up as it becomes larger
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // ### Types ###
 
@@ -49,5 +50,9 @@ GetProcAddress_p(
     _In_ HMODULE hModule,
     _In_ LPCSTR lpProcName
 );
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif
