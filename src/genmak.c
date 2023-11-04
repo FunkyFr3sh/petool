@@ -171,6 +171,9 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "%%.o: %%.s\n");
     fprintf(ofh, "	$(AS) $(ASFLAGS) -o $@ $<\n\n");
 
+    fprintf(ofh, "%%.o: %%.rc\n");
+    fprintf(ofh, "	$(WINDRES) $(WINDRES_FLAGS) $< $@\n\n");
+
     if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
         fprintf(ofh, "rsrc.o: $(INPUT)\n");
