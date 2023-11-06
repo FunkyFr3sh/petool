@@ -107,31 +107,26 @@ int gensym(int argc, char **argv)
                 }
                 else if (strcmp((const char*)import->Name, "LoadLibraryA") == 0 && !g_sym_got_LoadLibraryA)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     g_sym_got_LoadLibraryA = true;
                 }
                 else if (strcmp((const char*)import->Name, "LoadLibraryW") == 0 && !g_sym_got_LoadLibraryW)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     g_sym_got_LoadLibraryW = true;
                 }
                 else if (strcmp((const char*)import->Name, "GetModuleHandleA") == 0 && !g_sym_got_GetModuleHandleA)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     g_sym_got_GetModuleHandleA = true;
                 }
                 else if (strcmp((const char*)import->Name, "GetModuleHandleW") == 0 && !g_sym_got_GetModuleHandleW)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     g_sym_got_GetModuleHandleW = true;
                 }
                 else if (strcmp((const char*)import->Name, "GetProcAddress") == 0 && !g_sym_got_GetProcAddress)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                     g_sym_got_GetProcAddress = true;
                 }

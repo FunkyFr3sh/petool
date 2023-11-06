@@ -146,7 +146,7 @@ int genmak(int argc, char **argv)
 
     if (strcmp(argv[0], "genmak") != 0)
     {
-        fprintf(ofh, " \\\n				imports.o");
+        fprintf(ofh, " \\\n				src/imports.o");
         fprintf(ofh, " \\\n				src/start.o");
     }
 
