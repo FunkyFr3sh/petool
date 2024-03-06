@@ -43,7 +43,6 @@ extern const char res_src_imports_GetModuleHandleA_GetProcAddress_c[];
 extern const char res_src_imports_GetModuleHandleW_c[];
 extern const char res_src_imports_GetModuleHandleW_GetProcAddress_c[];
 extern const char res_readme_md[];
-extern const char res_src_example_fix_asm[];
 extern const char res_src_start_c[];
 extern const char res_inc_imports_h[];
 extern const char res_inc_app_h[];
@@ -105,10 +104,6 @@ extern const char res_inc_macros_patch_s[];
     "_res_readme_md:"
     "res_readme_md:"
     ".incbin \"res/readme.md\";"
-    ".byte 0;"
-    "_res_src_example_fix_asm:"
-    "res_src_example_fix_asm:"
-    ".incbin \"res/src/example-fix.asm\";"
     ".byte 0;"
     "_res_src_start_c:"
     "res_src_start_c:"
@@ -245,10 +240,6 @@ int genfiles(char *dir)
         printf("Generating %s...\n", buf);
         extract_resource(res_src_imports_dummy_c, buf);
     }
-
-    snprintf(buf, sizeof buf, "%s/src/example-fix.asm", dir);
-    printf("Generating %s...\n", buf);
-    extract_resource(res_src_example_fix_asm, buf);
 
     snprintf(buf, sizeof buf, "%s/src/start.c", dir);
     printf("Generating %s...\n", buf);
