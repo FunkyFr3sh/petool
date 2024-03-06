@@ -9,7 +9,3 @@
 ; ### functions ###
 
 ; ### Imports ###
-
-cextern _imp__LoadLibraryA
-cextern _imp__GetModuleHandleA
-cextern _imp__GetProcAddress
