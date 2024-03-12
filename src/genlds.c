@@ -79,6 +79,8 @@ int genlds(int argc, char **argv)
     }
 
     fprintf(ofh, "ENTRY(_start);\n");
+
+    fprintf(ofh, "SEARCH_DIR(\"/usr/i686-w64-mingw32/lib\");\n");
     fprintf(ofh, "SEARCH_DIR(\"=/w64devkit/i686-w64-mingw32/lib\");\n");
     fprintf(ofh, "SEARCH_DIR(\"=/w64devkit/lib\");\n");
     fprintf(ofh, "SEARCH_DIR(\"=/mingw32/i686-w64-mingw32/lib\");\n");
