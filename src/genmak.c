@@ -127,7 +127,7 @@ int genmak(int argc, char **argv)
         fprintf(ofh, "\n");
     }
 
-    fprintf(ofh, "GCCVERSION  = $(shell gcc --version | grep ^gcc | sed 's/^.* //g')\n");
+    fprintf(ofh, "GCCVERSION  = $(shell $(CC) --version | grep ^$(CC) | sed 's/^.* //g')\n");
     fprintf(ofh, "SEARCHDIRS  = -L=./../lib/gcc/i686-w64-mingw32/$(GCCVERSION) -L=./lib/gcc/i686-w64-mingw32/$(GCCVERSION)\n");
 
     fprintf(ofh, "\n");
