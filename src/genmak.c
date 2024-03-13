@@ -143,6 +143,8 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n\n");
 
+    fprintf(ofh, "CC         ?= i686-w64-mingw32-gcc\n");
+    fprintf(ofh, "CXX        ?= i686-w64-mingw32-g++\n");
     fprintf(ofh, "PETOOL     ?= petool\n");
     fprintf(ofh, "STRIP      ?= strip\n");
     fprintf(ofh, "NASM       ?= nasm\n");
