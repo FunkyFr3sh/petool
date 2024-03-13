@@ -25,6 +25,7 @@ int pe2obj(int argc, char **argv);
 int patch(int argc, char **argv);
 int setdd(int argc, char **argv);
 int setvs(int argc, char **argv);
+int setc(int argc, char** argv);
 int export(int argc, char **argv);
 int import(int argc, char **argv);
 int re2obj(int argc, char **argv);
@@ -44,6 +45,7 @@ void help(char *progname)
             "    patch  -- apply a patch set from the .patch section"           "\n"
             "    setdd  -- set any DataDirectory in PE header"                  "\n"
             "    setvs  -- set VirtualSize for a section"                       "\n"
+            "    setc   -- set Characteristics for a section"                   "\n"
             "    export -- export section data as raw binary"                   "\n"
             "    import -- dump the import table as assembly"                   "\n"
             "    re2obj -- convert the resource section into COFF object"       "\n"
@@ -68,6 +70,7 @@ int main(int argc, char **argv)
     else if (strcmp(argv[1], "patch")  == 0) return patch  (argc - 1, argv + 1);
     else if (strcmp(argv[1], "setdd")  == 0) return setdd  (argc - 1, argv + 1);
     else if (strcmp(argv[1], "setvs")  == 0) return setvs  (argc - 1, argv + 1);
+    else if (strcmp(argv[1], "setc")   == 0) return setc   (argc - 1, argv + 1);
     else if (strcmp(argv[1], "export") == 0) return export (argc - 1, argv + 1);
     else if (strcmp(argv[1], "import") == 0) return import (argc - 1, argv + 1);
     else if (strcmp(argv[1], "re2obj") == 0) return re2obj (argc - 1, argv + 1);

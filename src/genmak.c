@@ -97,18 +97,18 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "LDFLAGS     =");
 
     if (nt_hdr->OptionalHeader.SectionAlignment != 0x1000)
-        fprintf(ofh, " --section-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.SectionAlignment);
+        fprintf(ofh, " -Wl,--section-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.SectionAlignment);
 
     if (nt_hdr->OptionalHeader.ImageBase != 0x00400000)
-        fprintf(ofh, " --image-base=0x%08"PRIX32"", nt_hdr->OptionalHeader.ImageBase);
+        fprintf(ofh, " -Wl,--image-base=0x%08"PRIX32"", nt_hdr->OptionalHeader.ImageBase);
 
     if (nt_hdr->OptionalHeader.Subsystem == 2)
-        fprintf(ofh, " --subsystem=windows");
+        fprintf(ofh, " -Wl,--subsystem=windows");
 
     if (!(nt_hdr->OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NX_COMPAT))
-        fprintf(ofh, " --disable-nxcompat");
+        fprintf(ofh, " -Wl,--disable-nxcompat");
 
-    fprintf(ofh, " --enable-stdcall-fixup --disable-dynamicbase --disable-reloc-section");
+    fprintf(ofh, " -Wl,--enable-stdcall-fixup -Wl,--disable-dynamicbase -Wl,--disable-reloc-section");
 
     fprintf(ofh, "\n");
 
@@ -119,16 +119,7 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    if (g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW)
-    {
-        fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32 -lgdi32\n");
-        fprintf(ofh, "CXXLIBS     = =./lib/crt2.o -lstdc++ -lgcc -lpthread -lmingw32 -lmoldname -lmingwex -lgcc\n");
-
-        fprintf(ofh, "\n");
-    }
-
-    fprintf(ofh, "GCCVERSION  = $(shell $(CC) --version | grep ^$(CC) | sed 's/^.* //g')\n");
-    fprintf(ofh, "SEARCHDIRS  = -L=./../lib/gcc/i686-w64-mingw32/$(GCCVERSION) -L=./lib/gcc/i686-w64-mingw32/$(GCCVERSION)\n");
+    fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32 -lgdi32\n");
 
     fprintf(ofh, "\n");
 
@@ -181,7 +172,7 @@ int genmak(int argc, char **argv)
     }
 
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
-    fprintf(ofh, "	$(LD) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(CXXLIBS) $(LIBS) $(SEARCHDIRS)\n");
+    fprintf(ofh, "	$(CXX) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(LIBS)\n");
     fprintf(ofh, "ifneq (,$(IMPORTS))\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
@@ -190,6 +181,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "endif\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "	$(PETOOL) setc  \"$@\" .p_text 0x60000020 || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) dump \"$@\"\n\n");
