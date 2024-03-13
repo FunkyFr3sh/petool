@@ -108,7 +108,7 @@ int genmak(int argc, char **argv)
     if (!(nt_hdr->OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NX_COMPAT))
         fprintf(ofh, " -Wl,--disable-nxcompat");
 
-    fprintf(ofh, " -Wl,--enable-stdcall-fixup -Wl,--disable-dynamicbase -Wl,--disable-reloc-section");
+    fprintf(ofh, " -Wl,--enable-stdcall-fixup -Wl,--disable-dynamicbase -Wl,--disable-reloc-section -static");
 
     fprintf(ofh, "\n");
 
