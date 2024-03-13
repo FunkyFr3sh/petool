@@ -103,7 +103,7 @@ extern const char res_inc_macros_patch_s[];
     ".byte 0;"
     "_res_readme_md:"
     "res_readme_md:"
-    ".incbin \"res/readme.md\";"
+    ".incbin \"res/README.md\";"
     ".byte 0;"
     "_res_src_start_c:"
     "res_src_start_c:"

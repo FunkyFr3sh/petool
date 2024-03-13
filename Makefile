@@ -1,6 +1,6 @@
 REV     ?= $(shell git rev-parse --short @{0})
 STRIP   ?= strip
-CFLAGS  ?= -std=c99 -pedantic -Wall -Wextra -DREV=\"$(REV)\"
+CFLAGS  ?= -m32 -std=c99 -pedantic -Wall -Wextra -DREV=\"$(REV)\"
 TARGET  ?= petool
 
 ifdef DEBUG
