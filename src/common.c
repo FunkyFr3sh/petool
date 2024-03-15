@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "cleanup.h"
 #include "common.h"
@@ -16,6 +17,12 @@ int open_and_read(FILE **fh, int8_t **image, uint32_t *length,
     int ret = EXIT_SUCCESS;
 
     *fh = fopen(executable, fopen_attr);
+
+    if (!*fh) {
+        // Somehow this does fail a lot on windows - retry after 1 second does fix it
+        sleep(1);
+        *fh = fopen(executable, fopen_attr);
+    }
     FAIL_IF_PERROR(!*fh, "Could not open executable");
 
     FAIL_IF_PERROR(fseek(*fh, 0L, SEEK_END),
