@@ -108,18 +108,18 @@ int genmak(int argc, char **argv)
     if (!(nt_hdr->OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NX_COMPAT))
         fprintf(ofh, " -Wl,--disable-nxcompat");
 
-    fprintf(ofh, " -Wl,--enable-stdcall-fixup -Wl,--disable-dynamicbase -Wl,--disable-reloc-section -static");
+    fprintf(ofh, " -Wl,--disable-reloc-section -Wl,--enable-stdcall-fixup -static");
 
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "ASFLAGS     = -Iinc/\n");
-    fprintf(ofh, "NFLAGS      = -f elf -Iinc/\n");
-    fprintf(ofh, "CFLAGS      = -Iinc/ -O2 -march=pentium4 -Wall -masm=intel\n");
-    fprintf(ofh, "CXXFLAGS    = -Iinc/ -O2 -march=pentium4 -Wall -masm=intel\n");
+    fprintf(ofh, "ASFLAGS     = -Iinc\n");
+    fprintf(ofh, "NFLAGS      = -f elf -Iinc\n");
+    fprintf(ofh, "CFLAGS      = -Iinc -O2 -march=pentium4 -Wall -masm=intel\n");
+    fprintf(ofh, "CXXFLAGS    = -Iinc -O2 -march=pentium4 -Wall -masm=intel\n");
 
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "LIBS        = -luser32 -ladvapi32 -lshell32 -lmsvcrt -lkernel32 -lgdi32\n");
+    fprintf(ofh, "LIBS        = -lgdi32\n");
 
     fprintf(ofh, "\n");
 
