@@ -69,16 +69,6 @@ int genmak(int argc, char **argv)
     }
 
     fprintf(ofh, "-include config.mk\n\n");
-
-    fprintf(ofh, "CC          = i686-w64-mingw32-gcc\n");
-    fprintf(ofh, "CXX         = i686-w64-mingw32-g++\n");
-    fprintf(ofh, "WINDRES    ?= i686-w64-mingw32-windres\n");
-    fprintf(ofh, "PETOOL     ?= petool\n");
-    fprintf(ofh, "STRIP      ?= strip\n");
-    fprintf(ofh, "NASM       ?= nasm\n");
-
-    fprintf(ofh, "\n");
-
     fprintf(ofh, "INPUT       = %s.dat\n", base);
     fprintf(ofh, "OUTPUT      = %s\n", file_escaped_basename(argv[1]));
     fprintf(ofh, "LDS         = %s.lds\n", base);
@@ -152,6 +142,15 @@ int genmak(int argc, char **argv)
     }
 
     fprintf(ofh, "\n\n");
+
+    fprintf(ofh, "CC          = i686-w64-mingw32-gcc\n");
+    fprintf(ofh, "CXX         = i686-w64-mingw32-g++\n");
+    fprintf(ofh, "WINDRES    ?= i686-w64-mingw32-windres\n");
+    fprintf(ofh, "PETOOL     ?= petool\n");
+    fprintf(ofh, "STRIP      ?= strip\n");
+    fprintf(ofh, "NASM       ?= nasm\n");
+
+    fprintf(ofh, "\n");
 
     fprintf(ofh, "all: $(OUTPUT)\n\n");
 
