@@ -169,7 +169,7 @@ int genlds(int argc, char **argv)
                     sprintf(buf, ".bss");
                 }
                 else {
-                    sprintf(buf, ".udata%u", udatan);
+                    sprintf(buf, ".udat%u", udatan);
                 }
 
                 fprintf(ofh, "    %-8s  %16s : { . = . + 0x%"PRIX32"; }\n", buf, align, cur_sct->Misc.VirtualSize - aligned_raw_size);
