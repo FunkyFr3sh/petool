@@ -91,8 +91,8 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "SECTIONS\n");
     fprintf(ofh, "{\n");
 
-    uint16_t filln = 0;
-    uint16_t udatan = 0;
+    uint8_t filln = 0;
+    uint8_t udatan = 0;
     bool got_crt_section = false;
 
     char align[64];
@@ -118,7 +118,7 @@ int genlds(int argc, char **argv)
 
 
             if (i < nt_hdr->FileHeader.NumberOfSections - 1) {
-                sprintf(buf, "FILL%d", filln++);
+                sprintf(buf, "FILL%u", filln++);
                 fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { . = . + 0x%"PRIX32"; }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, cur_sct->Misc.VirtualSize ? cur_sct->Misc.VirtualSize : cur_sct->SizeOfRawData);
             }
 
@@ -169,7 +169,7 @@ int genlds(int argc, char **argv)
                     sprintf(buf, ".bss");
                 }
                 else {
-                    sprintf(buf, ".udata%d", udatan);
+                    sprintf(buf, ".udata%u", udatan);
                 }
 
                 fprintf(ofh, "    %-8s  %16s : { . = . + 0x%"PRIX32"; }\n", buf, align, cur_sct->Misc.VirtualSize - aligned_raw_size);
