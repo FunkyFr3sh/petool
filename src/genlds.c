@@ -265,7 +265,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "  __RUNTIME_PSEUDO_RELOC_LIST_END__ = .;\n");
     fprintf(ofh, "  ___RUNTIME_PSEUDO_RELOC_LIST__ = . - __rt_psrelocs_size;\n");
     fprintf(ofh, "  __RUNTIME_PSEUDO_RELOC_LIST__ = . - __rt_psrelocs_size;\n");
-    fprintf(ofh, "  .eh_frame BLOCK(__section_alignment__) :\n");
+    fprintf(ofh, "  .eh_fram BLOCK(__section_alignment__) :\n");
     fprintf(ofh, "  {\n");
     fprintf(ofh, "    KEEP(*(.eh_frame*))\n");
     fprintf(ofh, "  }\n");
