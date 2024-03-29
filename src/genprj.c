@@ -96,6 +96,8 @@ int genprj(int argc, char **argv)
 
     if (!(g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
     {
+        printf("WARNING: No LoadLibraryX / GetModuleHandleX found in executable, creating project WITHOUT working imports (No C++ support)\n");
+
         snprintf(buf, sizeof buf, "%s/sym.asm", dir);
         printf("Generating %s with full import list...\n", buf);
         FAIL_IF(remove(buf) != 0, "Failed to delete old sym.asm\n");
