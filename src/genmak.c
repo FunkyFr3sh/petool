@@ -110,6 +110,9 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, " -Wl,--disable-reloc-section -Wl,--enable-stdcall-fixup -static");
 
+    if (!(g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
+        fprintf(ofh, " -nostdlib");
+
     fprintf(ofh, "\n");
 
     fprintf(ofh, "ASFLAGS     = -Iinc\n");
@@ -119,9 +122,12 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "LIBS        = -lgdi32\n");
+    if (g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW)
+    {
+        fprintf(ofh, "LIBS        = -lgdi32\n");
 
-    fprintf(ofh, "\n");
+        fprintf(ofh, "\n");
+    }
 
     fprintf(ofh, "OBJS        =");
 

@@ -37,10 +37,15 @@
 #include "cleanup.h"
 #include "common.h"
 
+extern bool g_sym_got_LoadLibraryA;
+extern bool g_sym_got_LoadLibraryW;
+extern bool g_sym_got_GetModuleHandleA;
+extern bool g_sym_got_GetModuleHandleW;
+extern bool g_sym_got_GetProcAddress;
 
 int genlds(int argc, char **argv);
 int genmak(int argc, char **argv);
-int gensym(int argc, char** argv);
+int gensym(int argc, char** argv, bool print_all);
 int genfiles(char* dir);
 
 int genprj(int argc, char **argv)
@@ -87,7 +92,15 @@ int genprj(int argc, char **argv)
 
     snprintf(buf, sizeof buf, "%s/sym.asm", dir);
     printf("Generating %s...\n", buf);
-    FAIL_IF(gensym(3, cmd_argv) != EXIT_SUCCESS, "Failed to create sym.asm\n");
+    FAIL_IF(gensym(3, cmd_argv, false) != EXIT_SUCCESS, "Failed to create sym.asm\n");
+
+    if (!(g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
+    {
+        snprintf(buf, sizeof buf, "%s/sym.asm", dir);
+        printf("Generating %s with full import list...\n", buf);
+        FAIL_IF(remove(buf) != 0, "Failed to delete old sym.asm\n");
+        FAIL_IF(gensym(3, cmd_argv, true) != EXIT_SUCCESS, "Failed to create sym.asm\n");
+    }
 
     snprintf(buf, sizeof buf, "%s/Makefile", dir);
     printf("Generating %s...\n", buf);

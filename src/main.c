@@ -30,7 +30,7 @@ int export(int argc, char **argv);
 int import(int argc, char **argv);
 int re2obj(int argc, char **argv);
 int genmak(int argc, char **argv);
-int gensym(int argc, char** argv);
+int gensym(int argc, char** argv, bool print_all);
 int genprj(int argc, char **argv);
 
 void help(char *progname)
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
     else if (strcmp(argv[1], "import") == 0) return import (argc - 1, argv + 1);
     else if (strcmp(argv[1], "re2obj") == 0) return re2obj (argc - 1, argv + 1);
     else if (strcmp(argv[1], "genmak") == 0) return genmak (argc - 1, argv + 1);
-    else if (strcmp(argv[1], "gensym") == 0) return gensym (argc - 1, argv + 1);
+    else if (strcmp(argv[1], "gensym") == 0) return gensym (argc - 1, argv + 1, false);
     else if (strcmp(argv[1], "genprj") == 0) return genprj (argc - 1, argv + 1);
     else if (strcmp(argv[1], "help")   == 0)
     {

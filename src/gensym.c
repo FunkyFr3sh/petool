@@ -35,7 +35,7 @@ bool g_sym_got_GetModuleHandleA;
 bool g_sym_got_GetModuleHandleW;
 bool g_sym_got_GetProcAddress;
 
-int gensym(int argc, char **argv)
+int gensym(int argc, char** argv, bool print_all)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret   = EXIT_SUCCESS;
@@ -101,7 +101,7 @@ int gensym(int argc, char **argv)
 
             if ((ft->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
             {
-                if (strcmp(argv[0], "gensym") == 0)
+                if (strcmp(argv[0], "gensym") == 0 || print_all)
                 {
                     fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
                 }
@@ -131,7 +131,7 @@ int gensym(int argc, char **argv)
                     g_sym_got_GetProcAddress = true;
                 }
             }
-            else if (strcmp(argv[0], "gensym") == 0)
+            else if (strcmp(argv[0], "gensym") == 0 || print_all)
             {
                 char* p = strrchr(name, '.');
                 if (p)
@@ -152,13 +152,15 @@ int gensym(int argc, char **argv)
         i++;
     }
 
-    FAIL_IF(
-        !(g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW), 
-        "Error: No LoadLibraryX / GetModuleHandleX found in executable.\n");
+    if (!(g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
+    {
+        fprintf(ofh, "\n\n");
+        fprintf(ofh, "setcglob 0x00000000, WinMainCRTStartup ; C++ not available - Dummy symbol allows the project to build\n");
+    }
 
 cleanup:
     if (image) free(image);
-    if (argc > 3)
+    if (argc > 2)
     {
         if (ofh)   fclose(ofh);
     }
