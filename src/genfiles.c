@@ -14,11 +14,16 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifdef __linux__
+#include <linux/limits.h>
+#elif !defined(_WIN32)
+#include <sys/syslimits.h>
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 #include <direct.h>
 #else
-#include <sys/syslimits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #define MAX_PATH PATH_MAX

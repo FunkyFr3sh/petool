@@ -20,11 +20,16 @@
 #include <string.h>
 #include <inttypes.h>
 
+#ifdef __linux__
+#include <linux/limits.h>
+#elif !defined(_WIN32)
+#include <sys/syslimits.h>
+#endif
+
 #ifdef _WIN32
 #include <direct.h>
 #define MAX_PATH 260 /* including windows.h would conflict with pe.h */
 #else
-#include <sys/syslimits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #define MAX_PATH PATH_MAX
