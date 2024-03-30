@@ -17,12 +17,10 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <direct.h>
-#endif
-
-#ifdef __linux__
+#else
+#include <sys/syslimits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <linux/limits.h>
 #define MAX_PATH PATH_MAX
 #define _mkdir(a) mkdir(a, 0777)
 #endif
