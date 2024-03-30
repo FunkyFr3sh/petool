@@ -34,7 +34,7 @@ int setc(int argc, char **argv)
     FILE   *fh    = NULL;
     int8_t *image = NULL;
 
-    FAIL_IF(argc != 4, "usage: petool setvs <image> <section> <Characteristics>\n");
+    FAIL_IF(argc != 4, "usage: petool setc <image> <section> <Characteristics>\n");
 
     uint32_t flags   = strtol(argv[3], NULL, 0);
 

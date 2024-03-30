@@ -61,7 +61,7 @@ int gensym(int argc, char** argv, bool print_all)
     fprintf(ofh, "%%include \"macros/setsym.inc\"\n\n\n");
     fprintf(ofh, "; vars\n\n\n");
     fprintf(ofh, "; functions\n\n");
-    fprintf(ofh, "setcglob 0x%p, app_start\n", (void*)(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
+    fprintf(ofh, "setcglob 0x%08"PRIX32", app_start\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
     fprintf(ofh, "setcglob 0x00000000, WinMain ; <- <FIX_ME>\n\n");
     fprintf(ofh, "; imports\n\n");
 
@@ -91,8 +91,7 @@ int gensym(int argc, char** argv, bool print_all)
         PIMAGE_THUNK_DATA32 ft =
             (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + thunk, nt_hdr));
 
-        PIMAGE_THUNK_DATA32 ft_rva =
-            (PIMAGE_THUNK_DATA32)(nt_hdr->OptionalHeader.ImageBase + i->FirstThunk);
+        uint32_t function = nt_hdr->OptionalHeader.ImageBase + i->FirstThunk;
 
         while (ft->u1.AddressOfData)
         {
@@ -103,31 +102,31 @@ int gensym(int argc, char** argv, bool print_all)
             {
                 if (strcmp(argv[0], "gensym") == 0 || print_all)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                    fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s\n", function, (const char*)import->Name);
                 }
                 else if (strcmp((const char*)import->Name, "LoadLibraryA") == 0 && !g_sym_got_LoadLibraryA)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                    fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_p\n", function, (const char*)import->Name);
                     g_sym_got_LoadLibraryA = true;
                 }
                 else if (strcmp((const char*)import->Name, "LoadLibraryW") == 0 && !g_sym_got_LoadLibraryW)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                    fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_p\n", function, (const char*)import->Name);
                     g_sym_got_LoadLibraryW = true;
                 }
                 else if (strcmp((const char*)import->Name, "GetModuleHandleA") == 0 && !g_sym_got_GetModuleHandleA)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                    fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_p\n", function, (const char*)import->Name);
                     g_sym_got_GetModuleHandleA = true;
                 }
                 else if (strcmp((const char*)import->Name, "GetModuleHandleW") == 0 && !g_sym_got_GetModuleHandleW)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                    fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_p\n", function, (const char*)import->Name);
                     g_sym_got_GetModuleHandleW = true;
                 }
                 else if (strcmp((const char*)import->Name, "GetProcAddress") == 0 && !g_sym_got_GetProcAddress)
                 {
-                    fprintf(ofh, "setcglob 0x%p, _imp__%s_p\n", (void*)&ft_rva->u1.Function, (const char*)import->Name);
+                    fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_p\n", function, (const char*)import->Name);
                     g_sym_got_GetProcAddress = true;
                 }
             }
@@ -141,12 +140,12 @@ int gensym(int argc, char** argv, bool print_all)
 
                 int ordinal = (ft->u1.Ordinal & ~IMAGE_ORDINAL_FLAG32) & 0xffff;
 
-                fprintf(ofh, "setcglob 0x%p, _imp__%s_Ordinal_%d\n", (void*)&ft_rva->u1.Function, name, ordinal);
+                fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_Ordinal_%d\n", function, name, ordinal);
             }
 
 
             ft++;
-            ft_rva++;
+            function += sizeof(IMAGE_THUNK_DATA32);
         }
 
         i++;
