@@ -11,7 +11,7 @@ Authors
 Building on *nix
 -----------------
  - Install [petool](https://github.com/FunkyFr3sh/petool) from github
- - Get mingw64 from your package manager
+ - Get mingw-w64 from your package manager
  - Get NASM
  - make or gmake
 
