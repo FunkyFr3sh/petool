@@ -32,7 +32,7 @@ LoadLibraryW_p(
 WINBASEAPI
 HMODULE
 WINAPI
-LoadLibraryExA(
+LoadLibraryExA_p(
     _In_ LPCSTR lpLibFileName,
     _Reserved_ HANDLE hFile,
     _In_ DWORD dwFlags
@@ -41,7 +41,7 @@ LoadLibraryExA(
 WINBASEAPI
 HMODULE
 WINAPI
-LoadLibraryExW(
+LoadLibraryExW_p(
     _In_ LPCWSTR lpLibFileName,
     _Reserved_ HANDLE hFile,
     _In_ DWORD dwFlags
