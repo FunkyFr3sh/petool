@@ -25,11 +25,7 @@
 #include "cleanup.h"
 #include "common.h"
 
-extern bool g_sym_got_LoadLibraryA;
-extern bool g_sym_got_LoadLibraryW;
-extern bool g_sym_got_GetModuleHandleA;
-extern bool g_sym_got_GetModuleHandleW;
-extern bool g_sym_got_GetProcAddress;
+extern bool g_sym_imports_enabled;
 
 int genmak(int argc, char **argv)
 {
@@ -110,7 +106,7 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, " -Wl,--disable-reloc-section -Wl,--enable-stdcall-fixup -static");
 
-    if (!(g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
+    if (!g_sym_imports_enabled)
         fprintf(ofh, " -nostdlib");
 
     fprintf(ofh, "\n");
@@ -122,7 +118,7 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    if (g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW)
+    if (g_sym_imports_enabled)
     {
         fprintf(ofh, "LIBS        = -lgdi32\n");
 

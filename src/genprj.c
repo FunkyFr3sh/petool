@@ -40,11 +40,7 @@
 #include "cleanup.h"
 #include "common.h"
 
-extern bool g_sym_got_LoadLibraryA;
-extern bool g_sym_got_LoadLibraryW;
-extern bool g_sym_got_GetModuleHandleA;
-extern bool g_sym_got_GetModuleHandleW;
-extern bool g_sym_got_GetProcAddress;
+extern bool g_sym_imports_enabled;
 
 int genlds(int argc, char **argv);
 int genmak(int argc, char **argv);
@@ -97,7 +93,7 @@ int genprj(int argc, char **argv)
     printf("Generating %s...\n", buf);
     FAIL_IF(gensym(3, cmd_argv, false) != EXIT_SUCCESS, "Failed to create sym.asm\n");
 
-    if (!(g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
+    if (!g_sym_imports_enabled)
     {
         printf("WARNING: No LoadLibraryX / GetModuleHandleX found in executable, creating project WITHOUT working imports (No C++ support)\n");
 

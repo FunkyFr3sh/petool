@@ -7,10 +7,14 @@
     .global res_src_imports_dummy_c
     .global _res_src_imports_LoadLibraryA_c
     .global res_src_imports_LoadLibraryA_c
+    .global _res_src_imports_LoadLibraryExA_c
+    .global res_src_imports_LoadLibraryExA_c
     .global _res_src_imports_LoadLibraryA_GetProcAddress_c
     .global res_src_imports_LoadLibraryA_GetProcAddress_c
     .global _res_src_imports_LoadLibraryW_c
     .global res_src_imports_LoadLibraryW_c
+    .global _res_src_imports_LoadLibraryExW_c
+    .global res_src_imports_LoadLibraryExW_c
     .global _res_src_imports_LoadLibraryW_GetProcAddress_c
     .global res_src_imports_LoadLibraryW_GetProcAddress_c
     .global _res_src_imports_GetModuleHandleA_c
@@ -70,6 +74,11 @@ res_src_imports_LoadLibraryA_c:
     .incbin "res/src/imports_LoadLibraryA.c"
     .byte 0
 
+_res_src_imports_LoadLibraryExA_c:
+res_src_imports_LoadLibraryExA_c:
+    .incbin "res/src/imports_LoadLibraryExA.c"
+    .byte 0
+
 _res_src_imports_LoadLibraryA_GetProcAddress_c:
 res_src_imports_LoadLibraryA_GetProcAddress_c:
     .incbin "res/src/imports_LoadLibraryA_GetProcAddress.c"
@@ -78,6 +87,11 @@ res_src_imports_LoadLibraryA_GetProcAddress_c:
 _res_src_imports_LoadLibraryW_c:
 res_src_imports_LoadLibraryW_c:
     .incbin "res/src/imports_LoadLibraryW.c"
+    .byte 0
+
+_res_src_imports_LoadLibraryExW_c:
+res_src_imports_LoadLibraryExW_c:
+    .incbin "res/src/imports_LoadLibraryExW.c"
     .byte 0
 
 _res_src_imports_LoadLibraryW_GetProcAddress_c:

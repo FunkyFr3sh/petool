@@ -30,10 +30,13 @@
 uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
 
 bool g_sym_got_LoadLibraryA;
+bool g_sym_got_LoadLibraryExA;
 bool g_sym_got_LoadLibraryW;
+bool g_sym_got_LoadLibraryExW;
 bool g_sym_got_GetModuleHandleA;
 bool g_sym_got_GetModuleHandleW;
 bool g_sym_got_GetProcAddress;
+bool g_sym_imports_enabled;
 
 int gensym(int argc, char** argv, bool print_all)
 {
@@ -109,10 +112,20 @@ int gensym(int argc, char** argv, bool print_all)
                     fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_p\n", function, (const char*)import->Name);
                     g_sym_got_LoadLibraryA = true;
                 }
+                else if (strcmp((const char*)import->Name, "LoadLibraryExA") == 0 && !g_sym_got_LoadLibraryExA)
+                {
+                    fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_p\n", function, (const char*)import->Name);
+                    g_sym_got_LoadLibraryExA = true;
+                }
                 else if (strcmp((const char*)import->Name, "LoadLibraryW") == 0 && !g_sym_got_LoadLibraryW)
                 {
                     fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_p\n", function, (const char*)import->Name);
                     g_sym_got_LoadLibraryW = true;
+                }
+                else if (strcmp((const char*)import->Name, "LoadLibraryExW") == 0 && !g_sym_got_LoadLibraryExW)
+                {
+                    fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_p\n", function, (const char*)import->Name);
+                    g_sym_got_LoadLibraryExW = true;
                 }
                 else if (strcmp((const char*)import->Name, "GetModuleHandleA") == 0 && !g_sym_got_GetModuleHandleA)
                 {
@@ -151,7 +164,15 @@ int gensym(int argc, char** argv, bool print_all)
         i++;
     }
 
-    if (!(g_sym_got_LoadLibraryA || g_sym_got_LoadLibraryW || g_sym_got_GetModuleHandleA || g_sym_got_GetModuleHandleW))
+    g_sym_imports_enabled =
+        g_sym_got_LoadLibraryA || 
+        g_sym_got_LoadLibraryExA ||
+        g_sym_got_LoadLibraryW || 
+        g_sym_got_LoadLibraryExW ||
+        g_sym_got_GetModuleHandleA || 
+        g_sym_got_GetModuleHandleW;
+
+    if (!g_sym_imports_enabled)
     {
         fprintf(ofh, "\n\n");
         fprintf(ofh, "setcglob 0x00000000, WinMainCRTStartup ; C++ not available - Dummy symbol allows the project to build\n");

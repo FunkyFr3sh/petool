@@ -32,6 +32,24 @@ LoadLibraryW_p(
 WINBASEAPI
 HMODULE
 WINAPI
+LoadLibraryExA(
+    _In_ LPCSTR lpLibFileName,
+    _Reserved_ HANDLE hFile,
+    _In_ DWORD dwFlags
+);
+
+WINBASEAPI
+HMODULE
+WINAPI
+LoadLibraryExW(
+    _In_ LPCWSTR lpLibFileName,
+    _Reserved_ HANDLE hFile,
+    _In_ DWORD dwFlags
+);
+
+WINBASEAPI
+HMODULE
+WINAPI
 GetModuleHandleA_p(
     __in_opt LPCSTR lpModuleName
 );
