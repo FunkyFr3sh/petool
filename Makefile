@@ -11,6 +11,10 @@ else
 	CFLAGS  += -O2
 endif
 
+ifeq ($(DESTDIR)$(PREFIX),)
+	PREFIX := /usr/local
+endif
+
 all: $(TARGET)
 
 $(TARGET): $(wildcard src/*.c) $(wildcard src/*.S)
@@ -20,7 +24,7 @@ clean:
 	$(RM) $(TARGET)
 
 install: $(TARGET)
-	install -Dt $(DESTDIR)$(PREFIX)/bin/ $(TARGET)
+	install $(TARGET) $(DESTDIR)$(PREFIX)/bin/
 
 uninstall: 
 	$(RM) $(DESTDIR)$(PREFIX)/bin/$(TARGET)
