@@ -301,8 +301,6 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "  {\n");
     fprintf(ofh, "    /* This cannot currently be handled with grouped sections.\n");
     fprintf(ofh, "        See pe.em:sort_sections.  */\n");
-    fprintf(ofh, "    KEEP (SORT(*)(.idata$2))\n");
-    fprintf(ofh, "    KEEP (SORT(*)(.idata$3))\n");
 
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes >= 2)
     {
@@ -332,6 +330,8 @@ int genlds(int argc, char **argv)
         }
     }
 
+    fprintf(ofh, "    KEEP (SORT(*)(.idata$2))\n");
+    fprintf(ofh, "    KEEP (SORT(*)(.idata$3))\n");
     fprintf(ofh, "    /* These zeroes mark the end of the import list.  */\n");
     fprintf(ofh, "    LONG (0); LONG (0); LONG (0); LONG (0); LONG (0);\n");
     fprintf(ofh, "    KEEP (SORT(*)(.idata$4))\n");
