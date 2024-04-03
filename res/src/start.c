@@ -1,7 +1,6 @@
 #include <windows.h>
 #include "macros/patch.h"
 #include "app.h"
-#include "imports.h"
 
 
 int WinMainCRTStartup(void);
@@ -17,8 +16,5 @@ int APIENTRY fake_WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, in
 // entry point
 void start()
 {
-    if (!imports_init())
-        return;
-
     app_start();
 }

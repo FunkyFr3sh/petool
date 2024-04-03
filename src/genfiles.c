@@ -36,20 +36,8 @@
 
 extern const char res_gitignore[];
 extern const char res_build_cmd[];
-extern const char res_src_imports_dummy_c[];
-extern const char res_src_imports_LoadLibraryA_c[];
-extern const char res_src_imports_LoadLibraryExA_c[];
-extern const char res_src_imports_LoadLibraryA_GetProcAddress_c[];
-extern const char res_src_imports_LoadLibraryW_c[];
-extern const char res_src_imports_LoadLibraryExW_c[];
-extern const char res_src_imports_LoadLibraryW_GetProcAddress_c[];
-extern const char res_src_imports_GetModuleHandleA_c[];
-extern const char res_src_imports_GetModuleHandleA_GetProcAddress_c[];
-extern const char res_src_imports_GetModuleHandleW_c[];
-extern const char res_src_imports_GetModuleHandleW_GetProcAddress_c[];
 extern const char res_readme_md[];
 extern const char res_src_start_c[];
-extern const char res_inc_imports_h[];
 extern const char res_inc_app_h[];
 extern const char res_inc_app_inc[];
 extern const char res_inc_patch_h[];
@@ -62,14 +50,6 @@ extern const char res_inc_macros_watcall_inc[];
 extern const char res_inc_macros_patch_s[];
 
 void extract_resource(const char* src, char* file_path);
-
-extern bool g_sym_got_LoadLibraryA;
-extern bool g_sym_got_LoadLibraryExA;
-extern bool g_sym_got_LoadLibraryW;
-extern bool g_sym_got_LoadLibraryExW;
-extern bool g_sym_got_GetModuleHandleA;
-extern bool g_sym_got_GetModuleHandleW;
-extern bool g_sym_got_GetProcAddress;
 
 int genfiles(char *dir)
 {
@@ -93,83 +73,12 @@ int genfiles(char *dir)
     snprintf(buf, sizeof buf, "%s/src", dir);
     _mkdir(buf);
 
-    if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryA)
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_LoadLibraryA_GetProcAddress_c, buf);
-    }
-    else if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryW)
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_LoadLibraryW_GetProcAddress_c, buf);
-    }
-    else if (g_sym_got_GetProcAddress && g_sym_got_GetModuleHandleA)
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_GetModuleHandleA_GetProcAddress_c, buf);
-    }
-    else if (g_sym_got_GetProcAddress && g_sym_got_GetModuleHandleW)
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_GetModuleHandleW_GetProcAddress_c, buf);
-    }
-    else if (g_sym_got_GetModuleHandleA)
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_GetModuleHandleA_c, buf);
-    }
-    else if (g_sym_got_GetModuleHandleW)
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_GetModuleHandleW_c, buf);
-    }
-    else if (g_sym_got_LoadLibraryA)
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_LoadLibraryA_c, buf);
-    }
-    else if (g_sym_got_LoadLibraryW)
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_LoadLibraryW_c, buf);
-    }
-    else if (g_sym_got_LoadLibraryExA)
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_LoadLibraryExA_c, buf);
-    }
-    else if (g_sym_got_LoadLibraryExW)
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_LoadLibraryExW_c, buf);
-    }
-    else
-    {
-        snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
-        extract_resource(res_src_imports_dummy_c, buf);
-    }
-
     snprintf(buf, sizeof buf, "%s/src/start.c", dir);
     printf("Generating %s...\n", buf);
     extract_resource(res_src_start_c, buf);
 
     snprintf(buf, sizeof buf, "%s/inc", dir);
     _mkdir(buf);
-
-    snprintf(buf, sizeof buf, "%s/inc/imports.h", dir);
-    printf("Generating %s...\n", buf);
-    extract_resource(res_inc_imports_h, buf);
 
     snprintf(buf, sizeof buf, "%s/inc/app.h", dir);
     printf("Generating %s...\n", buf);

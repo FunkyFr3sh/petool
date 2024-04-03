@@ -25,8 +25,6 @@
 #include "cleanup.h"
 #include "common.h"
 
-extern bool g_sym_imports_enabled;
-
 int genmak(int argc, char **argv)
 {
     int     ret   = EXIT_SUCCESS;
@@ -71,13 +69,6 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "IMPORTS     =");
-    if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress)
-    {
-        fprintf(ofh, " 0x%"PRIX32" %d", nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[1].Size);
-    }
-    fprintf(ofh, "\n");
-
     fprintf(ofh, "LOADCONFIG  =");
     if (nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
     {
@@ -85,7 +76,13 @@ int genmak(int argc, char **argv)
     }
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
+    fprintf(ofh, "TLS         =");
+    if (nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
+    {
+        fprintf(ofh, " 0x%"PRIX32" %d", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
+    }
+    fprintf(ofh, "\n");
+
     fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[12].Size);
 
     fprintf(ofh, "\n");
@@ -106,9 +103,6 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, " -Wl,--disable-reloc-section -Wl,--enable-stdcall-fixup -static");
 
-    if (!g_sym_imports_enabled)
-        fprintf(ofh, " -nostdlib");
-
     fprintf(ofh, "\n");
 
     fprintf(ofh, "ASFLAGS     = -Iinc\n");
@@ -118,12 +112,9 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    if (g_sym_imports_enabled)
-    {
-        fprintf(ofh, "LIBS        = -lgdi32\n");
+    fprintf(ofh, "LIBS        = -lgdi32\n");
 
-        fprintf(ofh, "\n");
-    }
+    fprintf(ofh, "\n");
 
     fprintf(ofh, "OBJS        =");
 
@@ -139,7 +130,6 @@ int genmak(int argc, char **argv)
 
     if (strcmp(argv[0], "genmak") != 0)
     {
-        fprintf(ofh, " \\\n				src/imports.o");
         fprintf(ofh, " \\\n				src/start.o");
     }
 
@@ -179,15 +169,15 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
     fprintf(ofh, "	$(CXX) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(LIBS)\n");
-    fprintf(ofh, "ifneq (,$(IMPORTS))\n");
-    fprintf(ofh, "	$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "endif\n");
     fprintf(ofh, "ifneq (,$(LOADCONFIG))\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 10 $(LOADCONFIG) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
+    fprintf(ofh, "ifneq (,$(TLS))\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "endif\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) setc  \"$@\" .p_text 0x60000020 || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "	$(PETOOL) setc  \"$@\" .o_idata 0xC0000040 || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) dump \"$@\"\n\n");
