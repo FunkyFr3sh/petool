@@ -25,6 +25,8 @@
 #include "cleanup.h"
 #include "common.h"
 
+uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
+
 int genmak(int argc, char **argv)
 {
     int     ret   = EXIT_SUCCESS;
@@ -83,7 +85,40 @@ int genmak(int argc, char **argv)
     }
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[12].Size);
+    if (nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[12].Size)
+    {
+        fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[12].Size);
+    }
+    else
+    {
+        /* IAT must be set or PE loader will fail to initialize the imports when they're in a read-only section */
+        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
+        IMAGE_IMPORT_DESCRIPTOR* i = (void*)(image + offset);
+
+        uint32_t iat_start = UINT32_MAX;
+        uint32_t iat_end = 0;
+
+        while (i->FirstThunk)
+        {
+            iat_start = i->FirstThunk < iat_start ? i->FirstThunk : iat_start;
+            iat_end = i->FirstThunk > iat_end ? i->FirstThunk : iat_end;
+            i++;
+        }
+
+        if (iat_end)
+        {
+            PIMAGE_THUNK_DATA32 ft =
+                (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + iat_end, nt_hdr));
+
+            while (ft->u1.Function)
+            {
+                ft++;
+                iat_end += sizeof(IMAGE_THUNK_DATA32);
+            }
+
+            fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", iat_start, iat_end - iat_start + 4);
+        }
+    }
 
     fprintf(ofh, "\n");
 
@@ -175,9 +210,10 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "ifneq (,$(TLS))\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
+    fprintf(ofh, "ifneq (,$(IAT))\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "endif\n");
     fprintf(ofh, "	$(PETOOL) setc  \"$@\" .p_text 0x60000020 || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "	$(PETOOL) setc  \"$@\" .o_idata 0xC0000040 || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) dump \"$@\"\n\n");
