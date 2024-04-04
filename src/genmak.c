@@ -89,7 +89,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[12].Size);
     }
-    else
+    else if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[1].Size)
     {
         /* IAT must be set or PE loader will fail to initialize the imports when they're in a read-only section */
         uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
