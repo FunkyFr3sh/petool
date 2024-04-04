@@ -37,7 +37,7 @@
 extern const char res_gitignore[];
 extern const char res_build_cmd[];
 extern const char res_readme_md[];
-extern const char res_src_start_c[];
+extern const char res_src_winmain_c[];
 extern const char res_inc_app_h[];
 extern const char res_inc_app_inc[];
 extern const char res_inc_patch_h[];
@@ -73,9 +73,9 @@ int genfiles(char *dir)
     snprintf(buf, sizeof buf, "%s/src", dir);
     _mkdir(buf);
 
-    snprintf(buf, sizeof buf, "%s/src/start.c", dir);
+    snprintf(buf, sizeof buf, "%s/src/winmain.c", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_src_start_c, buf);
+    extract_resource(res_src_winmain_c, buf);
 
     snprintf(buf, sizeof buf, "%s/inc", dir);
     _mkdir(buf);

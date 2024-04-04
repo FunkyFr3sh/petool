@@ -161,7 +161,7 @@ int genmak(int argc, char **argv)
 
     if (strcmp(argv[0], "genmak") != 0)
     {
-        fprintf(ofh, " \\\n				src/start.o");
+        fprintf(ofh, " \\\n				src/winmain.o");
     }
 
     fprintf(ofh, "\n\n");

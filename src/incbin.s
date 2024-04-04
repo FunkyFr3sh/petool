@@ -5,8 +5,8 @@
     .global res_build_cmd
     .global _res_readme_md
     .global res_readme_md
-    .global _res_src_start_c
-    .global res_src_start_c
+    .global _res_src_winmain_c
+    .global res_src_winmain_c
     .global _res_inc_app_h
     .global res_inc_app_h
     .global _res_inc_app_inc
@@ -45,9 +45,9 @@ res_readme_md:
     .incbin "res/README.md"
     .byte 0
 
-_res_src_start_c:
-res_src_start_c:
-    .incbin "res/src/start.c"
+_res_src_winmain_c:
+res_src_winmain_c:
+    .incbin "res/src/winmain.c"
     .byte 0
 
 _res_inc_app_h:
