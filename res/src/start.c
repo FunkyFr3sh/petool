@@ -12,9 +12,3 @@ int APIENTRY fake_WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, in
 {
     return WinMainCRTStartup();
 }
-
-// entry point
-void start()
-{
-    app_start();
-}

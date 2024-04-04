@@ -55,7 +55,7 @@ int gensym(int argc, char** argv)
     fprintf(ofh, "%%include \"macros/setsym.inc\"\n\n\n");
     fprintf(ofh, "; vars\n\n\n");
     fprintf(ofh, "; functions\n\n");
-    fprintf(ofh, "setcglob 0x%08"PRIX32", app_start\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
+    fprintf(ofh, "setcglob 0x%08"PRIX32", start\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
     fprintf(ofh, "setcglob 0x00000000, WinMain ; <- <FIX_ME>\n\n");
     
     if (strcmp(argv[0], "gensym") == 0)
