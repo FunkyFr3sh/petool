@@ -78,9 +78,12 @@ int genlds(int argc, char **argv)
     if (strcmp(argv[0], "genlds") == 0)
     {
         fprintf(ofh, "_start = 0x%"PRIX32";\n", nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint);
+        fprintf(ofh, "ENTRY(_start);\n");
     }
-
-    fprintf(ofh, "ENTRY(_start);\n");
+    else
+    {
+        fprintf(ofh, "ENTRY(_WinMainCRTStartup);\n");
+    }
 
     fprintf(ofh, "SEARCH_DIR(\"/usr/i686-w64-mingw32/lib\");\n");
     fprintf(ofh, "SEARCH_DIR(\"=/w64devkit/i686-w64-mingw32/lib\");\n");
