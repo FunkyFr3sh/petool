@@ -71,19 +71,15 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "LOADCONFIG  =");
     if (nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
     {
-        fprintf(ofh, " 0x%"PRIX32" %d", nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[10].Size);
+        fprintf(ofh, "LOADCONFIG  = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[10].Size);
     }
-    fprintf(ofh, "\n");
 
-    fprintf(ofh, "TLS         =");
     if (nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
     {
-        fprintf(ofh, " 0x%"PRIX32" %d", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
+        fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
     }
-    fprintf(ofh, "\n");
 
     if (nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[12].Size)
     {
