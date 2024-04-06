@@ -111,7 +111,7 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "ASFLAGS     = -Iinc\n");
+    fprintf(ofh, "ASFLAGS     = -Iinc -msyntax=intel -mnaked-reg\n");
     fprintf(ofh, "NFLAGS      = -Iinc -f elf\n");
     fprintf(ofh, "CFLAGS      = -Iinc -O2 -march=pentium4 -Wall -masm=intel\n");
     fprintf(ofh, "CXXFLAGS    = -Iinc -O2 -march=pentium4 -Wall -masm=intel\n");
@@ -147,6 +147,7 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "CC          = i686-w64-mingw32-gcc\n");
     fprintf(ofh, "CXX         = i686-w64-mingw32-g++\n");
+    fprintf(ofh, "AS          = i686-w64-mingw32-as\n");
     fprintf(ofh, "STRIP      ?= i686-w64-mingw32-strip\n");
     fprintf(ofh, "WINDRES    ?= i686-w64-mingw32-windres\n");
     fprintf(ofh, "PETOOL     ?= petool\n");
@@ -165,7 +166,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "%%.o: %%.cpp\n");
     fprintf(ofh, "	$(CXX) $(CXXFLAGS) -c -o $@ $<\n\n");
 
-    fprintf(ofh, "%%.o: %%.s\n");
+    fprintf(ofh, "%%.o: %%.S\n");
     fprintf(ofh, "	$(AS) $(ASFLAGS) -o $@ $<\n\n");
 
     fprintf(ofh, "%%.o: %%.rc\n");
