@@ -89,18 +89,18 @@ int genprj(int argc, char **argv)
     printf("Generating %s...\n", buf);
     FAIL_IF(genlds(3, cmd_argv) != EXIT_SUCCESS, "Failed to create linker script\n");
 
-    snprintf(buf, sizeof buf, "%s/sym.asm", dir);
+    snprintf(buf, sizeof buf, "%s/sym.c", dir);
     printf("Generating %s...\n", buf);
-    FAIL_IF(gensym(3, cmd_argv, false) != EXIT_SUCCESS, "Failed to create sym.asm\n");
+    FAIL_IF(gensym(3, cmd_argv, false) != EXIT_SUCCESS, "Failed to create sym.c\n");
 
     if (!g_sym_imports_enabled)
     {
         printf("WARNING: No LoadLibraryX / GetModuleHandleX found in executable, creating project WITHOUT working imports (No C++ support)\n");
 
-        snprintf(buf, sizeof buf, "%s/sym.asm", dir);
+        snprintf(buf, sizeof buf, "%s/sym.c", dir);
         printf("Generating %s with full import list...\n", buf);
-        FAIL_IF(remove(buf) != 0, "Failed to delete old sym.asm\n");
-        FAIL_IF(gensym(3, cmd_argv, true) != EXIT_SUCCESS, "Failed to create sym.asm\n");
+        FAIL_IF(remove(buf) != 0, "Failed to delete old sym.c\n");
+        FAIL_IF(gensym(3, cmd_argv, true) != EXIT_SUCCESS, "Failed to create sym.c\n");
     }
 
     snprintf(buf, sizeof buf, "%s/Makefile", dir);
