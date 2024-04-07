@@ -85,7 +85,7 @@ int gensym(int argc, char** argv, bool print_all)
 
             if (strcmp(argv[0], "gensym") == 0)
             {
-                fprintf(ofh, "\n; %s\n", name);
+                fprintf(ofh, "\n/* %s */\n", name);
             }
         }
 
