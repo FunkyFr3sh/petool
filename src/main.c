@@ -35,7 +35,7 @@ int genprj(int argc, char **argv);
 
 void help(char *progname)
 {
-    fprintf(stderr, "petool git~%s (c) 2013 - 2017 Toni Spets, (c) 2023 github.com/FunkyFr3sh\n", REV);
+    fprintf(stderr, "petool git~%s (c) 2013 - 2017 Toni Spets, (c) 2024 github.com/FunkyFr3sh\n", REV);
     fprintf(stderr, "https://github.com/FunkyFr3sh/petool\n\n");
     fprintf(stderr, "usage: %s <command> [args ...]\n\n", progname);
     fprintf(stderr, "commands:"                                                 "\n"
