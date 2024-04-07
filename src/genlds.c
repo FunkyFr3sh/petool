@@ -29,6 +29,8 @@
 #include "cleanup.h"
 #include "common.h"
 
+uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
+
 int genlds(int argc, char **argv)
 {
     // decleration before more meaningful initialization for cleanup
@@ -76,9 +78,12 @@ int genlds(int argc, char **argv)
     if (strcmp(argv[0], "genlds") == 0)
     {
         fprintf(ofh, "_start = 0x%"PRIX32";\n", nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint);
+        fprintf(ofh, "ENTRY(_start);\n");
     }
-
-    fprintf(ofh, "ENTRY(_start);\n");
+    else
+    {
+        fprintf(ofh, "ENTRY(_WinMainCRTStartup);\n");
+    }
 
     fprintf(ofh, "SEARCH_DIR(\"/usr/i686-w64-mingw32/lib\");\n");
     fprintf(ofh, "SEARCH_DIR(\"=/w64devkit/i686-w64-mingw32/lib\");\n");
@@ -104,6 +109,13 @@ int genlds(int argc, char **argv)
         char buf[9];
         memset(buf, 0, sizeof buf);
         memcpy(buf, cur_sct->Name, 8);
+
+        /* Section without name (Age Of Wonders 2) */
+        if (!buf[0])
+        {
+            buf[0] = '"';
+            buf[1] = '"';
+        }
 
         if (cur_sct->Characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA && !(cur_sct->Characteristics & IMAGE_SCN_CNT_INITIALIZED_DATA)) {
             fprintf(ofh, "    /DISCARD/                  : { %s(%s) }\n", inputname, buf);
@@ -153,6 +165,8 @@ int genlds(int argc, char **argv)
             continue;
         }
 
+        bool is_idata = strcmp(buf, ".idata") == 0;
+
         if (cur_sct->Misc.VirtualSize > cur_sct->SizeOfRawData) {
 
             /* Borland Fix - VirtualSize is aligned to SectionAlignment */
@@ -162,7 +176,7 @@ int genlds(int argc, char **argv)
             while (aligned_raw_size % nt_hdr->OptionalHeader.SectionAlignment)
                 aligned_raw_size++;
 
-            fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) . = ALIGN(0x%"PRIX32"); }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf, nt_hdr->OptionalHeader.SectionAlignment);
+            fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) . = ALIGN(0x%"PRIX32"); }\n", is_idata ? ".o_idata" : buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf, nt_hdr->OptionalHeader.SectionAlignment);
 
             if (cur_sct->Misc.VirtualSize > aligned_raw_size) {
                 if (udatan++ == 0) {
@@ -178,7 +192,7 @@ int genlds(int argc, char **argv)
             continue;
         }
 
-        fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) }\n", buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf);
+        fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) }\n", is_idata ? ".o_idata" : buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf);
     }
 
     fprintf(ofh, "\n");
@@ -293,11 +307,39 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "     *(.note.GNU-stack)\n");
     fprintf(ofh, "     *(.gnu.lto_*)\n");
     fprintf(ofh, "  }\n");
-    fprintf(ofh, "  .p_idata BLOCK(__section_alignment__) :\n");
+    fprintf(ofh, "  .idata BLOCK(__section_alignment__) :\n");
     fprintf(ofh, "  {\n");
-    fprintf(ofh, "    __p_idata_start__ = . ;\n");
     fprintf(ofh, "    /* This cannot currently be handled with grouped sections.\n");
     fprintf(ofh, "        See pe.em:sort_sections.  */\n");
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes >= 2)
+    {
+        fprintf(ofh, "\n");
+
+        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
+        IMAGE_IMPORT_DESCRIPTOR* i = (void*)(image + offset);
+
+        while (i->FirstThunk) {
+            if (i->Name != 0) {
+                char* name = (char*)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->Name, nt_hdr));
+                fprintf(ofh, "    /* %s */\n", name);
+            }
+
+            fprintf(
+                ofh, 
+                "    LONG (0x%"PRIX32"); LONG (0x%"PRIX32"); LONG (0x%"PRIX32"); LONG (0x%"PRIX32"); LONG (0x%"PRIX32");\n", 
+                i->OriginalFirstThunk,
+                i->TimeDateStamp,
+                i->ForwarderChain,
+                i->Name,
+                i->FirstThunk);
+
+            fprintf(ofh, "\n");
+
+            i++;
+        }
+    }
+
     fprintf(ofh, "    KEEP (SORT(*)(.idata$2))\n");
     fprintf(ofh, "    KEEP (SORT(*)(.idata$3))\n");
     fprintf(ofh, "    /* These zeroes mark the end of the import list.  */\n");

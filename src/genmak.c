@@ -25,7 +25,7 @@
 #include "cleanup.h"
 #include "common.h"
 
-extern bool g_sym_imports_enabled;
+uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
 
 int genmak(int argc, char **argv)
 {
@@ -71,22 +71,50 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "IMPORTS     =");
-    if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress)
-    {
-        fprintf(ofh, " 0x%"PRIX32" %d", nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[1].Size);
-    }
-    fprintf(ofh, "\n");
-
-    fprintf(ofh, "LOADCONFIG  =");
     if (nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
     {
-        fprintf(ofh, " 0x%"PRIX32" %d", nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[10].Size);
+        fprintf(ofh, "LOADCONFIG  = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[10].Size);
     }
-    fprintf(ofh, "\n");
 
-    fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
-    fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[12].Size);
+    if (nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
+    {
+        fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
+    }
+
+    if (nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[12].Size)
+    {
+        fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[12].Size);
+    }
+    else if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[1].Size)
+    {
+        /* IAT must be set or PE loader will fail to initialize the imports when they're in a read-only section */
+        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
+        IMAGE_IMPORT_DESCRIPTOR* i = (void*)(image + offset);
+
+        uint32_t iat_start = UINT32_MAX;
+        uint32_t iat_end = 0;
+
+        while (i->FirstThunk)
+        {
+            iat_start = i->FirstThunk < iat_start ? i->FirstThunk : iat_start;
+            iat_end = i->FirstThunk > iat_end ? i->FirstThunk : iat_end;
+            i++;
+        }
+
+        if (iat_end)
+        {
+            PIMAGE_THUNK_DATA32 ft =
+                (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + iat_end, nt_hdr));
+
+            while (ft->u1.Function)
+            {
+                ft++;
+                iat_end += sizeof(IMAGE_THUNK_DATA32);
+            }
+
+            fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", iat_start, iat_end - iat_start + 4);
+        }
+    }
 
     fprintf(ofh, "\n");
 
@@ -106,9 +134,6 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, " -Wl,--disable-reloc-section -Wl,--enable-stdcall-fixup -static");
 
-    if (!g_sym_imports_enabled)
-        fprintf(ofh, " -nostdlib");
-
     fprintf(ofh, "\n");
 
     fprintf(ofh, "ASFLAGS     = -Iinc -msyntax=intel -mnaked-reg\n");
@@ -118,12 +143,9 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    if (g_sym_imports_enabled)
-    {
-        fprintf(ofh, "LIBS        = -lgdi32\n");
+    fprintf(ofh, "LIBS        = -lgdi32\n");
 
-        fprintf(ofh, "\n");
-    }
+    fprintf(ofh, "\n");
 
     fprintf(ofh, "OBJS        =");
 
@@ -139,8 +161,7 @@ int genmak(int argc, char **argv)
 
     if (strcmp(argv[0], "genmak") != 0)
     {
-        fprintf(ofh, " \\\n				src/imports.o");
-        fprintf(ofh, " \\\n				src/start.o");
+        fprintf(ofh, " \\\n				src/winmain.o");
     }
 
     fprintf(ofh, "\n\n");
@@ -180,14 +201,15 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
     fprintf(ofh, "	$(CXX) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(LIBS)\n");
-    fprintf(ofh, "ifneq (,$(IMPORTS))\n");
-    fprintf(ofh, "	$(PETOOL) setdd \"$@\" 1 $(IMPORTS) || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "endif\n");
     fprintf(ofh, "ifneq (,$(LOADCONFIG))\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 10 $(LOADCONFIG) || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "endif\n");
+    fprintf(ofh, "ifneq (,$(TLS))\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "endif\n");
+    fprintf(ofh, "ifneq (,$(IAT))\n");
     fprintf(ofh, "	$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "endif\n");
     fprintf(ofh, "	$(PETOOL) setc  \"$@\" .p_text 0x60000020 || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");

@@ -36,7 +36,7 @@ int setc(int argc, char **argv)
 
     FAIL_IF(argc != 4, "usage: petool setc <image> <section> <Characteristics>\n");
 
-    uint32_t flags   = strtol(argv[3], NULL, 0);
+    uint32_t flags   = strtoul(argv[3], NULL, 0);
 
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
@@ -65,7 +65,8 @@ int setc(int argc, char **argv)
         }
     }
 
-    fprintf(stderr, "No '%s' section in given PE image.\n", argv[2]);
+    if (strcmp(argv[2], ".o_idata") != 0)
+        fprintf(stderr, "No '%s' section in given PE image.\n", argv[2]);
 
 cleanup:
     if (image) free(image);

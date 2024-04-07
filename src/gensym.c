@@ -29,16 +29,7 @@
 
 uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
 
-bool g_sym_got_LoadLibraryA;
-bool g_sym_got_LoadLibraryExA;
-bool g_sym_got_LoadLibraryW;
-bool g_sym_got_LoadLibraryExW;
-bool g_sym_got_GetModuleHandleA;
-bool g_sym_got_GetModuleHandleW;
-bool g_sym_got_GetProcAddress;
-bool g_sym_imports_enabled;
-
-int gensym(int argc, char** argv, bool print_all)
+int gensym(int argc, char** argv)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret   = EXIT_SUCCESS;
@@ -65,117 +56,65 @@ int gensym(int argc, char** argv, bool print_all)
     fprintf(ofh, "/* vars */\n\n\n");
     fprintf(ofh, "/* functions */\n\n");
     fprintf(ofh, "SETCGLOB(0x%08"PRIX32", app_start);\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
-    fprintf(ofh, "SETCGLOB(0x00000000, WinMain); // <- <FIX_ME>\n\n");
-    fprintf(ofh, "/* imports */\n\n");
+    
+    if (strcmp(argv[0], "gensym") == 0)
+    {
+        fprintf(ofh, "/* imports */\n\n");
 
-    FAIL_IF (nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 2, "Not enough DataDirectories.\n");
+        FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 2, "Not enough DataDirectories.\n");
 
-    uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
-    IMAGE_IMPORT_DESCRIPTOR *i = (void *)(image + offset);
+        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
+        IMAGE_IMPORT_DESCRIPTOR* i = (void*)(image + offset);
 
-    while (i->FirstThunk) {
-        char name[260] = { 0 };
+        while (i->FirstThunk) {
+            char name[260] = { 0 };
 
-        if (i->Name != 0) {
-            strncpy(
-                name,
-                (char*)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->Name, nt_hdr)),
-                sizeof name - 1
-            );
-
-            if (strcmp(argv[0], "gensym") == 0)
-            {
+            if (i->Name != 0) {
+                strncpy(
+                    name,
+                    (char*)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->Name, nt_hdr)),
+                    sizeof name - 1
+                );
+                
                 fprintf(ofh, "\n/* %s */\n", name);
             }
-        }
 
-        uint32_t thunk = i->OriginalFirstThunk ? i->OriginalFirstThunk : i->FirstThunk;
+            uint32_t thunk = i->OriginalFirstThunk ? i->OriginalFirstThunk : i->FirstThunk;
 
-        PIMAGE_THUNK_DATA32 ft =
-            (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + thunk, nt_hdr));
+            PIMAGE_THUNK_DATA32 ft =
+                (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + thunk, nt_hdr));
 
-        uint32_t function = nt_hdr->OptionalHeader.ImageBase + i->FirstThunk;
+            uint32_t function = nt_hdr->OptionalHeader.ImageBase + i->FirstThunk;
 
-        while (ft->u1.AddressOfData)
-        {
-            PIMAGE_IMPORT_BY_NAME import =
-                (PIMAGE_IMPORT_BY_NAME)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + ft->u1.AddressOfData, nt_hdr));
-
-            if ((ft->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
+            while (ft->u1.AddressOfData)
             {
-                if (strcmp(argv[0], "gensym") == 0 || print_all)
+                PIMAGE_IMPORT_BY_NAME import =
+                    (PIMAGE_IMPORT_BY_NAME)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + ft->u1.AddressOfData, nt_hdr));
+
+                if ((ft->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
                 {
                     fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s);\n", function, (const char*)import->Name);
                 }
-                else if (strcmp((const char*)import->Name, "LoadLibraryA") == 0 && !g_sym_got_LoadLibraryA)
+                else
                 {
-                    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s_p);\n", function, (const char*)import->Name);
-                    g_sym_got_LoadLibraryA = true;
-                }
-                else if (strcmp((const char*)import->Name, "LoadLibraryExA") == 0 && !g_sym_got_LoadLibraryExA)
-                {
-                    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s_p);\n", function, (const char*)import->Name);
-                    g_sym_got_LoadLibraryExA = true;
-                }
-                else if (strcmp((const char*)import->Name, "LoadLibraryW") == 0 && !g_sym_got_LoadLibraryW)
-                {
-                    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s_p);\n", function, (const char*)import->Name);
-                    g_sym_got_LoadLibraryW = true;
-                }
-                else if (strcmp((const char*)import->Name, "LoadLibraryExW") == 0 && !g_sym_got_LoadLibraryExW)
-                {
-                    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s_p);\n", function, (const char*)import->Name);
-                    g_sym_got_LoadLibraryExW = true;
-                }
-                else if (strcmp((const char*)import->Name, "GetModuleHandleA") == 0 && !g_sym_got_GetModuleHandleA)
-                {
-                    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s_p);\n", function, (const char*)import->Name);
-                    g_sym_got_GetModuleHandleA = true;
-                }
-                else if (strcmp((const char*)import->Name, "GetModuleHandleW") == 0 && !g_sym_got_GetModuleHandleW)
-                {
-                    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s_p);\n", function, (const char*)import->Name);
-                    g_sym_got_GetModuleHandleW = true;
-                }
-                else if (strcmp((const char*)import->Name, "GetProcAddress") == 0 && !g_sym_got_GetProcAddress)
-                {
-                    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s_p);\n", function, (const char*)import->Name);
-                    g_sym_got_GetProcAddress = true;
-                }
-            }
-            else if (strcmp(argv[0], "gensym") == 0 || print_all)
-            {
-                char* p = strrchr(name, '.');
-                if (p)
-                {
-                    *p = '\0';
+                    char* p = strrchr(name, '.');
+                    if (p)
+                    {
+                        *p = '\0';
+                    }
+
+                    int ordinal = (ft->u1.Ordinal & ~IMAGE_ORDINAL_FLAG32) & 0xffff;
+
+                    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s_Ordinal_%d);\n", function, name, ordinal);
                 }
 
-                int ordinal = (ft->u1.Ordinal & ~IMAGE_ORDINAL_FLAG32) & 0xffff;
 
-                fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s_Ordinal_%d);\n", function, name, ordinal);
+                ft++;
+                function += sizeof(IMAGE_THUNK_DATA32);
             }
 
-
-            ft++;
-            function += sizeof(IMAGE_THUNK_DATA32);
+            i++;
         }
-
-        i++;
-    }
-
-    g_sym_imports_enabled =
-        g_sym_got_LoadLibraryA || 
-        g_sym_got_LoadLibraryExA ||
-        g_sym_got_LoadLibraryW || 
-        g_sym_got_LoadLibraryExW ||
-        g_sym_got_GetModuleHandleA || 
-        g_sym_got_GetModuleHandleW;
-
-    if (!g_sym_imports_enabled)
-    {
-        fprintf(ofh, "\n\n");
-        fprintf(ofh, "SETCGLOB(0x00000000, WinMainCRTStartup); // C++ not available - Dummy symbol allows the project to build\n");
     }
 
 cleanup:
