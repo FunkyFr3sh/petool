@@ -52,7 +52,7 @@ int gensym(int argc, char** argv)
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
     PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
 
-    fprintf(ofh, "%%include \"macros/setsym.inc\"\n\n\n");
+    fprintf(ofh, "#include \"macros/setsym.h\"\n\n\n");
     fprintf(ofh, "/* vars */\n\n\n");
     fprintf(ofh, "/* functions */\n\n");
     fprintf(ofh, "SETCGLOB(0x%08"PRIX32", app_start);\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
