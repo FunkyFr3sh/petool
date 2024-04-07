@@ -17,7 +17,7 @@ endif
 
 all: $(TARGET)
 
-$(TARGET): $(wildcard src/*.c) $(wildcard src/*.s)
+$(TARGET): $(wildcard src/*.c) $(wildcard src/*.S)
 	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
