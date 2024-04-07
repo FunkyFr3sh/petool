@@ -81,9 +81,13 @@ int genmak(int argc, char **argv)
         fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
     }
 
+    uint32_t iat_size = 0;
+
     if (nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[12].Size)
     {
-        fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[12].Size);
+        iat_size = nt_hdr->OptionalHeader.DataDirectory[12].Size;
+
+        fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, iat_size);
     }
     else if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[1].Size)
     {
@@ -112,7 +116,9 @@ int genmak(int argc, char **argv)
                 iat_end += sizeof(IMAGE_THUNK_DATA32);
             }
 
-            fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", iat_start, iat_end - iat_start + 4);
+            iat_size = iat_end - iat_start + 4;
+
+            fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", iat_start, iat_size);
         }
     }
 
@@ -201,15 +207,22 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
     fprintf(ofh, "	$(CXX) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(LIBS)\n");
-    fprintf(ofh, "ifneq (,$(LOADCONFIG))\n");
-    fprintf(ofh, "	$(PETOOL) setdd \"$@\" 10 $(LOADCONFIG) || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "endif\n");
-    fprintf(ofh, "ifneq (,$(TLS))\n");
-    fprintf(ofh, "	$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "endif\n");
-    fprintf(ofh, "ifneq (,$(IAT))\n");
-    fprintf(ofh, "	$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "endif\n");
+
+    if (nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" 10 $(LOADCONFIG) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (iat_size)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
     fprintf(ofh, "	$(PETOOL) setc  \"$@\" .p_text 0x60000020 || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
