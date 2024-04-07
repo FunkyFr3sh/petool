@@ -41,18 +41,10 @@ supports working with 32-bit portable executable.
 Setting up
 --------------------------------------------------------------------------------
 
-`petool` tries its best to create a re-linkable template for any given normal
-Windows executable. This is not always successful so be warned it might not 
-work out of the box without modifications.
-
 To begin, generate a project by giving a path to an executable file as the only
 argument. Dragging and dropping an executable on `petool.exe` also does this
 on Windows and the project is generated next to the original executable in a 
 subdirectory.
-
-For technical reasons, embedded `.bss` inside `.data` is not supported but is
-instead unwound to separate `.bss` after `.data`. You can optionally use `setdd`
-command to expand `.data` to its original size.
 
 You should be able to re-link the executable now by executing `make` without any
 modifications.
@@ -62,7 +54,7 @@ Patching
 
 Generating the patch set can be done with macros. There are macros available for 
 C/C++ in `inc/macros/patch.h`, several macros for `NASM` in `inc/macros/*.inc` and
-macros for `GNU as` in `inc/macros/patch.s`. Runtime patching is supported as well
+macros for `GNU as` in `inc/macros/*.s`. Runtime patching is supported as well
 via `inc/patch.h` (Not recommended, unless you have no other choice).
 
 Below are some C/C++ examples for how these macros are used in practice.
@@ -104,7 +96,7 @@ Example: `CLEAR(0x410000, 0x90, 0x410005); /* NOP 5 bytes starting from 0x410000
 
 ### Existing symbols in original executable (sym.c)
 
-    setcglob 0x004D2A80, WinMain
+    SETCGLOB(0x004D2A80, WinMain);
 
 When you need to refer to existing symbols inside the executable, you can export
 global symbols from assembly source. Symbols can be any named memory address:
