@@ -85,10 +85,6 @@ int genprj(int argc, char **argv)
     printf("Copying %s -> %s...\n", argv[1], buf);
     FAIL_IF(file_copy(argv[1], buf) != EXIT_SUCCESS, "Failed to copy file\n");
 
-    snprintf(buf, sizeof buf, "%s/%s.lds", dir, base);
-    printf("Generating %s...\n", buf);
-    FAIL_IF(genlds(3, cmd_argv) != EXIT_SUCCESS, "Failed to create linker script\n");
-
     snprintf(buf, sizeof buf, "%s/sym.c", dir);
     printf("Generating %s...\n", buf);
     FAIL_IF(gensym(3, cmd_argv, false) != EXIT_SUCCESS, "Failed to create sym.c\n");
@@ -102,6 +98,10 @@ int genprj(int argc, char **argv)
         FAIL_IF(remove(buf) != 0, "Failed to delete old sym.c\n");
         FAIL_IF(gensym(3, cmd_argv, true) != EXIT_SUCCESS, "Failed to create sym.c\n");
     }
+
+    snprintf(buf, sizeof buf, "%s/%s.lds", dir, base);
+    printf("Generating %s...\n", buf);
+    FAIL_IF(genlds(3, cmd_argv) != EXIT_SUCCESS, "Failed to create linker script\n");
 
     snprintf(buf, sizeof buf, "%s/Makefile", dir);
     printf("Generating %s...\n", buf);
