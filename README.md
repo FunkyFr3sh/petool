@@ -89,9 +89,9 @@ Example:
 Note: the `CALL` macro is also available for `NASM` and `GNU AS` under the name `@CALL`
 
 ### Hook
-The `HOOK` macro writes a JMP instruction at _from_ to _to_. You can use `HOOK` in case
+The `HOOK` macro writes a JMP instruction at _addr_. You can use `HOOK` in case
 there is no Call instruction nearby that could be hooked via the `CALL` macro. 
-`HOOK` creates a naked function, so be sure you save and restore the values of the registers.
+`HOOK` creates a naked function, so be sure you save and restore the values of the registers if needed.
 
 The `HOOK` macro with 2 args can do a additional `CLEAR`, make sure you use it in case the
 replaced instructions don't have a size of 5 bytes (leftover bytes could break your disassembler).
@@ -143,6 +143,7 @@ Example:
     LJMP(0x410000, _doMagic);
 
 Note: the `LJMP` macro is also available for `NASM` and `GNU AS` under the name `@LJMP`
+
 Note: the `SJMP` macro is also available for `NASM` and `GNU AS` under the name `@SJMP`
 
 ### Clear
