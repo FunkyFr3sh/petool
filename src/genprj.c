@@ -81,19 +81,19 @@ int genprj(int argc, char **argv)
 
     FAIL_IF_PERROR(_mkdir(dir) == -1, "Failed to create output directory");
 
-    snprintf(buf, sizeof buf, "%s/%s.dat", dir, base);
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/%s.dat", dir, base) < 0, "Failed to copy game executable - Path truncated\n");
     printf("Copying %s -> %s...\n", argv[1], buf);
     FAIL_IF(file_copy(argv[1], buf) != EXIT_SUCCESS, "Failed to copy file\n");
 
-    snprintf(buf, sizeof buf, "%s/%s.lds", dir, base);
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/%s.lds", dir, base) < 0, "Failed to create linker script - Path truncated\n");
     printf("Generating %s...\n", buf);
     FAIL_IF(genlds(3, cmd_argv) != EXIT_SUCCESS, "Failed to create linker script\n");
 
-    snprintf(buf, sizeof buf, "%s/sym.c", dir);
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/sym.c", dir) < 0, "Failed to create sym.c - Path truncated\n");
     printf("Generating %s...\n", buf);
     FAIL_IF(gensym(3, cmd_argv) != EXIT_SUCCESS, "Failed to create sym.c\n");
 
-    snprintf(buf, sizeof buf, "%s/Makefile", dir);
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/Makefile", dir) < 0, "Failed to create makefile - Path truncated\n");
     printf("Generating %s...\n", buf);
     FAIL_IF(genmak(3, cmd_argv) != EXIT_SUCCESS, "Failed to create Makefile\n");
 
