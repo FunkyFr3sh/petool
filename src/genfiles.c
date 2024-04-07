@@ -45,7 +45,7 @@ extern const char res_inc_macros_datatypes_inc[];
 extern const char res_inc_macros_extern_inc[];
 extern const char res_inc_macros_patch_h[];
 extern const char res_inc_macros_patch_inc[];
-extern const char res_inc_macros_setsym_inc[];
+extern const char res_inc_macros_setsym_h[];
 extern const char res_inc_macros_watcall_inc[];
 extern const char res_inc_macros_patch_s[];
 
@@ -111,9 +111,9 @@ int genfiles(char *dir)
     printf("Generating %s...\n", buf);
     extract_resource(res_inc_macros_patch_inc, buf);
 
-    snprintf(buf, sizeof buf, "%s/inc/macros/setsym.inc", dir);
+    snprintf(buf, sizeof buf, "%s/inc/macros/setsym.h", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_setsym_inc, buf);
+    extract_resource(res_inc_macros_setsym_h, buf);
 
     snprintf(buf, sizeof buf, "%s/inc/macros/watcall.inc", dir);
     printf("Generating %s...\n", buf);

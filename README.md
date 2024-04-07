@@ -16,7 +16,7 @@ Tool to help rebuild and patch 32-bit Windows applications.
  - `import` - dump the import table as assembly
  - `re2obj` - convert the resource section into COFF object
  - `genmak` - generate project Makefile
- - `gensym` - generate full sym.asm with all imports
+ - `gensym` - generate full sym.c with all imports
  - `genprj` - generate full project directory (default)
 
 Building
@@ -102,13 +102,13 @@ far jumps which have broken instructions just after them.
 
 Example: `CLEAR(0x410000, 0x90, 0x410005); /* NOP 5 bytes starting from 0x410000 */`
 
-### Existing symbols in original executable (sym.asm)
+### Existing symbols in original executable (sym.c)
 
     setcglob 0x004D2A80, WinMain
 
 When you need to refer to existing symbols inside the executable, you can export
 global symbols from assembly source. Symbols can be any named memory address:
-function, data, uninitialized variable. As long as you define them in sym.asm, 
+function, data, uninitialized variable. As long as you define them in sym.c, 
 you can use them anywhere.
 
 Compiling new code

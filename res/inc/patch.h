@@ -3,11 +3,37 @@
 
 #include <windows.h>
 
+static inline void patch_clear(char *start, char value, char *end)
+{
+    DWORD op = PAGE_EXECUTE_READ;
+    VirtualProtect(start, end - start, PAGE_EXECUTE_READWRITE, &op);
+    memset(start, value, end - start);
+    VirtualProtect(start, end - start, op, &op);
+}
+
+static inline void patch_sjmp(char *src, char *dst)
+{
+    DWORD op = PAGE_EXECUTE_READ;
+    VirtualProtect(src, 2, PAGE_EXECUTE_READWRITE, &op);
+    src[0] = '\xEB';
+    src[1] = dst - src - 2;
+    VirtualProtect(src, 2, op, &op);
+}
+
+static inline void patch_ljmp(char *src, char *dst)
+{
+    DWORD op = PAGE_EXECUTE_READ;
+    VirtualProtect(src, 5, PAGE_EXECUTE_READWRITE, &op);
+    src[0] = '\xE9';
+    *((DWORD *)(&src[1])) = dst - src - 5;
+    VirtualProtect(src, 5, op, &op);
+}
+
 static inline PROC patch_call(char *src, char *dst)
 {
     DWORD op = PAGE_EXECUTE_READ;
     VirtualProtect(src, 5, PAGE_EXECUTE_READWRITE, &op);
-    src[0] = 0xE8;
+    src[0] = '\xE8';
     DWORD org = *((DWORD *)(&src[1]));
     *((DWORD *)(&src[1])) = dst - src - 5;
     VirtualProtect(src, 5, op, &op);
@@ -18,36 +44,10 @@ static inline void patch_call_nop(char *src, char *dst)
 {
     DWORD op = PAGE_EXECUTE_READ;
     VirtualProtect(src, 6, PAGE_EXECUTE_READWRITE, &op);
-    src[0] = 0xE8;
+    src[0] = '\xE8';
     *((DWORD *)(&src[1])) = dst - src - 5;
-    src[5] = 0x90;
+    src[5] = '\x90';
     VirtualProtect(src, 6, op, &op);
-}
-
-static inline void patch_ljmp(char *src, char *dst)
-{
-    DWORD op = PAGE_EXECUTE_READ;
-    VirtualProtect(src, 5, PAGE_EXECUTE_READWRITE, &op);
-    src[0] = 0xE9;
-    *((DWORD *)(&src[1])) = dst - src - 5;
-    VirtualProtect(src, 5, op, &op);
-}
-
-static inline void patch_sjmp(char *src, char *dst)
-{
-    DWORD op = PAGE_EXECUTE_READ;
-    VirtualProtect(src, 2, PAGE_EXECUTE_READWRITE, &op);
-    src[0] = 0xEB;
-    src[1] = dst - src - 2;
-    VirtualProtect(src, 2, op, &op);
-}
-
-static inline void patch_clear(char *start, char value, char *end)
-{
-    DWORD op = PAGE_EXECUTE_READ;
-    VirtualProtect(start, end - start, PAGE_EXECUTE_READWRITE, &op);
-    memset(start, value, end - start);
-    VirtualProtect(start, end - start, op, &op);
 }
 
 static inline DWORD patch_setdword(DWORD *dst, DWORD value)
@@ -89,5 +89,15 @@ static inline void patch_setbytes(char *dst, char *buf, size_t size)
 }
 
 #define PATCH_SET(a,b) patch_setbytes(a,b,sizeof(b)-1)
+
+static inline void patch_clear_nop(char *start, char *end)
+{
+    return patch_clear(start, '\x90', end);
+}
+
+static inline void patch_clear_int(char *start, char *end)
+{
+    return patch_clear(start, '\xCC', end);
+}
 
 #endif

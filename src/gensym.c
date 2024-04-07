@@ -53,13 +53,13 @@ int gensym(int argc, char** argv)
     PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
 
     fprintf(ofh, "%%include \"macros/setsym.inc\"\n\n\n");
-    fprintf(ofh, "; vars\n\n\n");
-    fprintf(ofh, "; functions\n\n");
-    fprintf(ofh, "setcglob 0x%08"PRIX32", app_start\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
+    fprintf(ofh, "/* vars */\n\n\n");
+    fprintf(ofh, "/* functions */\n\n");
+    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", app_start);\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
     
     if (strcmp(argv[0], "gensym") == 0)
     {
-        fprintf(ofh, "; imports\n\n");
+        fprintf(ofh, "/* imports */\n\n");
 
         FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 2, "Not enough DataDirectories.\n");
 
@@ -93,7 +93,7 @@ int gensym(int argc, char** argv)
 
                 if ((ft->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
                 {
-                    fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s\n", function, (const char*)import->Name);
+                    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s);\n", function, (const char*)import->Name);
                 }
                 else
                 {
@@ -105,7 +105,7 @@ int gensym(int argc, char** argv)
 
                     int ordinal = (ft->u1.Ordinal & ~IMAGE_ORDINAL_FLAG32) & 0xffff;
 
-                    fprintf(ofh, "setcglob 0x%08"PRIX32", _imp__%s_Ordinal_%d\n", function, name, ordinal);
+                    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", _imp__%s_Ordinal_%d);\n", function, name, ordinal);
                 }
 
 

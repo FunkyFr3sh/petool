@@ -39,14 +39,6 @@
     @ENDPATCH
 %endmacro
 
-%macro @CLEAR_INT 2
-    @CLEAR %1, 0xCC, %2
-%endmacro
-
-%macro @CLEAR_NOP 2
-    @CLEAR %1, 0x90, %2
-%endmacro
-
 %macro @SJMP 2
     @PATCH (%1)
     db 0xEB                     ; short jump
@@ -120,3 +112,10 @@
     %1:
 %endmacro
 
+%macro @CLEAR_INT 2
+    @CLEAR %1, 0xCC, %2
+%endmacro
+
+%macro @CLEAR_NOP 2
+    @CLEAR %1, 0x90, %2
+%endmacro
