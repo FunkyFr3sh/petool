@@ -76,7 +76,7 @@ int gensym(int argc, char** argv)
                     sizeof name - 1
                 );
                 
-                fprintf(ofh, "\n; %s\n", name);
+                fprintf(ofh, "\n/* %s */\n", name);
             }
 
             uint32_t thunk = i->OriginalFirstThunk ? i->OriginalFirstThunk : i->FirstThunk;
