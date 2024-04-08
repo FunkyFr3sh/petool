@@ -312,7 +312,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "    /* This cannot currently be handled with grouped sections.\n");
     fprintf(ofh, "        See pe.em:sort_sections.  */\n");
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 1)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 1 && nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress)
     {
         fprintf(ofh, "\n");
 

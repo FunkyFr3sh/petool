@@ -57,11 +57,12 @@ int gensym(int argc, char** argv)
     fprintf(ofh, "/* functions */\n\n");
     fprintf(ofh, "SETCGLOB(0x%08"PRIX32", app_start);\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
     
-    if (strcmp(argv[0], "gensym") == 0)
+    if (strcmp(argv[0], "gensym") == 0 && 
+        nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 1 && 
+        nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[1].Size)
     {
         fprintf(ofh, "/* imports */\n\n");
-
-        FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 2, "Not enough DataDirectories.\n");
 
         uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
         IMAGE_IMPORT_DESCRIPTOR* i = (void*)(image + offset);
