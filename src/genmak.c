@@ -187,15 +187,6 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "%%.o: %%.asm\n");
     fprintf(ofh, "	$(NASM) $(NFLAGS) -o $@ $<\n\n");
 
-    fprintf(ofh, "%%.o: %%.c\n");
-    fprintf(ofh, "	$(CC) $(CFLAGS) -c -o $@ $<\n\n");
-
-    fprintf(ofh, "%%.o: %%.cpp\n");
-    fprintf(ofh, "	$(CXX) $(CXXFLAGS) -c -o $@ $<\n\n");
-
-    fprintf(ofh, "%%.o: %%.S\n");
-    fprintf(ofh, "	$(AS) $(ASFLAGS) -o $@ $<\n\n");
-
     fprintf(ofh, "%%.o: %%.rc\n");
     fprintf(ofh, "	$(WINDRES) $(WINDRES_FLAGS) $< $@\n\n");
 
