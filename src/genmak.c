@@ -133,7 +133,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh, 
-            "EXPORTDIR   = 0 0x%"PRIX32" %"PRIu32"\n",
+            "EXPORTDIR   = 0  0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, 
             nt_hdr->OptionalHeader.DataDirectory[0].Size);
     }
@@ -142,7 +142,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh,
-            "EXCEPTDIR   = 3 0x%"PRIX32" %"PRIu32"\n",
+            "EXCEPTDIR   = 3  0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress,
             nt_hdr->OptionalHeader.DataDirectory[3].Size);
     }
@@ -151,7 +151,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh,
-            "SECURITYDIR = 4 0x%"PRIX32" %"PRIu32"\n",
+            "SECURITYDIR = 4  0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[4].VirtualAddress,
             nt_hdr->OptionalHeader.DataDirectory[4].Size);
     }
@@ -160,7 +160,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh,
-            "DEBUGDIR    = 6 0x%"PRIX32" %"PRIu32"\n",
+            "DEBUGDIR    = 6  0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress,
             nt_hdr->OptionalHeader.DataDirectory[6].Size);
     }
@@ -169,7 +169,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh,
-            "ARCHITECTUR = 7 0x%"PRIX32" %"PRIu32"\n",
+            "ARCHITECTUR = 7  0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress,
             nt_hdr->OptionalHeader.DataDirectory[7].Size);
     }
@@ -178,7 +178,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh,
-            "GLOBALPTR   = 8 0x%"PRIX32" %"PRIu32"\n",
+            "GLOBALPTR   = 8  0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress,
             nt_hdr->OptionalHeader.DataDirectory[8].Size);
     }
@@ -187,7 +187,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh, 
-            "TLSDIR      = 9 0x%"PRIX32" %"PRIu32"\n",
+            "TLSDIR      = 9  0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, 
             nt_hdr->OptionalHeader.DataDirectory[9].Size);
     }
