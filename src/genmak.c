@@ -107,7 +107,7 @@ int genmak(int argc, char **argv)
         fprintf(ofh, " \\\n				sym.o");
     }
 
-    if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 2 && nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
         fprintf(ofh, " \\\n				rsrc.o");
     }
@@ -284,7 +284,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "%%.o: %%.rc\n");
     fprintf(ofh, "	$(WINDRES) $(WFLAGS) $< $@\n\n");
 
-    if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 2 && nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
         fprintf(ofh, "rsrc.o: $(INPUT)\n");
         fprintf(ofh, "	$(PETOOL) re2obj $(INPUT) $@\n\n");
