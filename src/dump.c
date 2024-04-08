@@ -116,9 +116,36 @@ int dump(int argc, char **argv)
         );
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes >= 2)
+    printf("NumberOfRvaAndSizes: %"PRIu32"\n", nt_hdr->OptionalHeader.NumberOfRvaAndSizes);
+
+    char dirs[][40] = {
+        "Export Directory",
+        "Import Directory",
+        "Resource Directory",
+        "Exception Directory",
+        "Security Directory",
+        "Base Relocation Table",
+        "Debug Directory",
+        "Architecture Specific Data",
+        "RVA of GP",
+        "TLS Directory",
+        "Load Configuration Directory",
+        "Bound Import Directory in headers",
+        "Import Address Table",
+        "Delay Load Import Descriptors",
+        "COM Runtime descriptor"
+    };
+
+    for (uint32_t i = 0; i < nt_hdr->OptionalHeader.NumberOfRvaAndSizes; i++)
     {
-        printf("Import Table: %8"PRIX32" (%"PRIu32" bytes)\n", nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[1].Size);
+        if (!nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress)
+            continue;
+
+        printf(
+            "%-40s= %8"PRIX32" (%"PRIu32" bytes)\n", 
+            dirs[i],
+            nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress, 
+            nt_hdr->OptionalHeader.DataDirectory[i].Size);
     }
 
 cleanup:
