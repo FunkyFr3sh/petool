@@ -71,59 +71,6 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    if (nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
-    {
-        fprintf(ofh, "LOADCONFIG  = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[10].Size);
-    }
-
-    if (nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
-    {
-        fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
-    }
-
-    uint32_t iat_size = 0;
-
-    if (nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[12].Size)
-    {
-        iat_size = nt_hdr->OptionalHeader.DataDirectory[12].Size;
-
-        fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, iat_size);
-    }
-    else if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[1].Size)
-    {
-        /* IAT must be set or PE loader will fail to initialize the imports when they're in a read-only section */
-        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
-        IMAGE_IMPORT_DESCRIPTOR* i = (void*)(image + offset);
-
-        uint32_t iat_start = UINT32_MAX;
-        uint32_t iat_end = 0;
-
-        while (i->FirstThunk)
-        {
-            iat_start = i->FirstThunk < iat_start ? i->FirstThunk : iat_start;
-            iat_end = i->FirstThunk > iat_end ? i->FirstThunk : iat_end;
-            i++;
-        }
-
-        if (iat_end)
-        {
-            PIMAGE_THUNK_DATA32 ft =
-                (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + iat_end, nt_hdr));
-
-            while (ft->u1.Function)
-            {
-                ft++;
-                iat_end += sizeof(IMAGE_THUNK_DATA32);
-            }
-
-            iat_size = iat_end - iat_start + 4;
-
-            fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", iat_start, iat_size);
-        }
-    }
-
-    fprintf(ofh, "\n");
-
     fprintf(ofh, "LDFLAGS     =");
 
     if (nt_hdr->OptionalHeader.SectionAlignment != 0x1000)
@@ -182,13 +129,66 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
+    if (nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
+    {
+        fprintf(ofh, "LOADCONFIG  = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[10].Size);
+    }
+
+    if (nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
+    {
+        fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
+    }
+
+    uint32_t iat_size = 0;
+
+    if (nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[12].Size)
+    {
+        iat_size = nt_hdr->OptionalHeader.DataDirectory[12].Size;
+
+        fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, iat_size);
+    }
+    else if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[1].Size)
+    {
+        /* IAT must be set or PE loader will fail to initialize the imports when they're in a read-only section */
+        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
+        IMAGE_IMPORT_DESCRIPTOR* i = (void*)(image + offset);
+
+        uint32_t iat_start = UINT32_MAX;
+        uint32_t iat_end = 0;
+
+        while (i->FirstThunk)
+        {
+            iat_start = i->FirstThunk < iat_start ? i->FirstThunk : iat_start;
+            iat_end = i->FirstThunk > iat_end ? i->FirstThunk : iat_end;
+            i++;
+        }
+
+        if (iat_end)
+        {
+            PIMAGE_THUNK_DATA32 ft =
+                (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + iat_end, nt_hdr));
+
+            while (ft->u1.Function)
+            {
+                ft++;
+                iat_end += sizeof(IMAGE_THUNK_DATA32);
+            }
+
+            iat_size = iat_end - iat_start + 4;
+
+            fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", iat_start, iat_size);
+        }
+    }
+
+    fprintf(ofh, "\n");
+
     fprintf(ofh, "all: $(OUTPUT)\n\n");
 
     fprintf(ofh, "%%.o: %%.asm\n");
     fprintf(ofh, "	$(NASM) $(NFLAGS) -o $@ $<\n\n");
 
     fprintf(ofh, "%%.o: %%.rc\n");
-    fprintf(ofh, "	$(WINDRES) $(WINDRES_FLAGS) $< $@\n\n");
+    fprintf(ofh, "	$(WINDRES) $(WFLAGS) $< $@\n\n");
 
     if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
