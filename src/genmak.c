@@ -129,25 +129,101 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    if (nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 0 && nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress)
     {
-        fprintf(ofh, "LOADCONFIG  = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[10].Size);
+        fprintf(
+            ofh, 
+            "EXPORTDIR   = 0 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, 
+            nt_hdr->OptionalHeader.DataDirectory[0].Size);
     }
 
-    if (nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 3 && nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress)
     {
-        fprintf(ofh, "TLS         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[9].Size);
+        fprintf(
+            ofh,
+            "EXCEPTDIR   = 3 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress,
+            nt_hdr->OptionalHeader.DataDirectory[3].Size);
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 4 && nt_hdr->OptionalHeader.DataDirectory[4].VirtualAddress)
+    {
+        fprintf(
+            ofh,
+            "SECURITYDIR = 4 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[4].VirtualAddress,
+            nt_hdr->OptionalHeader.DataDirectory[4].Size);
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 6 && nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress)
+    {
+        fprintf(
+            ofh,
+            "DEBUGDIR    = 6 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress,
+            nt_hdr->OptionalHeader.DataDirectory[6].Size);
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 7 && nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress)
+    {
+        fprintf(
+            ofh,
+            "ARCHITECTUR = 7 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress,
+            nt_hdr->OptionalHeader.DataDirectory[7].Size);
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 8 && nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress)
+    {
+        fprintf(
+            ofh,
+            "GLOBALPTR   = 8 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress,
+            nt_hdr->OptionalHeader.DataDirectory[8].Size);
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 9 && nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
+    {
+        fprintf(
+            ofh, 
+            "TLSDIR      = 9 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, 
+            nt_hdr->OptionalHeader.DataDirectory[9].Size);
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 10 && nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
+    {
+        fprintf(
+            ofh, 
+            "LOADCFGDIR  = 10 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress, 
+            nt_hdr->OptionalHeader.DataDirectory[10].Size);
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 11 && nt_hdr->OptionalHeader.DataDirectory[11].VirtualAddress)
+    {
+        fprintf(
+            ofh,
+            "BIMPORTDIR  = 11 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[11].VirtualAddress,
+            nt_hdr->OptionalHeader.DataDirectory[11].Size);
     }
 
     uint32_t iat_size = 0;
 
-    if (nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[12].Size)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 12 && 
+        nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress && 
+        nt_hdr->OptionalHeader.DataDirectory[12].Size)
     {
         iat_size = nt_hdr->OptionalHeader.DataDirectory[12].Size;
 
-        fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, iat_size);
+        fprintf(ofh, "IAT         = 12 0x%"PRIX32" %"PRIu32"\n", nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress, iat_size);
     }
-    else if (nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress && nt_hdr->OptionalHeader.DataDirectory[1].Size)
+    else if (
+        nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 1 &&
+        nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress && 
+        nt_hdr->OptionalHeader.DataDirectory[1].Size)
     {
         /* IAT must be set or PE loader will fail to initialize the imports when they're in a read-only section */
         uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
@@ -176,8 +252,26 @@ int genmak(int argc, char **argv)
 
             iat_size = iat_end - iat_start + 4;
 
-            fprintf(ofh, "IAT         = 0x%"PRIX32" %d\n", iat_start, iat_size);
+            fprintf(ofh, "IAT         = 12 0x%"PRIX32" %"PRIu32"\n", iat_start, iat_size);
         }
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 13 && nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress)
+    {
+        fprintf(
+            ofh,
+            "DIMPORTDIR  = 13 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress,
+            nt_hdr->OptionalHeader.DataDirectory[13].Size);
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress)
+    {
+        fprintf(
+            ofh,
+            "COMRUNDESC  = 14 0x%"PRIX32" %"PRIu32"\n",
+            nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress,
+            nt_hdr->OptionalHeader.DataDirectory[14].Size);
     }
 
     fprintf(ofh, "\n");
@@ -199,19 +293,64 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
     fprintf(ofh, "	$(CXX) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(LIBS)\n");
 
-    if (nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 0 && nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress)
     {
-        fprintf(ofh, "	$(PETOOL) setdd \"$@\" 10 $(LOADCONFIG) || ($(RM) \"$@\" && exit 1)\n");
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(EXPORTDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
-    if (nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 3 && nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress)
     {
-        fprintf(ofh, "	$(PETOOL) setdd \"$@\" 9 $(TLS) || ($(RM) \"$@\" && exit 1)\n");
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(EXCEPTDIR) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 4 && nt_hdr->OptionalHeader.DataDirectory[4].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(SECURITYDIR) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 6 && nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(DEBUGDIR) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 7 && nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(ARCHITECTUR) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 8 && nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(GLOBALPTR) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 9 && nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(TLSDIR) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 10 && nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(LOADCFGDIR) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 11 && nt_hdr->OptionalHeader.DataDirectory[11].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(BIMPORTDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
     if (iat_size)
     {
-        fprintf(ofh, "	$(PETOOL) setdd \"$@\" 12 $(IAT) || ($(RM) \"$@\" && exit 1)\n");
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(IAT) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 13 && nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(DIMPORTDIR) || ($(RM) \"$@\" && exit 1)\n");
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress)
+    {
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(COMRUNDESC) || ($(RM) \"$@\" && exit 1)\n");
     }
 
     fprintf(ofh, "	$(PETOOL) setc  \"$@\" .p_text 0x60000020 || ($(RM) \"$@\" && exit 1)\n");
