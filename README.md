@@ -135,12 +135,20 @@ Both short (near) and long (far) variants are included. No overflow
 checks are done so do pre-calculate which one you need.
 
     LJMP(<from>, <to>);
+    LJMP_NOP(<from>, <end>, <to>);
+    LJMP_INT(<from>, <end>, <to>);
     SJMP(<from>, <to>);
 
 Example:
 
     /* Do a (far) jump from 0x410000 to label doMagic */`
     LJMP(0x410000, _doMagic);
+
+    /* NOP all bytes starting from 0x410000 up to 0x410009 AND do a (far) jump from 0x410000 to label doMagic */`
+    LJMP_NOP(0x410000, 0x410009, _doMagic);
+
+    /* Same as LJMP_NOP, just that it clears with INT3 instead of NOP */
+    LJMP_INT(0x410000, 0x410009, _doMagic);
 
 Note: the `LJMP` macro is also available for `NASM` and `GNU AS` under the name `@LJMP`
 
@@ -168,7 +176,7 @@ Example:
     /* Does the same as the one above, NOP 5 bytes starting from 0x410000 */`
     CLEAR_NOP(0x410000, 0x410005); 
 
-    /* same as CLEAR_NOP, just that it clears with INT3 instead of NOP */`
+    /* Same as CLEAR_NOP, just that it clears with INT3 instead of NOP */`
     CLEAR_INT(0x410000, 0x410005); 
 
 Note: the `CLEAR` macro is also available for `NASM` and `GNU AS` under the name `@CLEAR`
