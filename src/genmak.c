@@ -147,15 +147,6 @@ int genmak(int argc, char **argv)
             nt_hdr->OptionalHeader.DataDirectory[3].Size);
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 4 && nt_hdr->OptionalHeader.DataDirectory[4].VirtualAddress)
-    {
-        fprintf(
-            ofh,
-            "SECURITYDIR = 4  0x%"PRIX32" %"PRIu32"\n",
-            nt_hdr->OptionalHeader.DataDirectory[4].VirtualAddress,
-            nt_hdr->OptionalHeader.DataDirectory[4].Size);
-    }
-
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 6 && nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress)
     {
         fprintf(
@@ -301,11 +292,6 @@ int genmak(int argc, char **argv)
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 3 && nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(EXCEPTDIR) || ($(RM) \"$@\" && exit 1)\n");
-    }
-
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 4 && nt_hdr->OptionalHeader.DataDirectory[4].VirtualAddress)
-    {
-        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(SECURITYDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 6 && nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress)
