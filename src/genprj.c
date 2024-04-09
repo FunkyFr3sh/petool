@@ -22,6 +22,8 @@
 
 #ifdef __linux__
 #include <linux/limits.h>
+#elif defined(__FreeBSD__ )
+#include <limits.h>
 #elif !defined(_WIN32)
 #include <sys/syslimits.h>
 #endif
