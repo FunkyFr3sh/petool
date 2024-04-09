@@ -116,7 +116,7 @@ int dump(int argc, char **argv)
         );
     }
 
-    printf("NumberOfRvaAndSizes: %"PRIu32"\n", nt_hdr->OptionalHeader.NumberOfRvaAndSizes);
+    printf("\n");
 
     char dirs[][40] = {
         "Export Directory",
@@ -136,17 +136,37 @@ int dump(int argc, char **argv)
         "COM Runtime descriptor"
     };
 
+    printf("DataDirectory                               vaddr    size  section\n");
+    printf("-------------------------------------------------------------------\n");
+
     for (uint32_t i = 0; i < nt_hdr->OptionalHeader.NumberOfRvaAndSizes; i++)
     {
         if (!nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress)
             continue;
 
+        char section[12] = { 0 };
+
+        for (int x = 0; x < nt_hdr->FileHeader.NumberOfSections; x++)
+        {
+            const PIMAGE_SECTION_HEADER cur_sct = IMAGE_FIRST_SECTION(nt_hdr) + x;
+
+            if (nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress >= cur_sct->VirtualAddress &&
+                nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress < cur_sct->VirtualAddress + cur_sct->SizeOfRawData)
+            {
+                strncpy(section, (void*)cur_sct->Name, 8);
+                break;
+            }
+        }
+
         printf(
-            "%-40s= %8"PRIX32" (%"PRIu32" bytes)\n", 
+            "%-40s %8"PRIX32" %7"PRIu32"  %s\n", 
             dirs[i],
             nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress, 
-            nt_hdr->OptionalHeader.DataDirectory[i].Size);
+            nt_hdr->OptionalHeader.DataDirectory[i].Size,
+            section);
     }
+
+    printf("\n");
 
 cleanup:
     if (image) free(image);
