@@ -65,8 +65,7 @@ int setc(int argc, char **argv)
         }
     }
 
-    if (strcmp(argv[2], ".o_idata") != 0)
-        fprintf(stderr, "No '%s' section in given PE image.\n", argv[2]);
+    fprintf(stderr, "No '%s' section in given PE image.\n", argv[2]);
 
 cleanup:
     if (image) free(image);
