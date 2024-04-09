@@ -62,6 +62,30 @@ Below are some C/C++ examples for how these macros are used in practice.
 Note: All labels passed to the macros must be prefixed with _ and C++ functions 
 must be defined with EXTERN_C
 
+    /* example.cpp */
+
+    /* This does NOT work - undefined reference to `doMagic' */
+    CALL(0x410000, doMagic);
+    void doMagic()
+    {
+       something();
+    }
+
+    /* Working example - prefixed with _ and defined with EXTERN_C */
+    CALL(0x410000, _doMagic);
+    EXTERN_C void doMagic()
+    {
+       something();
+    }
+
+    /* Working example - prefixed with _ and using asm labels instead of EXTERN_C */
+    extern void doMagic() asm("_doMagic");
+    CALL(0x410000, _doMagic);
+    void doMagic()
+    {
+       something();
+    }
+
 ### Call
 The `CALL` macro writes a CALL instruction at _from_ to _to_. It is commonly used
 to replace an existing function call with a call to your own function. This is 
