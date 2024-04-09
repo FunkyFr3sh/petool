@@ -294,7 +294,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "    *(COMMON)\n");
     fprintf(ofh, "    __bss_end__ = . ;\n");
     fprintf(ofh, "  }\n");
-    fprintf(ofh, "  .edata BLOCK(__section_alignment__) :\n");
+    fprintf(ofh, "  .p_edata BLOCK(__section_alignment__) :\n");
     fprintf(ofh, "  {\n");
     fprintf(ofh, "    *(.edata)\n");
     fprintf(ofh, "  }\n");
