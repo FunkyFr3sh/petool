@@ -66,7 +66,7 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "-include config.mk\n\n");
     fprintf(ofh, "INPUT       = %s.dat\n", base);
-    fprintf(ofh, "OUTPUT      = %s\n", file_escaped_basename(argv[1]));
+    fprintf(ofh, "OUTPUT      = %se.exe\n", file_escaped_basename(argv[1]));
     fprintf(ofh, "LDS         = %s.lds\n", base);
 
     fprintf(ofh, "\n");
@@ -192,15 +192,6 @@ int genmak(int argc, char **argv)
             nt_hdr->OptionalHeader.DataDirectory[10].Size);
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 11 && nt_hdr->OptionalHeader.DataDirectory[11].VirtualAddress)
-    {
-        fprintf(
-            ofh,
-            "BIMPORTDIR  = 11 0x%"PRIX32" %"PRIu32"\n",
-            nt_hdr->OptionalHeader.DataDirectory[11].VirtualAddress,
-            nt_hdr->OptionalHeader.DataDirectory[11].Size);
-    }
-
     uint32_t iat_size = 0;
 
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 12 && 
@@ -317,11 +308,6 @@ int genmak(int argc, char **argv)
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 10 && nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(LOADCFGDIR) || ($(RM) \"$@\" && exit 1)\n");
-    }
-
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 11 && nt_hdr->OptionalHeader.DataDirectory[11].VirtualAddress)
-    {
-        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(BIMPORTDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
     if (iat_size)
