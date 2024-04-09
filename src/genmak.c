@@ -260,7 +260,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh,
-            "DIMPORTDIR  = 13 0x%"PRIX32" %"PRIu32"\n",
+            "DIMPORTDESC = 13 0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress,
             nt_hdr->OptionalHeader.DataDirectory[13].Size);
     }
@@ -345,7 +345,7 @@ int genmak(int argc, char **argv)
 
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 13 && nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress)
     {
-        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(DIMPORTDIR) || ($(RM) \"$@\" && exit 1)\n");
+        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(DIMPORTDESC) || ($(RM) \"$@\" && exit 1)\n");
     }
 
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress)
