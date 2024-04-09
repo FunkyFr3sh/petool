@@ -59,6 +59,9 @@ via `inc/patch.h` (Not recommended, unless you have no other choice).
 
 Below are some C/C++ examples for how these macros are used in practice.
 
+Note: All labels passed to the macros must be prefixed with _ and C++ functions 
+must be defined with EXTERN_C
+
 ### Call
 The `CALL` macro writes a CALL instruction at _from_ to _to_. It is commonly used
 to replace an existing function call with a call to your own function. This is 
@@ -75,7 +78,7 @@ Example:
     /* Replace function call at 0x410000 with a call to doMagic */
     CALL(0x410000, _doMagic);
 
-    void doMagic()
+    EXTERN_C void doMagic()
     {
        /* insert your own code here */
        something();
