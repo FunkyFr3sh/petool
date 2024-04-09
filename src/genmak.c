@@ -129,7 +129,27 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 0 && nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress)
+    /* Make sure the DataDirectory VA is within a section (Heroes of Might and Magic 3 / LoadConfig) */
+    uint32_t code_start = UINT32_MAX;
+
+    for (int i = 0; i < nt_hdr->FileHeader.NumberOfSections; i++)
+    {
+        const PIMAGE_SECTION_HEADER cur_sct = IMAGE_FIRST_SECTION(nt_hdr) + i;
+
+        if (cur_sct->VirtualAddress && cur_sct->VirtualAddress < code_start)
+        {
+            code_start = cur_sct->VirtualAddress;
+        }
+    }
+
+    if (code_start == UINT32_MAX)
+    {
+        code_start = nt_hdr->OptionalHeader.SectionAlignment;
+    }
+
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 0 && 
+        nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress && 
+        nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress >= code_start)
     {
         fprintf(
             ofh, 
@@ -138,7 +158,9 @@ int genmak(int argc, char **argv)
             nt_hdr->OptionalHeader.DataDirectory[0].Size);
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 3 && nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 3 && 
+        nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress >= code_start)
     {
         fprintf(
             ofh,
@@ -147,7 +169,9 @@ int genmak(int argc, char **argv)
             nt_hdr->OptionalHeader.DataDirectory[3].Size);
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 6 && nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 6 && 
+        nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress >= code_start)
     {
         fprintf(
             ofh,
@@ -156,7 +180,9 @@ int genmak(int argc, char **argv)
             nt_hdr->OptionalHeader.DataDirectory[6].Size);
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 7 && nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 7 && 
+        nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress >= code_start)
     {
         fprintf(
             ofh,
@@ -165,7 +191,9 @@ int genmak(int argc, char **argv)
             nt_hdr->OptionalHeader.DataDirectory[7].Size);
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 8 && nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 8 && 
+        nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress >= code_start)
     {
         fprintf(
             ofh,
@@ -174,7 +202,9 @@ int genmak(int argc, char **argv)
             nt_hdr->OptionalHeader.DataDirectory[8].Size);
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 9 && nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 9 && 
+        nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress >= code_start)
     {
         fprintf(
             ofh, 
@@ -183,7 +213,9 @@ int genmak(int argc, char **argv)
             nt_hdr->OptionalHeader.DataDirectory[9].Size);
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 10 && nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 10 && 
+        nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress >= code_start)
     {
         fprintf(
             ofh, 
@@ -196,7 +228,8 @@ int genmak(int argc, char **argv)
 
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 12 && 
         nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress && 
-        nt_hdr->OptionalHeader.DataDirectory[12].Size)
+        nt_hdr->OptionalHeader.DataDirectory[12].Size &&
+        nt_hdr->OptionalHeader.DataDirectory[12].VirtualAddress >= code_start)
     {
         iat_size = nt_hdr->OptionalHeader.DataDirectory[12].Size;
 
@@ -205,7 +238,8 @@ int genmak(int argc, char **argv)
     else if (
         nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 1 &&
         nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress && 
-        nt_hdr->OptionalHeader.DataDirectory[1].Size)
+        nt_hdr->OptionalHeader.DataDirectory[1].Size &&
+        nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress >= code_start)
     {
         /* IAT must be set or PE loader will fail to initialize the imports when they're in a read-only section */
         uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
@@ -238,7 +272,9 @@ int genmak(int argc, char **argv)
         }
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 13 && nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 13 && 
+        nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress >= code_start)
     {
         fprintf(
             ofh,
@@ -247,7 +283,9 @@ int genmak(int argc, char **argv)
             nt_hdr->OptionalHeader.DataDirectory[13].Size);
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && 
+        nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress >= code_start)
     {
         fprintf(
             ofh,
@@ -275,37 +313,51 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
     fprintf(ofh, "	$(CXX) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(LIBS)\n");
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 0 && nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 0 && 
+        nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress >= code_start)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(EXPORTDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 3 && nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 3 && 
+        nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress >= code_start)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(EXCEPTDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 6 && nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 6 && 
+        nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress >= code_start)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(DEBUGDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 7 && nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 7 && 
+        nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress >= code_start)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(ARCHITECTUR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 8 && nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 8 && 
+        nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress >= code_start)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(GLOBALPTR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 9 && nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 9 && 
+        nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress >= code_start)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(TLSDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 10 && nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 10 && 
+        nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[10].VirtualAddress >= code_start)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(LOADCFGDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
@@ -315,12 +367,16 @@ int genmak(int argc, char **argv)
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(IAT) || ($(RM) \"$@\" && exit 1)\n");
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 13 && nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 13 && 
+        nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[13].VirtualAddress >= code_start)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(DIMPORTDESC) || ($(RM) \"$@\" && exit 1)\n");
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && 
+        nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress &&
+        nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress >= code_start)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(COMRUNDESC) || ($(RM) \"$@\" && exit 1)\n");
     }
