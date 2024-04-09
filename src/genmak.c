@@ -66,7 +66,7 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "-include config.mk\n\n");
     fprintf(ofh, "INPUT       = %s.dat\n", base);
-    fprintf(ofh, "OUTPUT      = %se.exe\n", file_escaped_basename(argv[1]));
+    fprintf(ofh, "OUTPUT      = %s\n", file_escaped_basename(argv[1]));
     fprintf(ofh, "LDS         = %s.lds\n", base);
 
     fprintf(ofh, "\n");
