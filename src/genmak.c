@@ -238,8 +238,7 @@ int genmak(int argc, char **argv)
     else if (
         nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 1 &&
         nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress && 
-        nt_hdr->OptionalHeader.DataDirectory[1].Size &&
-        nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress >= code_start)
+        nt_hdr->OptionalHeader.DataDirectory[1].Size)
     {
         /* IAT must be set or PE loader will fail to initialize the imports when they're in a read-only section */
         uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
@@ -266,9 +265,12 @@ int genmak(int argc, char **argv)
                 iat_end += sizeof(IMAGE_THUNK_DATA32);
             }
 
-            iat_size = iat_end - iat_start + 4;
+            if (iat_start >= code_start)
+            {
+                iat_size = iat_end - iat_start + 4;
 
-            fprintf(ofh, "IAT         = 12 0x%"PRIX32" %"PRIu32"\n", iat_start, iat_size);
+                fprintf(ofh, "IAT         = 12 0x%"PRIX32" %"PRIu32"\n", iat_start, iat_size);
+            }
         }
     }
 
