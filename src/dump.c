@@ -136,7 +136,7 @@ int dump(int argc, char **argv)
         "COM Runtime descriptor"
     };
 
-    printf("DataDirectory                               vaddr    size  section\n");
+    printf("DataDirectory                               vaddr    size   section\n");
     printf("-------------------------------------------------------------------\n");
 
     for (uint32_t i = 0; i < nt_hdr->OptionalHeader.NumberOfRvaAndSizes; i++)
@@ -159,7 +159,7 @@ int dump(int argc, char **argv)
         }
 
         printf(
-            "%-40s %8"PRIX32" %7"PRIu32"  %s\n", 
+            "%-40s %8"PRIX32" %7"PRIu32"  %8.8s\n", 
             dirs[i],
             nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress, 
             nt_hdr->OptionalHeader.DataDirectory[i].Size,
