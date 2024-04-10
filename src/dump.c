@@ -99,7 +99,7 @@ int dump(int argc, char **argv)
                         : nt_hdr->OptionalHeader.SectionAlignment;
 
         printf(
-            "%8.8s %8"PRIX32" %8"PRIX32" %8"PRIX32" %8"PRIX32" %8"PRIX32" %c%c%c%c%c%c %6"PRIX32"\n",
+            "%8.8s %8"PRIX32" %8"PRIX32" %8"PRIu32" %8"PRIX32" %8"PRIu32" %c%c%c%c%c%c %6"PRIX32"\n",
             cur_sct->Name,
             cur_sct->PointerToRawData,
             cur_sct->PointerToRawData + cur_sct->SizeOfRawData,
@@ -136,7 +136,7 @@ int dump(int argc, char **argv)
         "COM Runtime descriptor"
     };
 
-    printf("DataDirectory                               vaddr    size   section\n");
+    printf("DataDirectory                              vaddr     size   section\n");
     printf("-------------------------------------------------------------------\n");
 
     for (uint32_t i = 0; i < nt_hdr->OptionalHeader.NumberOfRvaAndSizes; i++)
@@ -159,9 +159,9 @@ int dump(int argc, char **argv)
         }
 
         printf(
-            "%-40s %8"PRIX32" %7"PRIu32"  %8.8s\n", 
+            "%-39s %8"PRIX32" %8"PRIu32"  %8.8s\n", 
             dirs[i],
-            nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress, 
+            nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress + nt_hdr->OptionalHeader.ImageBase,
             nt_hdr->OptionalHeader.DataDirectory[i].Size,
             section);
     }
