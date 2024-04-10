@@ -74,6 +74,13 @@ int genlds(int argc, char **argv)
     }
 
     fprintf(ofh, "/* GNU ld linker script for %s */\n", inputname);
+    fprintf(ofh, "\n");
+    fprintf(ofh, "/* Default linker script, for normal executables */\n");
+    fprintf(ofh, "/* Copyright (C) 2014-2023 Free Software Foundation, Inc.\n");
+    fprintf(ofh, "   Copying and distribution of this script, with or without modification,\n");
+    fprintf(ofh, "   are permitted in any medium without royalty provided the copyright\n");
+    fprintf(ofh, "   notice and this notice are preserved.  */\n");
+    fprintf(ofh, "\n");
 
     if (strcmp(argv[0], "genlds") == 0)
     {
