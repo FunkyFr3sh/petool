@@ -42,8 +42,6 @@
 #include "cleanup.h"
 #include "common.h"
 
-extern bool g_sym_imports_enabled;
-
 int genlds(int argc, char **argv);
 int genmak(int argc, char **argv);
 int gensym(int argc, char** argv);
