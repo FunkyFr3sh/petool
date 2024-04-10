@@ -93,6 +93,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "SEARCH_DIR(\"=/usr/local/lib\");\n");
     fprintf(ofh, "SEARCH_DIR(\"=/lib\");\n");
     fprintf(ofh, "SEARCH_DIR(\"=/usr/lib\");\n");
+    fprintf(ofh, "SEARCH_DIR(\"./lib\");\n");
     fprintf(ofh, "SECTIONS\n");
     fprintf(ofh, "{\n");
 
