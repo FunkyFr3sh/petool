@@ -54,7 +54,7 @@ int setvs(int argc, char **argv)
     {
         PIMAGE_SECTION_HEADER sct_hdr = IMAGE_FIRST_SECTION(nt_hdr) + i;
 
-        if (strcmp(argv[2], (char *)sct_hdr->Name) == 0)
+        if (strncmp(argv[2], (char *)sct_hdr->Name, 8) == 0)
         {
             FAIL_IF(vs < sct_hdr->SizeOfRawData,"VirtualSize can't be smaller than raw size.\n");
             sct_hdr->Misc.VirtualSize = vs;      // update section size

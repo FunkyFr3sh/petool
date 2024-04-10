@@ -153,7 +153,7 @@ int dump(int argc, char **argv)
             if (nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress >= cur_sct->VirtualAddress &&
                 nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress < cur_sct->VirtualAddress + cur_sct->SizeOfRawData)
             {
-                strncpy(section, (void*)cur_sct->Name, 8);
+                memcpy(section, (void*)cur_sct->Name, 8);
                 break;
             }
         }

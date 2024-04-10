@@ -86,7 +86,7 @@ int patch(int argc, char **argv)
     {
         PIMAGE_SECTION_HEADER sct_hdr = IMAGE_FIRST_SECTION(nt_hdr) + i;
 
-        if (strcmp(section, (char *)sct_hdr->Name) == 0)
+        if (strncmp(section, (char *)sct_hdr->Name, 8) == 0)
         {
             patch = image + sct_hdr->PointerToRawData;
             patch_len = sct_hdr->Misc.VirtualSize;
