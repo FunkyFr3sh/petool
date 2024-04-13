@@ -172,17 +172,6 @@ int genmak(int argc, char **argv)
             nt_hdr->OptionalHeader.DataDirectory[3].Size);
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 6 && 
-        nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress &&
-        nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress >= code_start)
-    {
-        fprintf(
-            ofh,
-            "DEBUGDIR    = 6  0x%"PRIX32" %"PRIu32"\n",
-            nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress,
-            nt_hdr->OptionalHeader.DataDirectory[6].Size);
-    }
-
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 7 && 
         nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress &&
         nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress >= code_start)
@@ -330,13 +319,6 @@ int genmak(int argc, char **argv)
         nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress >= code_start)
     {
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(EXCEPTDIR) || ($(RM) \"$@\" && exit 1)\n");
-    }
-
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 6 && 
-        nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress &&
-        nt_hdr->OptionalHeader.DataDirectory[6].VirtualAddress >= code_start)
-    {
-        fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(DEBUGDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 7 && 
