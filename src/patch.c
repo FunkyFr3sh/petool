@@ -103,7 +103,10 @@ int patch(int argc, char **argv)
         goto cleanup;
     }
 
-    for (int8_t *p = patch; p < patch + patch_len;)
+    uint32_t patch_count = 0;
+    uint32_t patch_bytes = 0;
+
+    for (int8_t *p = patch; p < patch + patch_len; patch_count++)
     {
         uint32_t paddress = get_uint32(&p);
         if (paddress == 0)
@@ -115,8 +118,11 @@ int patch(int argc, char **argv)
         uint32_t plength = get_uint32(&p);
         FAIL_IF_SILENT(patch_image(image, paddress, p, plength) == EXIT_FAILURE);
 
+        patch_bytes += plength;
         p += plength;
     }
+
+    fprintf(stderr, "Applied %"PRIu32" patches (%"PRIu32" bytes)\n", patch_count, patch_bytes);
 
     /* FIXME: implement checksum calculation */
     nt_hdr->OptionalHeader.CheckSum = 0;
