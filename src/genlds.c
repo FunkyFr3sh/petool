@@ -119,10 +119,8 @@ int genlds(int argc, char **argv)
         memcpy(buf, cur_sct->Name, 8);
 
         /* Section without name (Age Of Wonders 2) */
-        if (!buf[0])
-        {
-            buf[0] = '"';
-            buf[1] = '"';
+        if (!buf[0]) {
+            strcpy(buf, "\"\"");
         }
 
         if (cur_sct->Characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA && !(cur_sct->Characteristics & IMAGE_SCN_CNT_INITIALIZED_DATA)) {
