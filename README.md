@@ -240,12 +240,12 @@ Note: These macros are NOT available for `NASM` and `GNU as` but the same can be
     SETCGLOB(0x004D2A80, WinMain);
 
 When you need to refer to existing symbols inside the executable, you can export
-global symbols from assembly source via the `SETCGLOB`. Symbols can be any named 
+global symbols from assembly source via the `SETCGLOB` macro. Symbols can be any named 
 memory address: function, data, uninitialized variable. As long as you define 
 them in sym.c, you can use them anywhere.
 
 Note: For applications built with watcom you'll need to define the functions
-with the `SETWATGLOB` macro instead and include watcall.asm from the macros folder.
+with the `SETWATGLOB` macro instead and also include watcall.asm from the macros folder.
 
     SETWATGLOB(<addr>, <name>, <arg_count>);
 
