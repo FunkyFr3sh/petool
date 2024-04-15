@@ -49,7 +49,7 @@ extern const char res_inc_macros_extern_s[];
 extern const char res_inc_macros_patch_h[];
 extern const char res_inc_macros_patch_inc[];
 extern const char res_inc_macros_setsym_h[];
-extern const char res_inc_macros_watcall_inc[];
+extern const char res_inc_macros_watcall_asm[];
 extern const char res_inc_macros_patch_s[];
 
 void extract_resource(const char* src, char* file_path);
@@ -122,9 +122,9 @@ int genfiles(char *dir)
     printf("Generating %s...\n", buf);
     extract_resource(res_inc_macros_setsym_h, buf);
 
-    snprintf(buf, sizeof buf, "%s/inc/macros/watcall.inc", dir);
+    snprintf(buf, sizeof buf, "%s/inc/macros/watcall.asm", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_watcall_inc, buf);
+    extract_resource(res_inc_macros_watcall_asm, buf);
 
     snprintf(buf, sizeof buf, "%s/inc/macros/patch.s", dir);
     printf("Generating %s...\n", buf);
