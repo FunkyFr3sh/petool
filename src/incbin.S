@@ -15,6 +15,8 @@
     .global res_inc_patch_h
     .global _res_inc_macros_datatypes_inc
     .global res_inc_macros_datatypes_inc
+    .global _res_inc_macros_datatypes_s
+    .global res_inc_macros_datatypes_s
     .global _res_inc_macros_extern_inc
     .global res_inc_macros_extern_inc
     .global _res_inc_macros_extern_s
@@ -70,6 +72,11 @@ res_inc_patch_h:
 _res_inc_macros_datatypes_inc:
 res_inc_macros_datatypes_inc:
     .incbin "res/inc/macros/datatypes.inc"
+    .byte 0
+
+_res_inc_macros_datatypes_s:
+res_inc_macros_datatypes_s:
+    .incbin "res/inc/macros/datatypes.s"
     .byte 0
     
 _res_inc_macros_extern_inc:

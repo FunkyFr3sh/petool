@@ -44,6 +44,7 @@ extern const char res_inc_app_h[];
 extern const char res_inc_app_inc[];
 extern const char res_inc_patch_h[];
 extern const char res_inc_macros_datatypes_inc[];
+extern const char res_inc_macros_datatypes_s[];
 extern const char res_inc_macros_extern_inc[];
 extern const char res_inc_macros_extern_s[];
 extern const char res_inc_macros_patch_h[];
@@ -101,6 +102,10 @@ int genfiles(char *dir)
     snprintf(buf, sizeof buf, "%s/inc/macros/datatypes.inc", dir);
     printf("Generating %s...\n", buf);
     extract_resource(res_inc_macros_datatypes_inc, buf);
+
+    snprintf(buf, sizeof buf, "%s/inc/macros/datatypes.s", dir);
+    printf("Generating %s...\n", buf);
+    extract_resource(res_inc_macros_datatypes_s, buf);
 
     snprintf(buf, sizeof buf, "%s/inc/macros/extern.inc", dir);
     printf("Generating %s...\n", buf);
