@@ -102,7 +102,7 @@ int dump(int argc, char **argv)
             "%8.8s %8"PRIX32"h %8"PRIX32"h %9"PRIu32" %8"PRIX32"h %9"PRIu32" %c%c%c%c%c%c %6"PRIX32"h\n",
             cur_sct->Name,
             cur_sct->PointerToRawData,
-            cur_sct->PointerToRawData + cur_sct->SizeOfRawData,
+            cur_sct->PointerToRawData ? cur_sct->PointerToRawData + cur_sct->SizeOfRawData : 0,
             cur_sct->SizeOfRawData,
             cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase,
             cur_sct->Misc.VirtualSize,
