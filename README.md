@@ -113,7 +113,7 @@ Example:
        /* Note: you will have to insert "original" into sym.c and app.h to be able to call it */
     }
 
-Note: the `CALL` macro is also available for `NASM` and `GNU AS` under the name `@CALL`
+Note: the `CALL` macro is also available for `NASM` and `GNU as` under the name `@CALL`
 
 ### Hook
 The `HOOK` macro writes a JMP instruction at _addr_. You can use `HOOK` in case
@@ -144,7 +144,7 @@ Example:
        __asm("popad; jmp 0x410000 + 5");
     }
 
-Note: the `HOOK` macro is also available for `NASM` and `GNU AS` under the name `@HOOK`
+Note: the `HOOK` macro is also available for `NASM` and `GNU as` under the name `@HOOK`
 
 ### Set instruction
 Inserts the given instruction at the chosen address.
@@ -155,7 +155,7 @@ Example:
 
     SETINST(0x410000, "mov eax, 1");
 
-Note: the `SETINST` macro is also available for `NASM` and `GNU AS` under the name `@SET`
+Note: the `SETINST` macro is also available for `NASM` and `GNU as` under the name `@SET`
 
 ### Jump
 Both short (near) and long (far) variants are included. No overflow
@@ -177,9 +177,9 @@ Example:
     /* Same as LJMP_NOP, just that it clears with INT3 instead of NOP */
     LJMP_INT(0x410000, 0x410009, _doMagic);
 
-Note: the `LJMP` macro is also available for `NASM` and `GNU AS` under the name `@LJMP`
+Note: the `LJMP` macro is also available for `NASM` and `GNU as` under the name `@LJMP`
 
-Note: the `SJMP` macro is also available for `NASM` and `GNU AS` under the name `@SJMP`
+Note: the `SJMP` macro is also available for `NASM` and `GNU as` under the name `@SJMP`
 
 ### Clear
 Sets all bytes between _from_ and _to_ (not inclusive) to the 8-bit argument
@@ -206,7 +206,7 @@ Example:
     /* Same as CLEAR_NOP, just that it clears with INT3 instead of NOP */`
     CLEAR_INT(0x410000, 0x410005); 
 
-Note: the `CLEAR` macro is also available for `NASM` and `GNU AS` under the name `@CLEAR`
+Note: the `CLEAR` macro is also available for `NASM` and `GNU as` under the name `@CLEAR`
 
 ### Set values
 Change values at a given location.
@@ -233,7 +233,7 @@ Example:
     /* Change string at 0x410000 to HelloWorld */`
     SETBYTES(0x410000, "HelloWorld\0");
 
-Note: These macros are NOT available for `NASM` and `GNU AS` but the same can be done via `@SET` instead
+Note: These macros are NOT available for `NASM` and `GNU as` but the same can be done via `@SET` instead
 
 ### Existing symbols in original executable (sym.c)
 
