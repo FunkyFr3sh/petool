@@ -15,51 +15,78 @@
     \name\(): .asciz "\value"
 .endm
 
-# global int -> arg1 = name, arg2 = value
-.macro gint name:req, value:req
+# global int -> arg1 = name, arg2 = value, arg3 = array length
+.macro gint name:req, value:req, length=0
     cglobal \name
-    sint \name, \value
+    sint \name, \value, \length
 .endm
 
-# static (local) int -> arg1 = name, arg2 = value
-.macro sint name:req, value:req
-    .section .data
-    \name\(): .long (\value)
+# static (local) int -> arg1 = name, arg2 = value, arg3 = array length
+.macro sint name:req, value:req, length=0
+    .ifeq (\value)
+        .section .bss
+    .else
+        .section .data
+    .endif
+
+    .ifeq (\length)
+        \name\(): .long (\value)
+    .else
+        \name\(): .fill (\length), 4, (\value)
+    .endif
 .endm
 
-# global short -> arg1 = name, arg2 = value
-.macro gshort name:req, value:req
+# global short -> arg1 = name, arg2 = value, arg3 = array length
+.macro gshort name:req, value:req, length=0
     cglobal \name
-    sshort \name, \value
+    sshort \name, \value, \length
 .endm
 
-# static (local) short -> arg1 = name, arg2 = value
-.macro sshort name:req, value:req
-    .section .data
-    \name\(): .short (\value)
+# static (local) short -> arg1 = name, arg2 = value, arg3 = array length
+.macro sshort name:req, value:req, length=0
+    .ifeq (\value)
+        .section .bss
+    .else
+        .section .data
+    .endif
+    
+    .ifeq (\length)
+        \name\(): .short (\value)
+    .else
+        \name\(): .fill (\length), 2, (\value)
+    .endif
 .endm
 
-# global byte -> arg1 = name, arg2 = value
-.macro gbyte name:req, value:req
+# global byte -> arg1 = name, arg2 = value, arg3 = array length
+.macro gbyte name:req, value:req, length=0
     cglobal \name
-    sbyte \name, \value
+    sbyte \name, \value, \length
 .endm
 
-# static (local) byte -> arg1 = name, arg2 = value
-.macro sbyte name:req, value:req
-    .section .data
-    \name\(): .byte (\value)
+# static (local) byte -> arg1 = name, arg2 = value, arg3 = array length
+.macro sbyte name:req, value:req, length=0
+    .ifeq (\value)
+        .section .bss
+    .else
+        .section .data
+    .endif
+    
+    .ifeq (\length)
+        \name\(): .byte (\value)
+    .else
+        \name\(): .fill (\length), 1, (\value)
+    .endif
 .endm
 
-# global bool -> arg1 = name, arg2 = value
-.macro gbool name:req, value:req
+# global bool -> arg1 = name, arg2 = value, arg3 = array length
+.macro gbool name:req, value:req, length=0
     cglobal \name
-    sbyte \name, \value
+    sbyte \name, \value, \length
 .endm
 
-# static (local) bool -> arg1 = name, arg2 = value
-.macro sbool name:req, value:req
-    sbyte \name, \value
+# static (local) bool -> arg1 = name, arg2 = value, arg3 = array length
+.macro sbool name:req, value:req, length=0
+    sbyte \name, \value, \length
 .endm
 
 # global function -> arg1 = name
