@@ -87,9 +87,13 @@ int genlds(int argc, char **argv)
         fprintf(ofh, "_start = 0x%"PRIX32";\n", nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint);
         fprintf(ofh, "ENTRY(_start);\n");
     }
-    else
+    else if (nt_hdr->OptionalHeader.Subsystem == 2)
     {
         fprintf(ofh, "ENTRY(_WinMainCRTStartup);\n");
+    }
+    else
+    {
+        fprintf(ofh, "ENTRY(_mainCRTStartup);\n");
     }
 
     fprintf(ofh, "SEARCH_DIR(\"/usr/i686-w64-mingw32/lib\");\n");
