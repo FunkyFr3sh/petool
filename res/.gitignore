@@ -17,3 +17,6 @@ config.mk
 
 # Visual Studio
 .vs
+
+# debug symbols
+*.pdb
