@@ -370,7 +370,7 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "	$(PETOOL) setsc \"$@\" .p_text 0x60000020 || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "	$(STRIP) -R .patch \"$@\" -p || ($(RM) \"$@\" && exit 1)\n");
+    fprintf(ofh, "	$(STRIP) -p -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) dump \"$(INPUT)\"\n");
     fprintf(ofh, "	$(PETOOL) dump \"$@\"\n");
 
