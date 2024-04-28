@@ -156,7 +156,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh, 
-            "EXPORTDIR   = 0  0x%"PRIX32" %"PRIu32"\n",
+            "EXPORTDIR   =  0 0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, 
             nt_hdr->OptionalHeader.DataDirectory[0].Size);
     }
@@ -167,7 +167,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh,
-            "EXCEPTDIR   = 3  0x%"PRIX32" %"PRIu32"\n",
+            "EXCEPTDIR   =  3 0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[3].VirtualAddress,
             nt_hdr->OptionalHeader.DataDirectory[3].Size);
     }
@@ -178,7 +178,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh,
-            "ARCHITECTUR = 7  0x%"PRIX32" %"PRIu32"\n",
+            "ARCHITECTUR =  7 0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[7].VirtualAddress,
             nt_hdr->OptionalHeader.DataDirectory[7].Size);
     }
@@ -189,7 +189,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh,
-            "GLOBALPTR   = 8  0x%"PRIX32" %"PRIu32"\n",
+            "GLOBALPTR   =  8 0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[8].VirtualAddress,
             nt_hdr->OptionalHeader.DataDirectory[8].Size);
     }
@@ -200,7 +200,7 @@ int genmak(int argc, char **argv)
     {
         fprintf(
             ofh, 
-            "TLSDIR      = 9  0x%"PRIX32" %"PRIu32"\n",
+            "TLSDIR      =  9 0x%"PRIX32" %"PRIu32"\n",
             nt_hdr->OptionalHeader.DataDirectory[9].VirtualAddress, 
             nt_hdr->OptionalHeader.DataDirectory[9].Size);
     }
@@ -301,11 +301,11 @@ int genmak(int argc, char **argv)
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 2 && nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
         fprintf(ofh, "rsrc.o: $(INPUT)\n");
-        fprintf(ofh, "	$(PETOOL) re2obj $(INPUT) $@\n\n");
+        fprintf(ofh, "	$(PETOOL) re2obj $< $@\n\n");
     }
 
-    fprintf(ofh, "$(OUTPUT): $(LDS) $(INPUT) $(OBJS)\n");
-    fprintf(ofh, "	$(CXX) $(LDFLAGS) -T $(LDS) -o \"$@\" $(OBJS) $(LIBS)\n");
+    fprintf(ofh, "$(OUTPUT): $(OBJS)\n");
+    fprintf(ofh, "	$(CXX) $(LDFLAGS) -T $(LDS) -o \"$@\" $^ $(LIBS)\n");
 
     if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 0 && 
         nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress &&
