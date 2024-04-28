@@ -11,7 +11,7 @@ Tool to help rebuild and patch 32-bit Windows applications.
  - `patch`  - apply a patch set from the .patch section
  - `setdd`  - set any DataDirectory in PE header
  - `setvs`  - set VirtualSize for a section
- - `setc`   - set Characteristics for a section
+ - `setsc`  - set Characteristics for a section
  - `setts`  - set TimeDateStamp in FileHeader
  - `export` - export section data as raw binary
  - `import` - dump the import table as assembly

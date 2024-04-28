@@ -46,7 +46,7 @@ void help(char *progname)
             "    patch  -- apply a patch set from the .patch section"           "\n"
             "    setdd  -- set any DataDirectory in PE header"                  "\n"
             "    setvs  -- set VirtualSize for a section"                       "\n"
-            "    setc   -- set Characteristics for a section"                   "\n"
+            "    setsc  -- set Characteristics for a section"                   "\n"
             "    setts  -- set TimeDateStamp in FileHeader"                     "\n"
             "    export -- export section data as raw binary"                   "\n"
             "    import -- dump the import table as assembly"                   "\n"
