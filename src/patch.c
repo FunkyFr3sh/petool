@@ -106,7 +106,7 @@ int patch(int argc, char **argv)
     uint32_t patch_count = 0;
     uint32_t patch_bytes = 0;
 
-    for (int8_t *p = patch; p < patch + patch_len; patch_count++)
+    for (int8_t *p = patch; p < patch + patch_len;)
     {
         uint32_t paddress = get_uint32(&p);
         if (paddress == 0)
@@ -118,7 +118,9 @@ int patch(int argc, char **argv)
         uint32_t plength = get_uint32(&p);
         FAIL_IF_SILENT(patch_image(image, paddress, p, plength) == EXIT_FAILURE);
 
+        patch_count++;
         patch_bytes += plength;
+
         p += plength;
     }
 
