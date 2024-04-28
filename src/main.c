@@ -25,7 +25,7 @@ int pe2obj(int argc, char **argv);
 int patch(int argc, char **argv);
 int setdd(int argc, char **argv);
 int setvs(int argc, char **argv);
-int setc(int argc, char** argv);
+int setsc(int argc, char** argv);
 int setts(int argc, char** argv);
 int export(int argc, char **argv);
 int import(int argc, char **argv);
@@ -72,7 +72,8 @@ int main(int argc, char **argv)
     else if (strcmp(argv[1], "patch")  == 0) return patch  (argc - 1, argv + 1);
     else if (strcmp(argv[1], "setdd")  == 0) return setdd  (argc - 1, argv + 1);
     else if (strcmp(argv[1], "setvs")  == 0) return setvs  (argc - 1, argv + 1);
-    else if (strcmp(argv[1], "setc")   == 0) return setc   (argc - 1, argv + 1);
+    else if (strcmp(argv[1], "setc")   == 0) return setsc  (argc - 1, argv + 1);
+    else if (strcmp(argv[1], "setsc")  == 0) return setsc  (argc - 1, argv + 1);
     else if (strcmp(argv[1], "setts")  == 0) return setts  (argc - 1, argv + 1);
     else if (strcmp(argv[1], "export") == 0) return export (argc - 1, argv + 1);
     else if (strcmp(argv[1], "import") == 0) return import (argc - 1, argv + 1);

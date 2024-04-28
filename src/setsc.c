@@ -27,14 +27,14 @@
 #include "cleanup.h"
 #include "common.h"
 
-int setc(int argc, char **argv)
+int setsc(int argc, char **argv)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret   = EXIT_SUCCESS;
     FILE   *fh    = NULL;
     int8_t *image = NULL;
 
-    FAIL_IF(argc != 4, "usage: petool setc <image> <section> <Characteristics>\n");
+    FAIL_IF(argc != 4, "usage: petool setsc <image> <section> <Characteristics>\n");
 
     uint32_t flags   = strtoul(argv[3], NULL, 0);
 
