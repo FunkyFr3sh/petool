@@ -1,4 +1,0 @@
-
-TARGET = petool.exe
-
--include Makefile
