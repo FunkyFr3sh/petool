@@ -1,9 +1,9 @@
-.PHONY: clean all install
+-include config.mk
 
-REV     ?= $(shell git rev-parse --short @{0})
+TARGET  ?= petool
+REV     := $(shell git rev-parse --short @{0})
 STRIP   ?= strip
 CFLAGS  ?= -std=c99 -pedantic -Wall -Wextra -DREV=\"$(REV)\"
-TARGET  ?= petool
 
 ifdef DEBUG
 	CFLAGS  += -ggdb
@@ -15,13 +15,17 @@ ifeq ($(DESTDIR)$(PREFIX),)
 	PREFIX := /usr/local
 endif
 
+SRCS   := $(wildcard src/*.c)
+OBJS   := $(SRCS:c=o) src/incbin.o
+
+.PHONY: clean all install
 all: $(TARGET)
 
-$(TARGET): $(wildcard src/*.c) $(wildcard src/*.S)
-	$(CC) $(CFLAGS) -o $@ $^
+$(TARGET): $(OBJS)
+	$(CC) -o $@ $^
 
 clean:
-	$(RM) $(TARGET)
+	$(RM) $(TARGET) $(OBJS)
 
 install: $(TARGET)
 	install $(TARGET) $(DESTDIR)$(PREFIX)/bin/

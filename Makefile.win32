@@ -1,16 +1,4 @@
 
-REV     = UNKNOWN
-
-# FIXME: Remove user specific git path from makefile - Adding git path to PATH env does not work if there are spaces in the path
-
-GIT  = C:\Program\ Files\Microsoft\ Visual\ Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team\ Explorer\Git\mingw64\bin\git.exe
-
-GIT2 = "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin\git.exe"
-
-ifneq ("$(wildcard $(GIT))","")
-    REV     = $(shell $(GIT2) rev-parse --short @{0})
-endif
-
-TARGET  = petool.exe
+TARGET = petool.exe
 
 -include Makefile
