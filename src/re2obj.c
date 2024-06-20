@@ -117,7 +117,7 @@ int re2obj(int argc, char **argv)
     {
         PIMAGE_SECTION_HEADER sct_hdr = IMAGE_FIRST_SECTION(nt_hdr) + i;
 
-        if (strcmp(section, (char *)sct_hdr->Name) == 0)
+        if (strncmp(section, (char*)sct_hdr->Name, 8) == 0)
         {
             data = image + sct_hdr->PointerToRawData;
             data_len = sct_hdr->SizeOfRawData;

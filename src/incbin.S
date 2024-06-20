@@ -39,6 +39,8 @@
     .global res_inc_patch_h
     .global _res_inc_macros_datatypes_inc
     .global res_inc_macros_datatypes_inc
+    .global _res_inc_macros_datatypes_s
+    .global res_inc_macros_datatypes_s
     .global _res_inc_macros_extern_inc
     .global res_inc_macros_extern_inc
     .global _res_inc_macros_extern_s
@@ -49,8 +51,8 @@
     .global res_inc_macros_patch_inc
     .global _res_inc_macros_setsym_h
     .global res_inc_macros_setsym_h
-    .global _res_inc_macros_watcall_inc
-    .global res_inc_macros_watcall_inc
+    .global _res_inc_macros_watcall_asm
+    .global res_inc_macros_watcall_asm
     .global _res_inc_macros_patch_s
     .global res_inc_macros_patch_s
 
@@ -155,6 +157,11 @@ _res_inc_macros_datatypes_inc:
 res_inc_macros_datatypes_inc:
     .incbin "res/inc/macros/datatypes.inc"
     .byte 0
+
+_res_inc_macros_datatypes_s:
+res_inc_macros_datatypes_s:
+    .incbin "res/inc/macros/datatypes.s"
+    .byte 0
     
 _res_inc_macros_extern_inc:
 res_inc_macros_extern_inc:
@@ -181,9 +188,9 @@ res_inc_macros_setsym_h:
     .incbin "res/inc/macros/setsym.h"
     .byte 0
     
-_res_inc_macros_watcall_inc:
-res_inc_macros_watcall_inc:
-    .incbin "res/inc/macros/watcall.inc"
+_res_inc_macros_watcall_asm:
+res_inc_macros_watcall_asm:
+    .incbin "res/inc/macros/watcall.asm"
     .byte 0
     
 _res_inc_macros_patch_s:

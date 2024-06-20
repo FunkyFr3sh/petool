@@ -25,17 +25,18 @@ int pe2obj(int argc, char **argv);
 int patch(int argc, char **argv);
 int setdd(int argc, char **argv);
 int setvs(int argc, char **argv);
-int setc(int argc, char** argv);
+int setsc(int argc, char** argv);
+int setts(int argc, char** argv);
 int export(int argc, char **argv);
 int import(int argc, char **argv);
 int re2obj(int argc, char **argv);
 int genmak(int argc, char **argv);
-int gensym(int argc, char** argv, bool print_all);
+int gensym(int argc, char** argv);
 int genprj(int argc, char **argv);
 
 void help(char *progname)
 {
-    fprintf(stderr, "petool git~%s (c) 2013 - 2017 Toni Spets, (c) 2023 github.com/FunkyFr3sh\n", REV);
+    fprintf(stderr, "petool git~%s (c) 2013 - 2024 Toni Spets, Ericson2314, FunkyFr3sh\n", REV);
     fprintf(stderr, "https://github.com/FunkyFr3sh/petool\n\n");
     fprintf(stderr, "usage: %s <command> [args ...]\n\n", progname);
     fprintf(stderr, "commands:"                                                 "\n"
@@ -45,7 +46,8 @@ void help(char *progname)
             "    patch  -- apply a patch set from the .patch section"           "\n"
             "    setdd  -- set any DataDirectory in PE header"                  "\n"
             "    setvs  -- set VirtualSize for a section"                       "\n"
-            "    setc   -- set Characteristics for a section"                   "\n"
+            "    setsc  -- set Characteristics for a section"                   "\n"
+            "    setts  -- set TimeDateStamp in FileHeader"                     "\n"
             "    export -- export section data as raw binary"                   "\n"
             "    import -- dump the import table as assembly"                   "\n"
             "    re2obj -- convert the resource section into COFF object"       "\n"
@@ -70,12 +72,14 @@ int main(int argc, char **argv)
     else if (strcmp(argv[1], "patch")  == 0) return patch  (argc - 1, argv + 1);
     else if (strcmp(argv[1], "setdd")  == 0) return setdd  (argc - 1, argv + 1);
     else if (strcmp(argv[1], "setvs")  == 0) return setvs  (argc - 1, argv + 1);
-    else if (strcmp(argv[1], "setc")   == 0) return setc   (argc - 1, argv + 1);
+    else if (strcmp(argv[1], "setc")   == 0) return setsc  (argc - 1, argv + 1);
+    else if (strcmp(argv[1], "setsc")  == 0) return setsc  (argc - 1, argv + 1);
+    else if (strcmp(argv[1], "setts")  == 0) return setts  (argc - 1, argv + 1);
     else if (strcmp(argv[1], "export") == 0) return export (argc - 1, argv + 1);
     else if (strcmp(argv[1], "import") == 0) return import (argc - 1, argv + 1);
     else if (strcmp(argv[1], "re2obj") == 0) return re2obj (argc - 1, argv + 1);
     else if (strcmp(argv[1], "genmak") == 0) return genmak (argc - 1, argv + 1);
-    else if (strcmp(argv[1], "gensym") == 0) return gensym (argc - 1, argv + 1, false);
+    else if (strcmp(argv[1], "gensym") == 0) return gensym (argc - 1, argv + 1);
     else if (strcmp(argv[1], "genprj") == 0) return genprj (argc - 1, argv + 1);
     else if (strcmp(argv[1], "help")   == 0)
     {

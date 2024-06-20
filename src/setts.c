@@ -27,45 +27,35 @@
 #include "cleanup.h"
 #include "common.h"
 
-int setc(int argc, char **argv)
+int setts(int argc, char **argv)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret   = EXIT_SUCCESS;
     FILE   *fh    = NULL;
     int8_t *image = NULL;
 
-    FAIL_IF(argc != 4, "usage: petool setc <image> <section> <Characteristics>\n");
+    FAIL_IF(argc != 3, "usage: petool setts <image> <TimeDateStamp>\n");
 
-    uint32_t flags   = strtol(argv[3], NULL, 0);
+    uint32_t timeDateStamp = strtoul(argv[2], NULL, 0);
 
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
-    PIMAGE_NT_HEADERS nt_hdr  = (void *)(image + dos_hdr->e_lfanew);
+    PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
 
-    FAIL_IF(length < sizeof (IMAGE_DOS_HEADER),         "File too small.\n");
-    FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE,    "File DOS signature invalid.\n");
-    FAIL_IF(dos_hdr->e_lfanew == 0,                     "NT header missing.\n");
-    FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE,    "File NT signature invalid.\n");
-    FAIL_IF(flags == 0,                                 "Characteristics can't be zero.\n");
+    FAIL_IF(length < sizeof (IMAGE_DOS_HEADER),               "File too small.\n");
+    FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE,          "File DOS signature invalid.\n");
+    FAIL_IF(dos_hdr->e_lfanew == 0,                           "NT header missing.\n");
+    FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE,          "File NT signature invalid.\n");
 
-    for (int32_t i = 0; i < nt_hdr->FileHeader.NumberOfSections; i++)
-    {
-        PIMAGE_SECTION_HEADER sct_hdr = IMAGE_FIRST_SECTION(nt_hdr) + i;
+    nt_hdr->FileHeader.TimeDateStamp = timeDateStamp;
 
-        if (strcmp(argv[2], (char *)sct_hdr->Name) == 0)
-        {
-            sct_hdr->Characteristics = flags;    // update characteristics
+    /* FIXME: implement checksum calculation */
+    nt_hdr->OptionalHeader.CheckSum = 0;
 
-            nt_hdr->OptionalHeader.CheckSum = 0; // FIXME: implement checksum calculation
-            rewind(fh);                          // write to file
-            FAIL_IF_PERROR(fwrite(image, length, 1, fh) != 1, "Error writing executable");
-            goto cleanup;                        // done
-        }
-    }
-
-    fprintf(stderr, "No '%s' section in given PE image.\n", argv[2]);
+    rewind(fh);
+    FAIL_IF_PERROR(fwrite(image, length, 1, fh) != 1, "Error writing executable");
 
 cleanup:
     if (image) free(image);

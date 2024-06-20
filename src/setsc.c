@@ -27,16 +27,16 @@
 #include "cleanup.h"
 #include "common.h"
 
-int setvs(int argc, char **argv)
+int setsc(int argc, char **argv)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret   = EXIT_SUCCESS;
     FILE   *fh    = NULL;
     int8_t *image = NULL;
 
-    FAIL_IF(argc != 4, "usage: petool setvs <image> <section> <VirtualSize>\n");
+    FAIL_IF(argc != 4, "usage: petool setsc <image> <section> <Characteristics>\n");
 
-    uint32_t vs   = strtol(argv[3], NULL, 0);
+    uint32_t flags   = strtoul(argv[3], NULL, 0);
 
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
@@ -48,7 +48,7 @@ int setvs(int argc, char **argv)
     FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE,    "File DOS signature invalid.\n");
     FAIL_IF(dos_hdr->e_lfanew == 0,                     "NT header missing.\n");
     FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE,    "File NT signature invalid.\n");
-    FAIL_IF(vs == 0,                                    "VirtualSize can't be zero.\n");
+    FAIL_IF(flags == 0,                                 "Characteristics can't be zero.\n");
 
     for (int32_t i = 0; i < nt_hdr->FileHeader.NumberOfSections; i++)
     {
@@ -56,10 +56,8 @@ int setvs(int argc, char **argv)
 
         if (strncmp(argv[2], (char *)sct_hdr->Name, 8) == 0)
         {
-            FAIL_IF(vs < sct_hdr->SizeOfRawData,"VirtualSize can't be smaller than raw size.\n");
-            sct_hdr->Misc.VirtualSize = vs;      // update section size
-                                                 // update total virtual size of image
-            nt_hdr->OptionalHeader.SizeOfImage += vs - sct_hdr->Misc.VirtualSize;
+            sct_hdr->Characteristics = flags;    // update characteristics
+
             nt_hdr->OptionalHeader.CheckSum = 0; // FIXME: implement checksum calculation
             rewind(fh);                          // write to file
             FAIL_IF_PERROR(fwrite(image, length, 1, fh) != 1, "Error writing executable");

@@ -87,8 +87,8 @@ int dump(int argc, char **argv)
         }
     }
 
-    printf(" section    start      end   length    vaddr    vsize  flags  align\n");
-    printf("-------------------------------------------------------------------\n");
+    printf(" section     start       end    length     vaddr     vsize  flags   align\n");
+    printf("-------------------------------------------------------------------------\n");
 
     for (int i = 0; i < nt_hdr->FileHeader.NumberOfSections; i++)
     {
@@ -99,10 +99,10 @@ int dump(int argc, char **argv)
                         : nt_hdr->OptionalHeader.SectionAlignment;
 
         printf(
-            "%8.8s %8"PRIX32" %8"PRIX32" %8"PRIX32" %8"PRIX32" %8"PRIX32" %c%c%c%c%c%c %6"PRIX32"\n",
+            "%8.8s %8"PRIX32"h %8"PRIX32"h %9"PRIu32" %8"PRIX32"h %9"PRIu32" %c%c%c%c%c%c %6"PRIX32"h\n",
             cur_sct->Name,
             cur_sct->PointerToRawData,
-            cur_sct->PointerToRawData + cur_sct->SizeOfRawData,
+            cur_sct->PointerToRawData ? cur_sct->PointerToRawData + cur_sct->SizeOfRawData : 0,
             cur_sct->SizeOfRawData,
             cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase,
             cur_sct->Misc.VirtualSize,
@@ -116,10 +116,57 @@ int dump(int argc, char **argv)
         );
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes >= 2)
+    printf("\n");
+
+    char dirs[][40] = {
+        "Export Directory",
+        "Import Directory",
+        "Resource Directory",
+        "Exception Directory",
+        "Security Directory",
+        "Base Relocation Table",
+        "Debug Directory",
+        "Architecture Specific Data",
+        "RVA of GP",
+        "TLS Directory",
+        "Load Configuration Directory",
+        "Bound Import Directory in headers",
+        "Import Address Table",
+        "Delay Load Import Descriptors",
+        "COM Runtime descriptor"
+    };
+
+    printf("DataDirectory                                   vaddr      size   section\n");
+    printf("-------------------------------------------------------------------------\n");
+
+    for (uint32_t i = 0; i < nt_hdr->OptionalHeader.NumberOfRvaAndSizes; i++)
     {
-        printf("Import Table: %8"PRIX32" (%"PRIu32" bytes)\n", nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr->OptionalHeader.DataDirectory[1].Size);
+        if (!nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress)
+            continue;
+
+        char section[12] = { 0 };
+
+        for (int x = 0; x < nt_hdr->FileHeader.NumberOfSections; x++)
+        {
+            const PIMAGE_SECTION_HEADER cur_sct = IMAGE_FIRST_SECTION(nt_hdr) + x;
+
+            if (nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress >= cur_sct->VirtualAddress &&
+                nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress < cur_sct->VirtualAddress + cur_sct->SizeOfRawData)
+            {
+                memcpy(section, (void*)cur_sct->Name, 8);
+                break;
+            }
+        }
+
+        printf(
+            "%-43s %8"PRIX32"h %9"PRIu32"  %8.8s\n", 
+            dirs[i],
+            nt_hdr->OptionalHeader.DataDirectory[i].VirtualAddress + nt_hdr->OptionalHeader.ImageBase,
+            nt_hdr->OptionalHeader.DataDirectory[i].Size,
+            section);
     }
+
+    printf("\n");
 
 cleanup:
     if (image) free(image);

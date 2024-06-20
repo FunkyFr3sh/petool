@@ -72,6 +72,13 @@ int genlds(int argc, char **argv)
     }
 
     fprintf(ofh, "/* GNU ld linker script for %s */\n", inputname);
+    fprintf(ofh, "\n");
+    fprintf(ofh, "/* Default linker script, for normal executables */\n");
+    fprintf(ofh, "/* Copyright (C) 2014-2023 Free Software Foundation, Inc.\n");
+    fprintf(ofh, "   Copying and distribution of this script, with or without modification,\n");
+    fprintf(ofh, "   are permitted in any medium without royalty provided the copyright\n");
+    fprintf(ofh, "   notice and this notice are preserved.  */\n");
+    fprintf(ofh, "\n");
 
     if (strcmp(argv[0], "genlds") == 0)
     {
@@ -88,6 +95,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "SEARCH_DIR(\"=/usr/local/lib\");\n");
     fprintf(ofh, "SEARCH_DIR(\"=/lib\");\n");
     fprintf(ofh, "SEARCH_DIR(\"=/usr/lib\");\n");
+    fprintf(ofh, "SEARCH_DIR(\"./lib\");\n");
     fprintf(ofh, "SECTIONS\n");
     fprintf(ofh, "{\n");
 
@@ -104,6 +112,11 @@ int genlds(int argc, char **argv)
         char buf[9];
         memset(buf, 0, sizeof buf);
         memcpy(buf, cur_sct->Name, 8);
+
+        /* Section without name (Age Of Wonders 2) */
+        if (!buf[0]) {
+            strcpy(buf, "\"\"");
+        }
 
         if (cur_sct->Characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA && !(cur_sct->Characteristics & IMAGE_SCN_CNT_INITIALIZED_DATA)) {
             fprintf(ofh, "    /DISCARD/                  : { %s(%s) }\n", inputname, buf);
@@ -280,7 +293,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "    *(COMMON)\n");
     fprintf(ofh, "    __bss_end__ = . ;\n");
     fprintf(ofh, "  }\n");
-    fprintf(ofh, "  .edata BLOCK(__section_alignment__) :\n");
+    fprintf(ofh, "  .p_edata BLOCK(__section_alignment__) :\n");
     fprintf(ofh, "  {\n");
     fprintf(ofh, "    *(.edata)\n");
     fprintf(ofh, "  }\n");

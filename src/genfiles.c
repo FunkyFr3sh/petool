@@ -16,6 +16,8 @@
 
 #ifdef __linux__
 #include <linux/limits.h>
+#elif defined(__FreeBSD__ )
+#include <limits.h>
 #elif !defined(_WIN32)
 #include <sys/syslimits.h>
 #endif
@@ -54,12 +56,13 @@ extern const char res_inc_app_h[];
 extern const char res_inc_app_inc[];
 extern const char res_inc_patch_h[];
 extern const char res_inc_macros_datatypes_inc[];
+extern const char res_inc_macros_datatypes_s[];
 extern const char res_inc_macros_extern_inc[];
 extern const char res_inc_macros_extern_s[];
 extern const char res_inc_macros_patch_h[];
 extern const char res_inc_macros_patch_inc[];
 extern const char res_inc_macros_setsym_h[];
-extern const char res_inc_macros_watcall_inc[];
+extern const char res_inc_macros_watcall_asm[];
 extern const char res_inc_macros_patch_s[];
 
 void extract_resource(const char* src, char* file_path);
@@ -97,7 +100,7 @@ int genfiles(char *dir)
     if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryA)
     {
         snprintf(buf, sizeof buf, "%s/src/imports.c", dir);
-        printf("Generating %s...\n", buf);
+    printf("Generating %s...\n", buf);
         extract_resource(res_src_imports_LoadLibraryA_GetProcAddress_c, buf);
     }
     else if (g_sym_got_GetProcAddress && g_sym_got_LoadLibraryW)
@@ -191,6 +194,10 @@ int genfiles(char *dir)
     printf("Generating %s...\n", buf);
     extract_resource(res_inc_macros_datatypes_inc, buf);
 
+    snprintf(buf, sizeof buf, "%s/inc/macros/datatypes.s", dir);
+    printf("Generating %s...\n", buf);
+    extract_resource(res_inc_macros_datatypes_s, buf);
+
     snprintf(buf, sizeof buf, "%s/inc/macros/extern.inc", dir);
     printf("Generating %s...\n", buf);
     extract_resource(res_inc_macros_extern_inc, buf);
@@ -211,9 +218,9 @@ int genfiles(char *dir)
     printf("Generating %s...\n", buf);
     extract_resource(res_inc_macros_setsym_h, buf);
 
-    snprintf(buf, sizeof buf, "%s/inc/macros/watcall.inc", dir);
+    snprintf(buf, sizeof buf, "%s/inc/macros/watcall.asm", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_watcall_inc, buf);
+    extract_resource(res_inc_macros_watcall_asm, buf);
 
     snprintf(buf, sizeof buf, "%s/inc/macros/patch.s", dir);
     printf("Generating %s...\n", buf);
