@@ -15,10 +15,10 @@ int APIENTRY fake_WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, in
 }
 
 // entry point
-void start()
+int start()
 {
     if (!imports_init())
         return;
 
-    app_start();
+    return app_start();
 }

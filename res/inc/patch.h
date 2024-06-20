@@ -92,12 +92,24 @@ static inline void patch_setbytes(char *dst, char *buf, size_t size)
 
 static inline void patch_clear_nop(char *start, char *end)
 {
-    return patch_clear(start, '\x90', end);
+    patch_clear(start, '\x90', end);
 }
 
 static inline void patch_clear_int(char *start, char *end)
 {
-    return patch_clear(start, '\xCC', end);
+    patch_clear(start, '\xCC', end);
+}
+
+static inline void patch_ljmp_nop(char *start, char *end, char *dst)
+{
+    patch_clear(start + 5, '\x90', end);
+    patch_ljmp(start, dst);
+}
+
+static inline void patch_ljmp_int(char *start, char *end, char *dst)
+{
+    patch_clear(start + 5, '\xCC', end);
+    patch_ljmp(start, dst);
 }
 
 #endif

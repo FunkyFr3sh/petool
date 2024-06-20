@@ -95,6 +95,9 @@ int genmak(int argc, char **argv)
     if (nt_hdr->OptionalHeader.SectionAlignment != 0x1000)
         fprintf(ofh, " -Wl,--section-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.SectionAlignment);
 
+    //if (nt_hdr->OptionalHeader.FileAlignment != 0x200)
+        fprintf(ofh, " -Wl,--file-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.FileAlignment);
+
     if (nt_hdr->OptionalHeader.ImageBase != 0x00400000)
         fprintf(ofh, " -Wl,--image-base=0x%08"PRIX32"", nt_hdr->OptionalHeader.ImageBase);
 
@@ -111,7 +114,7 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "ASFLAGS     = -Iinc -msyntax=intel -mnaked-reg\n");
+    fprintf(ofh, "ASFLAGS     = -Iinc\n");
     fprintf(ofh, "NFLAGS      = -Iinc -f elf\n");
     fprintf(ofh, "CFLAGS      = -Iinc -O2 -march=pentium4 -Wall -masm=intel\n");
     fprintf(ofh, "CXXFLAGS    = -Iinc -O2 -march=pentium4 -Wall -masm=intel\n");
@@ -132,7 +135,7 @@ int genmak(int argc, char **argv)
         fprintf(ofh, " \\\n				sym.o");
     }
 
-    if (nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 2 && nt_hdr->OptionalHeader.DataDirectory[2].VirtualAddress)
     {
         fprintf(ofh, " \\\n				rsrc.o");
     }
@@ -191,7 +194,10 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "	$(PETOOL) setc  \"$@\" .p_text 0x60000020 || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(PETOOL) patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
     fprintf(ofh, "	$(STRIP) -R .patch \"$@\" || ($(RM) \"$@\" && exit 1)\n");
-    fprintf(ofh, "	$(PETOOL) dump \"$@\"\n\n");
+    fprintf(ofh, "	$(PETOOL) dump \"$(INPUT)\"\n");
+    fprintf(ofh, "	$(PETOOL) dump \"$@\"\n");
+
+    fprintf(ofh, "\n");
 
     fprintf(ofh, "clean:\n");
     fprintf(ofh, "	$(RM) $(OUTPUT) $(OBJS)\n");
