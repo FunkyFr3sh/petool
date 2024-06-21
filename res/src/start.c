@@ -18,7 +18,7 @@ int APIENTRY fake_WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, in
 int start()
 {
     if (!imports_init())
-        return;
+        return 0;
 
     return app_start();
 }
