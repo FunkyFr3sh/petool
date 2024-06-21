@@ -156,6 +156,7 @@ int genmak(int argc, char **argv)
     fprintf(ofh, "PETOOL     ?= petool\n");
     fprintf(ofh, "NASM       ?= nasm\n");
 
+        nt_hdr->OptionalHeader.DataDirectory[9].Size);
     fprintf(ofh, "\n");
 
     fprintf(ofh, "all: $(OUTPUT)\n\n");
