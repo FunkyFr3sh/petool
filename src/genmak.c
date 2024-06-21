@@ -104,9 +104,9 @@ int genmak(int argc, char **argv)
 
     if (g_sym_imports_enabled)
     {
-    fprintf(ofh, "LIBS        = -lgdi32\n");
+        fprintf(ofh, "LIBS        = -lgdi32\n");
 
-    fprintf(ofh, "\n");
+        fprintf(ofh, "\n");
     }
 
     fprintf(ofh, "OBJS        =");
@@ -302,7 +302,7 @@ int genmak(int argc, char **argv)
         fprintf(ofh, "	$(PETOOL) setdd \"$@\" $(EXPORTDIR) || ($(RM) \"$@\" && exit 1)\n");
     }
 
-    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 0 &&
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 1 &&
         nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress &&
         nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress >= code_start)
     {
