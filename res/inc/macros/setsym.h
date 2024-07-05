@@ -23,7 +23,7 @@
         ".ifc " #arg_count ", 1;"                    \
             "_" #name ":;"                           \
             "push ebx;"                              \
-            "mov eax, dword[esp+4];"                 \
+            "mov eax, [esp+8];"                      \
             "call " #addr ";"                        \
             "pop ebx;"                               \
             "ret;"                                   \
@@ -31,8 +31,8 @@
         ".ifc " #arg_count ", 2;"                    \
             "_" #name ":;"                           \
             "push ebx;"                              \
-            "mov edx, dword[esp+8];"                 \
-            "mov eax, dword[esp+4];"                 \
+            "mov edx, [esp+12];"                     \
+            "mov eax, [esp+8];"                      \
             "call " #addr ";"                        \
             "pop ebx;"                               \
             "ret;"                                   \
@@ -40,9 +40,9 @@
         ".ifc " #arg_count ", 3;"                    \
             "_" #name ":;"                           \
             "push ebx;"                              \
-            "mov ebx, dword[esp+12];"                \
-            "mov edx, dword[esp+8];"                 \
-            "mov eax, dword[esp+4];"                 \
+            "mov ebx, [esp+16];"                     \
+            "mov edx, [esp+12];"                     \
+            "mov eax, [esp+8];"                      \
             "call " #addr ";"                        \
             "pop ebx;"                               \
             "ret;"                                   \
@@ -50,10 +50,10 @@
         ".ifc " #arg_count ", 4;"                    \
             "_" #name ":;"                           \
             "push ebx;"                              \
-            "mov ecx, dword[esp+16];"                \
-            "mov ebx, dword[esp+12];"                \
-            "mov edx, dword[esp+8];"                 \
-            "mov eax, dword[esp+4];"                 \
+            "mov ecx, [esp+20];"                     \
+            "mov ebx, [esp+16];"                     \
+            "mov edx, [esp+12];"                     \
+            "mov eax, [esp+8];"                      \
             "call " #addr ";"                        \
             "pop ebx;"                               \
             "ret;"                                   \
