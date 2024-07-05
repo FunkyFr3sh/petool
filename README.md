@@ -248,7 +248,7 @@ memory address: function, data, uninitialized variable. As long as you define
 them in sym.c, you can use them anywhere.
 
 Note: For applications built with watcom you'll need to define the functions
-with the `SETWATGLOB` macro instead and also include watcall.asm from the macros folder.
+with the `SETWATGLOB` macro instead.
 
     SETWATGLOB(<addr>, <name>, <arg_count>);
 
