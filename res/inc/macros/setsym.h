@@ -13,58 +13,28 @@
         ".equ " #name ", " #addr ";"                 \
         ".section .text;"                            \
         ".align 8, 0xCC;"                            \
-        ".ifc " #arg_count ", 0;"                    \
-            "_" #name ":;"                           \
-            "push ebx;"                              \
-            "call " #addr ";"                        \
-            "pop ebx;"                               \
-            "ret;"                                   \
-        ".else;"                                     \
-        ".ifc " #arg_count ", 1;"                    \
-            "_" #name ":;"                           \
-            "push ebx;"                              \
-            "mov eax, [esp+8];"                      \
-            "call " #addr ";"                        \
-            "pop ebx;"                               \
-            "ret;"                                   \
-        ".else;"                                     \
-        ".ifc " #arg_count ", 2;"                    \
-            "_" #name ":;"                           \
-            "push ebx;"                              \
-            "mov edx, [esp+12];"                     \
-            "mov eax, [esp+8];"                      \
-            "call " #addr ";"                        \
-            "pop ebx;"                               \
-            "ret;"                                   \
-        ".else;"                                     \
-        ".ifc " #arg_count ", 3;"                    \
-            "_" #name ":;"                           \
-            "push ebx;"                              \
-            "mov ebx, [esp+16];"                     \
-            "mov edx, [esp+12];"                     \
-            "mov eax, [esp+8];"                      \
-            "call " #addr ";"                        \
-            "pop ebx;"                               \
-            "ret;"                                   \
-        ".else;"                                     \
-        ".ifc " #arg_count ", 4;"                    \
-            "_" #name ":;"                           \
-            "push ebx;"                              \
-            "mov ecx, [esp+20];"                     \
-            "mov ebx, [esp+16];"                     \
-            "mov edx, [esp+12];"                     \
-            "mov eax, [esp+8];"                      \
-            "call " #addr ";"                        \
-            "pop ebx;"                               \
-            "ret;"                                   \
-        ".else;"                                     \
+        ".if " #arg_count " >= 5;"                   \
             "_" #name ":;"                           \
             "push " #addr ";"                        \
             "push " #arg_count ";"                   \
             "jmp _watcall;"                          \
-        ".endif;"                                    \
-        ".endif;"                                    \
-        ".endif;"                                    \
-        ".endif;"                                    \
+        ".else;"                                     \
+            "_" #name ":;"                           \
+            "push ebx;"                              \
+            ".if " #arg_count " >= 4;"               \
+                "mov ecx, [esp+20];"                 \
+            ".endif;"                                \
+            ".if " #arg_count " >= 3;"               \
+                "mov ebx, [esp+16];"                 \
+            ".endif;"                                \
+            ".if " #arg_count " >= 2;"               \
+                "mov edx, [esp+12];"                 \
+            ".endif;"                                \
+            ".if " #arg_count " >= 1;"               \
+                "mov eax, [esp+8];"                  \
+            ".endif;"                                \
+            "call " #addr ";"                        \
+            "pop ebx;"                               \
+            "ret;"                                   \
         ".endif;"                                    \
     )
