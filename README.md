@@ -92,11 +92,13 @@ The `CALL` macro writes a CALL instruction at _from_ to _to_. It is commonly use
 to replace an existing function call with a call to your own function. This is 
 the most simple and cleanest way to create a patch (No assembly required).
 
-`CALL` can be used to replace a 5byte call instruction and `CALL_NOP` can replace a 
-6byte instruction.
+`CALL` can be used to replace a 5byte call instruction, `CALL_NOP` can replace a 
+6byte instruction and `CALL_WATCOM` must be used for functions using the watcom 
+register calling convention.
 
     CALL(<from>, <to>);
     CALL_NOP(<from>, <to>);
+    CALL_WATCOM(<from>, <to>, <arg_count>);
 
 Example:
 
