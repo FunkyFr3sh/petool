@@ -139,6 +139,7 @@
         ".byte 0xE8;"                               \
         ".long 1f - " #src " - 5;"                  \
         ".section .text;"                           \
+        ".align 8, 0xCC;"                           \
         ".ifc " #arg_count ", 0;"                   \
             "1:;"                                   \
             "push ecx;"                             \
