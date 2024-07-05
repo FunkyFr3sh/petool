@@ -264,12 +264,12 @@ global symbols from assembly source via the `SETCGLOB` macro. Symbols can be any
 memory address: function, data, uninitialized variable. As long as you define 
 them in sym.c, you can use them anywhere.
 
-Note: For applications built with watcom you'll need to define the functions
-with the `SETWATGLOB` macro instead.
+Note: For functions using the watcom register calling convention you will need 
+to pass the additional <arg_count> arg.
 
-    SETWATGLOB(<addr>, <name>, <arg_count>);
+    SETCGLOB(<addr>, <name>, <arg_count>);
 
-    SETWATGLOB(0x004D500, doMagic, 4);
+    SETCGLOB(0x004D500, doMagic, 4);
 
 Compiling new code
 --------------------------------------------------------------------------------

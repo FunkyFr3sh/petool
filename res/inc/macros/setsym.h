@@ -1,12 +1,10 @@
-
-#define SETCGLOB(addr, name)                         \
+#define SETCGLOB_2(addr, name)                       \
     __asm (                                          \
         ".global _" #name ";"                        \
         ".equ _" #name ", " #addr ";"                \
     )
 
-// watcom - make existing watcall functions global
-#define SETWATGLOB(addr, name, arg_count)            \
+#define SETCGLOB_3(addr, name, arg_count)            \
     __asm (                                          \
         ".global _" #name ";"                        \
         ".global " #name ";"                         \
@@ -70,3 +68,12 @@
         "pop ebx;"                                   \
         "ret;"                                       \
     )
+
+#define SETCGLOB_X(x,A,B,C,FUNC, ...)  FUNC  
+#define SETCGLOB(...)                                \
+                       SETCGLOB_X(,##__VA_ARGS__,    \
+                            SETCGLOB_3(__VA_ARGS__), \
+                            SETCGLOB_2(__VA_ARGS__), \
+                            SETCGLOB_1(__VA_ARGS__), \
+                            SETCGLOB_0(__VA_ARGS__)  \
+                            )
