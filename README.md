@@ -93,25 +93,42 @@ to replace an existing function call with a call to your own function. This is
 the most simple and cleanest way to create a patch (No assembly required).
 
 `CALL` can be used to replace a 5byte call instruction, `CALL_NOP` can replace a 
-6byte instruction and `CALL_WATCOM` must be used for functions using the watcom 
-register calling convention.
+6byte instruction. 
+
+Note: For functions using the watcom register calling convention you will need 
+to pass the additional <arg_count> arg.
 
     CALL(<from>, <to>);
+    CALL(<from>, <to>, <arg_count>);
     CALL_NOP(<from>, <to>);
-    CALL_WATCOM(<from>, <to>, <arg_count>);
+    CALL_NOP(<from>, <to>, <arg_count>);
 
 Example:
 
     /* Replace function call at 0x410000 with a call to doMagic */
     CALL(0x410000, _doMagic);
 
-    EXTERN_C void doMagic()
+    EXTERN_C void doMagic(int arg1, int arg2, int arg3)
     {
        /* insert your own code here */
        something();
 
        /* call the orginal function that was replaced by the patch (optional) */
-       original();
+       original(arg1, arg2, arg3);
+
+       /* Note: you will have to insert "original" into sym.c and app.h to be able to call it */
+    }
+
+    /* Same as above, but for functions using the watom register calling convention */
+    CALL(0x410000, _doMagic, 3);
+
+    EXTERN_C void doMagic(int arg1, int arg2, int arg3)
+    {
+       /* insert your own code here */
+       something();
+
+       /* call the orginal function that was replaced by the patch (optional) */
+       original(arg1, arg2, arg3);
 
        /* Note: you will have to insert "original" into sym.c and app.h to be able to call it */
     }
