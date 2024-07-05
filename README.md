@@ -96,7 +96,7 @@ the most simple and cleanest way to create a patch (No assembly required).
 6byte instruction. 
 
 Note: For functions using the watcom register calling convention you will need 
-to pass the additional <arg_count> arg.
+to pass the additional <arg_count> arg (C/C++ only).
 
     CALL(<from>, <to>);
     CALL(<from>, <to>, <arg_count>);
