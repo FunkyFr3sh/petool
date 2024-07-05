@@ -130,3 +130,163 @@
 #define LJMP_INT(start, end, dst)                   \
     CLEAR_INT((start + 5), end);                    \
     LJMP(start, dst)
+
+#define CALL_WATCOM(src, dst, arg_count)            \
+    __asm (                                         \
+        ".section .patch,\"d0\";"                   \
+        ".long " #src ";"                           \
+        ".long 5;"                                  \
+        ".byte 0xE8;"                               \
+        ".long 1f - " #src " - 5;"                  \
+        ".section .text;"                           \
+        ".ifc " #arg_count ", 0;"                   \
+            "1:;"                                   \
+            "push ecx;"                             \
+            "push edx;"                             \
+            "call " #dst ";"                        \
+            "pop edx;"                              \
+            "pop ecx;"                              \
+            "ret;"                                  \
+        ".endif;"                                   \
+        ".ifc " #arg_count ", 1;"                   \
+            "1:;"                                   \
+            "push ecx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 4;"                           \
+            "pop edx;"                              \
+            "pop ecx;"                              \
+            "ret;"                                  \
+        ".endif;"                                   \
+        ".ifc " #arg_count ", 2;"                   \
+            "1:;"                                   \
+            "push ecx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 8;"                           \
+            "pop ecx;"                              \
+            "ret;"                                  \
+        ".endif;"                                   \
+        ".ifc " #arg_count ", 3;"                   \
+            "1:;"                                   \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 12;"                          \
+            "pop ecx;"                              \
+            "ret;"                                  \
+        ".endif;"                                   \
+        ".ifc " #arg_count ", 4;"                   \
+            "1:;"                                   \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 16;"                          \
+            "ret;"                                  \
+        ".endif;"                                   \
+        ".ifc " #arg_count ", 5;"                   \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push dword[ebp+4];"                    \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 20;"                          \
+            "pop ebp;"                              \
+            "ret 4;"                                \
+        ".endif;"                                   \
+        ".ifc " #arg_count ", 6;"                   \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push dword[ebp+8];"                    \
+            "push dword[ebp+4];"                    \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 24;"                          \
+            "pop ebp;"                              \
+            "ret 8;"                                \
+        ".endif;"                                   \
+        ".ifc " #arg_count ", 7;"                   \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push dword[ebp+12];"                   \
+            "push dword[ebp+8];"                    \
+            "push dword[ebp+4];"                    \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 28;"                          \
+            "pop ebp;"                              \
+            "ret 12;"                               \
+        ".endif;"                                   \
+        ".ifc " #arg_count ", 8;"                   \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push dword[ebp+16];"                   \
+            "push dword[ebp+12];"                   \
+            "push dword[ebp+8];"                    \
+            "push dword[ebp+4];"                    \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 32;"                          \
+            "pop ebp;"                              \
+            "ret 16;"                               \
+        ".endif;"                                   \
+        ".ifc " #arg_count ", 9;"                   \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push dword[ebp+20];"                   \
+            "push dword[ebp+16];"                   \
+            "push dword[ebp+12];"                   \
+            "push dword[ebp+8];"                    \
+            "push dword[ebp+4];"                    \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 36;"                          \
+            "pop ebp;"                              \
+            "ret 20;"                               \
+        ".endif;"                                   \
+        ".ifc " #arg_count ", 10;"                  \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push dword[ebp+24];"                   \
+            "push dword[ebp+20];"                   \
+            "push dword[ebp+16];"                   \
+            "push dword[ebp+12];"                   \
+            "push dword[ebp+8];"                    \
+            "push dword[ebp+4];"                    \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 40;"                          \
+            "pop ebp;"                              \
+            "ret 24;"                               \
+        ".endif;"                                   \
+    )
