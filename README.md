@@ -147,8 +147,11 @@ to pass the additional <arg_count> arg.
 
 Example:
 
-    /* Clear all bytes starting from 0x410000 up to 0x410009 AND do a (far) jump from 0x410000 to label doMagic */`
-    DETOUR(0x410000, 0x410009, _doMagic);
+    /* 
+        Clear all bytes from the start of the function (0x410000) up to the end of the function (0x410200) 
+        AND do a (far) jump from 0x410000 to label doMagic 
+    */`
+    DETOUR(0x410000, 0x410200, _doMagic);
 
     EXTERN_C void doMagic(int arg1, int arg2, int arg3)
     {
@@ -157,7 +160,7 @@ Example:
     }
 
     /* Same as above, but for functions using the watcom register calling convention */
-    DETOUR(0x410000, 0x410009, _doMagic, 3);
+    DETOUR(0x410000, 0x410200, _doMagic, 3);
 
     EXTERN_C void doMagic(int arg1, int arg2, int arg3)
     {
