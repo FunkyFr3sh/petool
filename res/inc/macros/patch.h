@@ -251,6 +251,113 @@
             "add esp, 40;"                          \
             "pop ebp;"                              \
             "ret 24;"                               \
+        ".elseif " #arg_count " == 11;"             \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push [ebp+32];"                        \
+            "push [ebp+28];"                        \
+            "push [ebp+24];"                        \
+            "push [ebp+20];"                        \
+            "push [ebp+16];"                        \
+            "push [ebp+12];"                        \
+            "push [ebp+8];"                         \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 44;"                          \
+            "pop ebp;"                              \
+            "ret 28;"                               \
+        ".elseif " #arg_count " == 12;"             \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push [ebp+36];"                        \
+            "push [ebp+32];"                        \
+            "push [ebp+28];"                        \
+            "push [ebp+24];"                        \
+            "push [ebp+20];"                        \
+            "push [ebp+16];"                        \
+            "push [ebp+12];"                        \
+            "push [ebp+8];"                         \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 48;"                          \
+            "pop ebp;"                              \
+            "ret 32;"                               \
+        ".elseif " #arg_count " == 13;"             \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push [ebp+40];"                        \
+            "push [ebp+36];"                        \
+            "push [ebp+32];"                        \
+            "push [ebp+28];"                        \
+            "push [ebp+24];"                        \
+            "push [ebp+20];"                        \
+            "push [ebp+16];"                        \
+            "push [ebp+12];"                        \
+            "push [ebp+8];"                         \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 52;"                          \
+            "pop ebp;"                              \
+            "ret 36;"                               \
+        ".elseif " #arg_count " == 14;"             \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push [ebp+44];"                        \
+            "push [ebp+40];"                        \
+            "push [ebp+36];"                        \
+            "push [ebp+32];"                        \
+            "push [ebp+28];"                        \
+            "push [ebp+24];"                        \
+            "push [ebp+20];"                        \
+            "push [ebp+16];"                        \
+            "push [ebp+12];"                        \
+            "push [ebp+8];"                         \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 56;"                          \
+            "pop ebp;"                              \
+            "ret 40;"                               \
+        ".elseif " #arg_count " == 15;"             \
+            "1:;"                                   \
+            "push ebp;"                             \
+            "mov ebp, esp;"                         \
+            "push [ebp+48];"                        \
+            "push [ebp+44];"                        \
+            "push [ebp+40];"                        \
+            "push [ebp+36];"                        \
+            "push [ebp+32];"                        \
+            "push [ebp+28];"                        \
+            "push [ebp+24];"                        \
+            "push [ebp+20];"                        \
+            "push [ebp+16];"                        \
+            "push [ebp+12];"                        \
+            "push [ebp+8];"                         \
+            "push ecx;"                             \
+            "push ebx;"                             \
+            "push edx;"                             \
+            "push eax;"                             \
+            "call " #dst ";"                        \
+            "add esp, 60;"                          \
+            "pop ebp;"                              \
+            "ret 44;"                               \
+        ".else;"                                    \
+            ".error \"Too many args in macro\";"    \
         ".endif;"
         
 #define DETOUR_3(start, end, dst)                   \
