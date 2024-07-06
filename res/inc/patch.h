@@ -112,4 +112,10 @@ static inline void patch_ljmp_int(char *start, char *end, char *dst)
     patch_ljmp(start, dst);
 }
 
+static inline void patch_detour(char* start, char* end, char* dst)
+{
+    patch_clear(start + 5, '\xCC', end);
+    patch_ljmp(start, dst);
+}
+
 #endif
