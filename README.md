@@ -119,7 +119,7 @@ Example:
        /* Note: you will have to insert "original" into sym.c and app.h to be able to call it */
     }
 
-    /* Same as above, but for functions using the watom register calling convention */
+    /* Same as above, but for functions using the watcom register calling convention */
     CALL(0x410000, _doMagic, 3);
 
     EXTERN_C void doMagic(int arg1, int arg2, int arg3)
@@ -156,7 +156,7 @@ Example:
        something();
     }
 
-    /* Same as above, but for functions using the watom register calling convention */
+    /* Same as above, but for functions using the watcom register calling convention */
     DETOUR(0x410000, 0x410009, _doMagic, 3);
 
     EXTERN_C void doMagic(int arg1, int arg2, int arg3)
