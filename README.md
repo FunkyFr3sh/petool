@@ -135,6 +135,38 @@ Example:
 
 Note: the `CALL` macro is also available for `NASM` and `GNU as` under the name `@CALL`
 
+### Detour
+The `DETOUR` macro redirects all calls to an exiting function to your own 
+replacement function. It does also clear (INT3) the original function.
+
+Note: For functions using the watcom register calling convention you will need 
+to pass the additional <arg_count> arg.
+
+    DETOUR(<from>, <end>, <to>);
+    DETOUR(<from>, <end>, <to>, <arg_count>);
+
+Example:
+
+    /* Clear all bytes starting from 0x410000 up to 0x410009 AND do a (far) jump from 0x410000 to label doMagic */`
+    DETOUR(0x410000, 0x410009, _doMagic);
+
+    EXTERN_C void doMagic(int arg1, int arg2, int arg3)
+    {
+       /* insert your own code here */
+       something();
+    }
+
+    /* Same as above, but for functions using the watom register calling convention */
+    DETOUR(0x410000, 0x410009, _doMagic, 3);
+
+    EXTERN_C void doMagic(int arg1, int arg2, int arg3)
+    {
+       /* insert your own code here */
+       something();
+    }
+
+Note: the `DETOUR` macro is NOT available for `NASM` and `GNU as` but the same can be done via `@HOOK` instead
+
 ### Hook
 The `HOOK` macro writes a JMP instruction at _addr_. You can use `HOOK` in case
 there is no Call instruction nearby that could be hooked via the `CALL` macro. 
