@@ -110,24 +110,7 @@
     CLEAR_INT((start + 5), end);                    \
     LJMP(start, dst)
 
-#define CALL_2(src, dst)                            \
-    __asm (                                         \
-        ".section .patch,\"d0\";"                   \
-        ".long " #src ";"                           \
-        ".long 5;"                                  \
-        ".byte 0xE8;"                               \
-        ".long " #dst "-" #src " - 5;"              \
-        ".section .text;"                           \
-    )
-
-#define CALL_3(src, dst, arg_count)                 \
-    __asm (                                         \
-        ".section .patch,\"d0\";"                   \
-        ".long " #src ";"                           \
-        ".long 5;"                                  \
-        ".byte 0xE8;"                               \
-        ".long 1f - " #src " - 5;"                  \
-        ".section .text;"                           \
+#define WATCALL_TO_CDECL(dst, arg_count)            \
         ".align 8, 0xCC;"                           \
         ".if " #arg_count " == 0;"                  \
             "1:;"                                   \
@@ -268,7 +251,27 @@
             "add esp, 40;"                          \
             "pop ebp;"                              \
             "ret 24;"                               \
-        ".endif;"                                   \
+        ".endif;"
+
+#define CALL_2(src, dst)                            \
+    __asm (                                         \
+        ".section .patch,\"d0\";"                   \
+        ".long " #src ";"                           \
+        ".long 5;"                                  \
+        ".byte 0xE8;"                               \
+        ".long " #dst "-" #src " - 5;"              \
+        ".section .text;"                           \
+    )
+
+#define CALL_3(src, dst, arg_count)                 \
+    __asm (                                         \
+        ".section .patch,\"d0\";"                   \
+        ".long " #src ";"                           \
+        ".long 5;"                                  \
+        ".byte 0xE8;"                               \
+        ".long 1f - " #src " - 5;"                  \
+        ".section .text;"                           \
+        WATCALL_TO_CDECL(dst, arg_count)            \
     )
 
 #define CALL_X(x,A,B,C,FUNC, ...)  FUNC  
@@ -300,147 +303,7 @@
         ".long 1f - " #src " - 5;"                  \
         ".byte 0x90;"                               \
         ".section .text;"                           \
-        ".align 8, 0xCC;"                           \
-        ".if " #arg_count " == 0;"                  \
-            "1:;"                                   \
-            "push ecx;"                             \
-            "push edx;"                             \
-            "call " #dst ";"                        \
-            "pop edx;"                              \
-            "pop ecx;"                              \
-            "ret;"                                  \
-        ".elseif " #arg_count " == 1;"              \
-            "1:;"                                   \
-            "push ecx;"                             \
-            "push edx;"                             \
-            "push eax;"                             \
-            "call " #dst ";"                        \
-            "add esp, 4;"                           \
-            "pop edx;"                              \
-            "pop ecx;"                              \
-            "ret;"                                  \
-        ".elseif " #arg_count " == 2;"              \
-            "1:;"                                   \
-            "push ecx;"                             \
-            "push edx;"                             \
-            "push eax;"                             \
-            "call " #dst ";"                        \
-            "add esp, 8;"                           \
-            "pop ecx;"                              \
-            "ret;"                                  \
-        ".elseif " #arg_count " == 3;"              \
-            "1:;"                                   \
-            "push ecx;"                             \
-            "push ebx;"                             \
-            "push edx;"                             \
-            "push eax;"                             \
-            "call " #dst ";"                        \
-            "add esp, 12;"                          \
-            "pop ecx;"                              \
-            "ret;"                                  \
-        ".elseif " #arg_count " == 4;"              \
-            "1:;"                                   \
-            "push ecx;"                             \
-            "push ebx;"                             \
-            "push edx;"                             \
-            "push eax;"                             \
-            "call " #dst ";"                        \
-            "add esp, 16;"                          \
-            "ret;"                                  \
-        ".elseif " #arg_count " == 5;"              \
-            "1:;"                                   \
-            "push ebp;"                             \
-            "mov ebp, esp;"                         \
-            "push [ebp+8];"                         \
-            "push ecx;"                             \
-            "push ebx;"                             \
-            "push edx;"                             \
-            "push eax;"                             \
-            "call " #dst ";"                        \
-            "add esp, 20;"                          \
-            "pop ebp;"                              \
-            "ret 4;"                                \
-        ".elseif " #arg_count " == 6;"              \
-            "1:;"                                   \
-            "push ebp;"                             \
-            "mov ebp, esp;"                         \
-            "push [ebp+12];"                        \
-            "push [ebp+8];"                         \
-            "push ecx;"                             \
-            "push ebx;"                             \
-            "push edx;"                             \
-            "push eax;"                             \
-            "call " #dst ";"                        \
-            "add esp, 24;"                          \
-            "pop ebp;"                              \
-            "ret 8;"                                \
-        ".elseif " #arg_count " == 7;"              \
-            "1:;"                                   \
-            "push ebp;"                             \
-            "mov ebp, esp;"                         \
-            "push [ebp+16];"                        \
-            "push [ebp+12];"                        \
-            "push [ebp+8];"                         \
-            "push ecx;"                             \
-            "push ebx;"                             \
-            "push edx;"                             \
-            "push eax;"                             \
-            "call " #dst ";"                        \
-            "add esp, 28;"                          \
-            "pop ebp;"                              \
-            "ret 12;"                               \
-        ".elseif " #arg_count " == 8;"              \
-            "1:;"                                   \
-            "push ebp;"                             \
-            "mov ebp, esp;"                         \
-            "push [ebp+20];"                        \
-            "push [ebp+16];"                        \
-            "push [ebp+12];"                        \
-            "push [ebp+8];"                         \
-            "push ecx;"                             \
-            "push ebx;"                             \
-            "push edx;"                             \
-            "push eax;"                             \
-            "call " #dst ";"                        \
-            "add esp, 32;"                          \
-            "pop ebp;"                              \
-            "ret 16;"                               \
-        ".elseif " #arg_count " == 9;"              \
-            "1:;"                                   \
-            "push ebp;"                             \
-            "mov ebp, esp;"                         \
-            "push [ebp+24];"                        \
-            "push [ebp+20];"                        \
-            "push [ebp+16];"                        \
-            "push [ebp+12];"                        \
-            "push [ebp+8];"                         \
-            "push ecx;"                             \
-            "push ebx;"                             \
-            "push edx;"                             \
-            "push eax;"                             \
-            "call " #dst ";"                        \
-            "add esp, 36;"                          \
-            "pop ebp;"                              \
-            "ret 20;"                               \
-        ".elseif " #arg_count " == 10;"             \
-            "1:;"                                   \
-            "push ebp;"                             \
-            "mov ebp, esp;"                         \
-            "push [ebp+28];"                        \
-            "push [ebp+24];"                        \
-            "push [ebp+20];"                        \
-            "push [ebp+16];"                        \
-            "push [ebp+12];"                        \
-            "push [ebp+8];"                         \
-            "push ecx;"                             \
-            "push ebx;"                             \
-            "push edx;"                             \
-            "push eax;"                             \
-            "call " #dst ";"                        \
-            "add esp, 40;"                          \
-            "pop ebp;"                              \
-            "ret 24;"                               \
-        ".endif;"                                   \
+        WATCALL_TO_CDECL(dst, arg_count)            \
     )
 
 #define CALL_NOP_X(x,A,B,C,FUNC, ...)  FUNC  
