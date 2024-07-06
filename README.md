@@ -136,7 +136,7 @@ Example:
 Note: the `CALL` macro is also available for `NASM` and `GNU as` under the name `@CALL`
 
 ### Detour
-The `DETOUR` macro redirects all calls to an exiting function to your own 
+The `DETOUR` macro redirects all calls to an existing function to your own 
 replacement function. It does also clear (INT3) the original function.
 
 Note: For functions using the watcom register calling convention you will need 
