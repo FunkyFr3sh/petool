@@ -252,6 +252,39 @@
             "pop ebp;"                              \
             "ret 24;"                               \
         ".endif;"
+        
+#define DETOUR_3(start, end, dst)                   \
+    CLEAR_INT((start + 5), end);                    \
+    __asm (                                         \
+        ".section .patch,\"d0\";"                   \
+        ".long " #start ";"                         \
+        ".long 5;"                                  \
+        ".byte 0xE9;"                               \
+        ".long " #dst "-" #start " - 5;"            \
+        ".section .text;"                           \
+    )
+    
+#define DETOUR_4(start, end, dst, arg_count)        \
+    CLEAR_INT((start + 5), end);                    \
+    __asm (                                         \
+        ".section .patch,\"d0\";"                   \
+        ".long " #start ";"                         \
+        ".long 5;"                                  \
+        ".byte 0xE9;"                               \
+        ".long 1f - " #start " - 5;"                \
+        ".section .text;"                           \
+        WATCALL_TO_CDECL(dst, arg_count)            \
+    )
+
+#define DETOUR_X(x,A,B,C,D,FUNC, ...)  FUNC  
+#define DETOUR(...)                                 \
+                        DETOUR_X(,##__VA_ARGS__,    \
+                             DETOUR_4(__VA_ARGS__), \
+                             DETOUR_3(__VA_ARGS__), \
+                             DETOUR_2(__VA_ARGS__), \
+                             DETOUR_1(__VA_ARGS__), \
+                             DETOUR_0(__VA_ARGS__)  \
+                             )
 
 #define CALL_2(src, dst)                            \
     __asm (                                         \
