@@ -184,7 +184,7 @@ create a trampoline in sym.c to restore the instructions that were removed.
        original(arg1, arg2, arg3);
     }
 
-    /* sym.c - Create trampoline to restore the two instuctions removed by DETOUR */
+    /* sym.c - Create trampoline to restore the two instructions removed by DETOUR */
     TRAMPOLINE(0x410007, original, "sub esp, 8; mov eax, [esp+0x1C]");
 
     /* Same as above, but for functions using the watcom register calling convention */
