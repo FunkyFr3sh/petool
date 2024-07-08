@@ -89,29 +89,6 @@
     dest%1:
 %endmacro
 
-%macro @DETOUR 3
-    cglobal %1
-    %define @DETOUREND (%3 + 5)
-    @LJMP {(%3)}, %2
-    [section .text]
-    align 16, db 0xCC
-    %1:
-%endmacro
-
-%macro @DETOUR 4
-    cglobal %1
-    %define @DETOUREND %4
-    %if %4 - ((%3) + 5) < 0
-        %error "end must be at least 5 bytes (the size of a long jump) after start"
-    %endif
-
-    @CLEAR {(%3) + 5}, 0xCC, {(%4)}
-    @LJMP {(%3)}, %2
-    [section .text]
-    align 16, db 0xCC
-    %1:
-%endmacro
-
 %macro @CLEAR_NOP 2
     @CLEAR %1, 0x90, %2
 %endmacro

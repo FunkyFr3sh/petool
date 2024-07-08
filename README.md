@@ -168,6 +168,28 @@ Example:
        something();
     }
 
+You can also keep the original function intact by clearing only the first 
+instructions (just to make enough space for the 5 byte jump to fit) and afterwards 
+create a trampoline in sym.c to restore the instructions that were removed.
+
+    /* Clear first two instructions AND do a (far) jump from 0x410000 to label doMagic */`
+    DETOUR(0x410000, 0x410007, _doMagic);
+
+    EXTERN_C void doMagic(int arg1, int arg2, int arg3)
+    {
+       /* insert your own code here */
+       something();
+
+       /* call the orginal function that was replaced by the patch (optional) */
+       original(arg1, arg2, arg3);
+    }
+
+    /* sym.c - Create trampoline to restore the two instuctions removed by DETOUR */
+    TRAMPOLINE(0x410007, original, "sub esp, 8; mov eax, [esp+0x1C]");
+
+    /* Same as above, but for functions using the watcom register calling convention */
+    TRAMPOLINE(0x410007, original, "sub esp, 8; mov eax, [esp+0x1C]", 3);
+
 Note: the `DETOUR` macro is NOT available for `NASM` and `GNU as` but the same can be done via `@HOOK` instead
 
 ### Hook
