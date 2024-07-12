@@ -49,6 +49,7 @@ _patchset_end_\@:
 .endm
 
 .macro @HOOK addr:req, end
+    .global _dest\addr
     .ifb \end
         .set @HOOKEND, (\addr) + 5
     .else
@@ -56,10 +57,10 @@ _patchset_end_\@:
         @CLEAR (\addr) + 5, 0xCC, (\end)
     .endif
     
-    @LJMP (\addr), dest\addr
+    @LJMP (\addr), _dest\addr
     .section .text
     .align 8, 0xCC
-    dest\addr\():
+    _dest\addr\():
 .endm
 
 .macro @CLEAR_NOP start:req, end:req
