@@ -69,24 +69,26 @@
 %endmacro
 
 %macro @HOOK 1
+    global _dest%1 ; Make it global to prevent bugs where 2 hacks were placed on the same location
     %define @HOOKEND (%1 + 5)
-    @LJMP {(%1)}, dest%1
+    @LJMP {(%1)}, _dest%1
     [section .text]
     align 16, db 0xCC
-    dest%1:
+    _dest%1:
 %endmacro
 
 %macro @HOOK 2
+    global dest%1 ; Make it global to prevent bugs where 2 hacks were placed on the same location
     %define @HOOKEND %2
     %if %2 - ((%1) + 5) < 0
         %error "end must be at least 5 bytes (the size of a long jump) after start"
     %endif
 
     @CLEAR {(%1) + 5}, 0xCC, {(%2)}
-    @LJMP {(%1)}, dest%1
+    @LJMP {(%1)}, _dest%1
     [section .text]
     align 16, db 0xCC
-    dest%1:
+    _dest%1:
 %endmacro
 
 %macro @CLEAR_NOP 2
