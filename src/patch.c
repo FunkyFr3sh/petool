@@ -27,6 +27,11 @@
 #include "cleanup.h"
 #include "common.h"
 
+static struct {
+    uint32_t start;
+    uint32_t end;
+} g_patch_offsets[4096];
+
 int patch_image(int8_t *image, uint32_t address, int8_t *patch, uint32_t length)
 {
     PIMAGE_DOS_HEADER dos_hdr       = (void *)image;
@@ -40,14 +45,39 @@ int patch_image(int8_t *image, uint32_t address, int8_t *patch, uint32_t length)
         {
             uint32_t offset = sct_hdr->PointerToRawData + (address - (sct_hdr->VirtualAddress + nt_hdr->OptionalHeader.ImageBase));
 
-            if (sct_hdr->SizeOfRawData < length)
+            if (sct_hdr->SizeOfRawData < length || sct_hdr->PointerToRawData + sct_hdr->SizeOfRawData < offset + length)
             {
-                fprintf(stderr, "Error: section length (%"PRIu32") is less than patch length (%"PRId32"), maybe expand the image a bit more?\n", sct_hdr->SizeOfRawData, length);
+                fprintf(stderr, "Error: Patch '%08"PRIX32"' is too long (%"PRIu32" bytes)\n", address, length);
+
                 return EXIT_FAILURE;
             }
 
             memcpy(image + offset, patch, length);
-            printf("PATCH  %8"PRId32" bytes -> %8"PRIX32"\n", length, address);
+
+            for (uint32_t i = 0; i < sizeof(g_patch_offsets) / sizeof(g_patch_offsets[0]); i++)
+            {
+                if (g_patch_offsets[i].start)
+                {
+                    if ((address >= g_patch_offsets[i].start && address < g_patch_offsets[i].end) ||
+                        (address + length - 1 >= g_patch_offsets[i].start && address + length - 1 < g_patch_offsets[i].end) ||
+                        (address < g_patch_offsets[i].start && address + length - 1 >= g_patch_offsets[i].start))
+                    {
+                        fprintf(
+                            stderr,
+                            "Warning: Patch '%08"PRIX32"' is conflicting with Patch '%08"PRIX32"'\n",
+                            address,
+                            g_patch_offsets[i].start);
+                    }
+                }
+                else
+                {
+                    g_patch_offsets[i].start = address;
+                    g_patch_offsets[i].end = address + length;
+                    break;
+                }
+            }
+
+            //printf("PATCH  %8"PRId32" bytes -> %8"PRIX32"\n", length, address);
             return EXIT_SUCCESS;
         }
     }
@@ -116,12 +146,20 @@ int patch(int argc, char **argv)
         }
 
         uint32_t plength = get_uint32(&p);
-        FAIL_IF_SILENT(patch_image(image, paddress, p, plength) == EXIT_FAILURE);
 
-        patch_count++;
-        patch_bytes += plength;
+        if (plength > 0)
+        {
+            FAIL_IF_SILENT(patch_image(image, paddress, p, plength) == EXIT_FAILURE);
 
-        p += plength;
+            patch_count++;
+            patch_bytes += plength;
+
+            p += plength;
+        }
+        else
+        {
+            fprintf(stderr, "Warning: Empty patch found at '%08"PRIX32"'\n", paddress);
+        }
     }
 
     fprintf(stderr, "Applied %"PRIu32" patches (%"PRIu32" bytes)\n", patch_count, patch_bytes);
