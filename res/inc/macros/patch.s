@@ -49,7 +49,6 @@ _patchset_end_\@:
 .endm
 
 .macro @HOOK addr:req, end
-    .global _dest\addr
     .ifb \end
         .set @HOOKEND, (\addr) + 5
     .else

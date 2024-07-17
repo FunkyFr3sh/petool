@@ -69,7 +69,6 @@
 %endmacro
 
 %macro @HOOK 1
-    global _dest%1 ; Make it global to prevent bugs where multiple @HOOK were placed on the same location
     %define @HOOKEND (%1 + 5)
     @LJMP {(%1)}, _dest%1
     [section .text]
@@ -78,7 +77,6 @@
 %endmacro
 
 %macro @HOOK 2
-    global dest%1 ; Make it global to prevent bugs where multiple @HOOK were placed on the same location
     %define @HOOKEND %2
     %if %2 - ((%1) + 5) < 0
         %error "end must be at least 5 bytes (the size of a long jump) after start"
