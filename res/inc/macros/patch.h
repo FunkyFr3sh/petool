@@ -92,7 +92,7 @@
     __asm (                                         \
         ".section .patch,\"d0\";"                   \
         ".long " #addr ";"                          \
-        ".long 5 + (" #end " - ((" #addr ") + 5));" \
+        ".long 5 + ((" #end ") - ((" #addr ") + 5));" \
         ".byte 0xE9;"                               \
         ".long _dest" #addr "-" #addr " - 5;"       \
         ".fill (" #end ") - ((" #addr ") + 5), 1, 0xCC;" \
@@ -114,7 +114,7 @@
     __asm (                                         \
         ".section .patch,\"d0\";"                   \
         ".long " #start ";"                         \
-        ".long 5 + (" #end " - ((" #start ") + 5));" \
+        ".long 5 + ((" #end ") - ((" #start ") + 5));" \
         ".byte 0xE9;"                               \
         ".long (" #dst ") - (" #start ") - 5;"      \
         ".fill (" #end ") - ((" #start ") + 5), 1, 0x90;" \
@@ -125,7 +125,7 @@
     __asm (                                         \
         ".section .patch,\"d0\";"                   \
         ".long " #start ";"                         \
-        ".long 5 + (" #end " - ((" #start ") + 5));" \
+        ".long 5 + ((" #end ") - ((" #start ") + 5));" \
         ".byte 0xE9;"                               \
         ".long (" #dst ") - (" #start ") - 5;"      \
         ".fill (" #end ") - ((" #start ") + 5), 1, 0xCC;" \
@@ -386,7 +386,7 @@
     __asm (                                         \
         ".section .patch,\"d0\";"                   \
         ".long " #start ";"                         \
-        ".long 5 + (" #end " - ((" #start ") + 5));" \
+        ".long 5 + ((" #end ") - ((" #start ") + 5));" \
         ".byte 0xE9;"                               \
         ".long (" #dst ") - (" #start ") - 5;"      \
         ".fill (" #end ") - ((" #start ") + 5), 1, 0xCC;" \
@@ -397,7 +397,7 @@
     __asm (                                         \
         ".section .patch,\"d0\";"                   \
         ".long " #start ";"                         \
-        ".long 5 + (" #end " - ((" #start ") + 5));" \
+        ".long 5 + ((" #end ") - ((" #start ") + 5));" \
         ".byte 0xE9;"                               \
         ".long 1f - (" #start ") - 5;"              \
         ".fill (" #end ") - ((" #start ") + 5), 1, 0xCC;" \
