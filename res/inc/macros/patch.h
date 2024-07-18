@@ -88,9 +88,19 @@
     );                                              \
     EXTERN_C void __attribute__((naked)) dest##addr()
     
+    
 #define HOOK_2(addr, end)                           \
-    CLEAR_INT((addr + 5), end);                     \
-    HOOK_1(addr)
+    __asm (                                         \
+        ".section .patch,\"d0\";"                   \
+        ".long " #addr ";"                          \
+        ".long 5 + (" #end " - ((" #addr ") + 5));" \
+        ".byte 0xE9;"                               \
+        ".long _dest" #addr "-" #addr " - 5;"       \
+        ".fill (" #end ") - ((" #addr ") + 5), 1, 0xCC;" \
+        ".section .text;"                           \
+    );                                              \
+    EXTERN_C void __attribute__((naked)) dest##addr()
+    
 
 #define HOOK_X(x,A,B,FUNC, ...)  FUNC  
 #define HOOK(...)         HOOK_X(,##__VA_ARGS__,    \
@@ -103,12 +113,26 @@
 #define CLEAR_INT(start, end) CLEAR(start, 0xCC, end)
 
 #define LJMP_NOP(start, end, dst)                   \
-    CLEAR_NOP((start + 5), end);                    \
-    LJMP(start, dst)
+    __asm (                                         \
+        ".section .patch,\"d0\";"                   \
+        ".long " #start ";"                         \
+        ".long 5 + (" #end " - ((" #start ") + 5));" \
+        ".byte 0xE9;"                               \
+        ".long " #dst " - " #start " - 5;"          \
+        ".fill (" #end ") - ((" #start ") + 5), 1, 0x90;" \
+        ".section .text;"                           \
+    )
 
 #define LJMP_INT(start, end, dst)                   \
-    CLEAR_INT((start + 5), end);                    \
-    LJMP(start, dst)
+    __asm (                                         \
+        ".section .patch,\"d0\";"                   \
+        ".long " #start ";"                         \
+        ".long 5 + (" #end " - ((" #start ") + 5));" \
+        ".byte 0xE9;"                               \
+        ".long " #dst " - " #start " - 5;"          \
+        ".fill (" #end ") - ((" #start ") + 5), 1, 0xCC;" \
+        ".section .text;"                           \
+    )
 
 #define WATCALL_TO_CDECL(dst, arg_count)            \
         ".align 8, 0xCC;"                           \
@@ -361,24 +385,24 @@
         ".endif;"
         
 #define DETOUR_3(start, end, dst)                   \
-    CLEAR_INT((start + 5), end);                    \
     __asm (                                         \
         ".section .patch,\"d0\";"                   \
         ".long " #start ";"                         \
-        ".long 5;"                                  \
+        ".long 5 + (" #end " - ((" #start ") + 5));" \
         ".byte 0xE9;"                               \
-        ".long " #dst "-" #start " - 5;"            \
+        ".long " #dst " - " #start " - 5;"          \
+        ".fill (" #end ") - ((" #start ") + 5), 1, 0xCC;" \
         ".section .text;"                           \
     )
     
 #define DETOUR_4(start, end, dst, arg_count)        \
-    CLEAR_INT((start + 5), end);                    \
     __asm (                                         \
         ".section .patch,\"d0\";"                   \
         ".long " #start ";"                         \
-        ".long 5;"                                  \
+        ".long 5 + (" #end " - ((" #start ") + 5));" \
         ".byte 0xE9;"                               \
         ".long 1f - " #start " - 5;"                \
+        ".fill (" #end ") - ((" #start ") + 5), 1, 0xCC;" \
         ".section .text;"                           \
         WATCALL_TO_CDECL(dst, arg_count)            \
     )
