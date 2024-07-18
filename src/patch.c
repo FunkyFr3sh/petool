@@ -59,7 +59,6 @@ int patch_image(int8_t *image, uint32_t address, int8_t *patch, uint32_t length)
                 if (g_patch_offsets[i].start)
                 {
                     if ((address >= g_patch_offsets[i].start && address < g_patch_offsets[i].end) ||
-                        (address + length - 1 >= g_patch_offsets[i].start && address + length - 1 < g_patch_offsets[i].end) ||
                         (address < g_patch_offsets[i].start && address + length - 1 >= g_patch_offsets[i].start))
                     {
                         fprintf(
