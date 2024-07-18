@@ -78,7 +78,7 @@
 
 %macro @HOOK 2
     %define @HOOKEND %2
-    %if %2 - ((%1) + 5) < 0
+    %if (%2) - ((%1) + 5) < 0
         %error "end must be at least 5 bytes (the size of a long jump) after start" (%2)
     %endif
 
@@ -102,7 +102,7 @@
 %endmacro
 
 %macro @LJMP_NOP 3
-    %if %2 - ((%1) + 5) < 0
+    %if (%2) - ((%1) + 5) < 0
         %error "end must be at least 5 bytes (the size of a long jump) after start" (%2)
     %endif
 
@@ -114,7 +114,7 @@
 %endmacro
 
 %macro @LJMP_INT 3
-    %if %2 - ((%1) + 5) < 0
+    %if (%2) - ((%1) + 5) < 0
         %error "end must be at least 5 bytes (the size of a long jump) after start" (%2)
     %endif
     
