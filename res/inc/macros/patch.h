@@ -87,8 +87,7 @@
         ".section .text;"                           \
     );                                              \
     EXTERN_C void __attribute__((naked)) dest##addr()
-    
-    
+
 #define HOOK_2(addr, end)                           \
     __asm (                                         \
         ".section .patch,\"d0\";"                   \
@@ -100,7 +99,6 @@
         ".section .text;"                           \
     );                                              \
     EXTERN_C void __attribute__((naked)) dest##addr()
-    
 
 #define HOOK_X(x,A,B,FUNC, ...)  FUNC  
 #define HOOK(...)         HOOK_X(,##__VA_ARGS__,    \
