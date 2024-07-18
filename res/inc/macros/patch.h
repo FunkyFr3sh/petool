@@ -14,8 +14,8 @@
     __asm (                                         \
         ".section .patch,\"d0\";"                   \
         ".long " #start ";"                         \
-        ".long " #end "-" #start ";"                \
-        ".fill " #end "-" #start ", 1, " #value ";" \
+        ".long (" #end ") - (" #start ");"          \
+        ".fill (" #end ") - (" #start "), 1, " #value ";" \
         ".section .text;"                           \
     )
 
@@ -25,7 +25,7 @@
         ".long " #src ";"                           \
         ".long 2;"                                  \
         ".byte 0xEB;"                               \
-        ".byte " #dst "-" #src " - 2;"              \
+        ".byte (" #dst ") - (" #src ") - 2;"        \
         ".section .text;"                           \
     )
 
@@ -35,7 +35,7 @@
         ".long " #src ";"                           \
         ".long 5;"                                  \
         ".byte 0xE9;"                               \
-        ".long " #dst "-" #src " - 5;"              \
+        ".long (" #dst ") - (" #src ") - 5;"        \
         ".section .text;"                           \
     )
 
@@ -116,7 +116,7 @@
         ".long " #start ";"                         \
         ".long 5 + (" #end " - ((" #start ") + 5));" \
         ".byte 0xE9;"                               \
-        ".long " #dst " - " #start " - 5;"          \
+        ".long (" #dst ") - (" #start ") - 5;"      \
         ".fill (" #end ") - ((" #start ") + 5), 1, 0x90;" \
         ".section .text;"                           \
     )
@@ -127,7 +127,7 @@
         ".long " #start ";"                         \
         ".long 5 + (" #end " - ((" #start ") + 5));" \
         ".byte 0xE9;"                               \
-        ".long " #dst " - " #start " - 5;"          \
+        ".long (" #dst ") - (" #start ") - 5;"      \
         ".fill (" #end ") - ((" #start ") + 5), 1, 0xCC;" \
         ".section .text;"                           \
     )
@@ -388,7 +388,7 @@
         ".long " #start ";"                         \
         ".long 5 + (" #end " - ((" #start ") + 5));" \
         ".byte 0xE9;"                               \
-        ".long " #dst " - " #start " - 5;"          \
+        ".long (" #dst ") - (" #start ") - 5;"      \
         ".fill (" #end ") - ((" #start ") + 5), 1, 0xCC;" \
         ".section .text;"                           \
     )
@@ -399,7 +399,7 @@
         ".long " #start ";"                         \
         ".long 5 + (" #end " - ((" #start ") + 5));" \
         ".byte 0xE9;"                               \
-        ".long 1f - " #start " - 5;"                \
+        ".long 1f - (" #start ") - 5;"              \
         ".fill (" #end ") - ((" #start ") + 5), 1, 0xCC;" \
         ".section .text;"                           \
         WATCALL_TO_CDECL(dst, arg_count)            \
@@ -421,7 +421,7 @@
         ".long " #src ";"                           \
         ".long 5;"                                  \
         ".byte 0xE8;"                               \
-        ".long " #dst "-" #src " - 5;"              \
+        ".long (" #dst ") - (" #src ") - 5;"        \
         ".section .text;"                           \
     )
 
@@ -431,7 +431,7 @@
         ".long " #src ";"                           \
         ".long 5;"                                  \
         ".byte 0xE8;"                               \
-        ".long 1f - " #src " - 5;"                  \
+        ".long 1f - (" #src ") - 5;"                \
         ".section .text;"                           \
         WATCALL_TO_CDECL(dst, arg_count)            \
     )
@@ -451,7 +451,7 @@
         ".long " #src ";"                           \
         ".long 6;"                                  \
         ".byte 0xE8;"                               \
-        ".long " #dst "-" #src " - 5;"              \
+        ".long (" #dst ") - (" #src ") - 5;"        \
         ".byte 0x90;"                               \
         ".section .text;"                           \
     )
@@ -462,7 +462,7 @@
         ".long " #src ";"                           \
         ".long 6;"                                  \
         ".byte 0xE8;"                               \
-        ".long 1f - " #src " - 5;"                  \
+        ".long 1f - (" #src ") - 5;"                \
         ".byte 0x90;"                               \
         ".section .text;"                           \
         WATCALL_TO_CDECL(dst, arg_count)            \
