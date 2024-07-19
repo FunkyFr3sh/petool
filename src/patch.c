@@ -63,10 +63,14 @@ int patch_image(int8_t *image, uint32_t address, int8_t *patch, uint32_t length)
                     {
                         fprintf(
                             stderr,
-                            "Warning: Conflicting patches: '%08"PRIX32" (%"PRIu32" bytes)' / '%08"PRIX32" (%"PRIu32" bytes)'\n",
+                            "Warning: Conflicting patches detected\n"
+                            "    Patch 1 start = %08"PRIX32", end = %08"PRIX32", size = %"PRIu32" bytes\n"
+                            "    Patch 2 start = %08"PRIX32", end = %08"PRIX32", size = %"PRIu32" bytes\n\n",
                             address,
+                            address + length,
                             length,
                             g_patch_offsets[i].start,
+                            g_patch_offsets[i].end,
                             g_patch_offsets[i].end - g_patch_offsets[i].start);
                     }
                 }
@@ -159,7 +163,11 @@ int patch(int argc, char **argv)
         }
         else
         {
-            fprintf(stderr, "Warning: Empty patch: '%08"PRIX32" (0 bytes)'\n", paddress);
+            fprintf(
+                stderr, 
+                "Warning: Empty patch detected\n"
+                "    Patch start = %08"PRIX32", size = 0 bytes\n\n", 
+                paddress);
         }
     }
 
