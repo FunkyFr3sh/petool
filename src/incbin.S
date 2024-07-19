@@ -128,7 +128,7 @@ res_readme_md:
 
 _res_src_start_c:
 res_src_start_c:
-    .incbin "res/src/start.cpp"
+    .incbin "res/src/start.c"
     .byte 0
 
 _res_inc_imports_h:
