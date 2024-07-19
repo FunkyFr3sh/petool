@@ -20,5 +20,5 @@ int start()
     if (!imports_init())
         return 0;
 
-    return app_start();
+    return OriginalCRTStartup();
 }

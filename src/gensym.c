@@ -64,7 +64,7 @@ int gensym(int argc, char** argv, bool print_all)
     fprintf(ofh, "#include \"macros/setsym.h\"\n\n\n");
     fprintf(ofh, "/* vars */\n\n\n");
     fprintf(ofh, "/* functions */\n\n");
-    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", app_start);\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
+    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", OriginalCRTStartup);\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
     fprintf(ofh, "SETCGLOB(0x00000000, WinMain); // <- <FIX_ME>\n\n");
     fprintf(ofh, "/* imports */\n\n");
 
