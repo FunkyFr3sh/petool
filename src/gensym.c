@@ -55,7 +55,7 @@ int gensym(int argc, char** argv)
     fprintf(ofh, "#include \"macros/setsym.h\"\n\n\n");
     fprintf(ofh, "/* vars */\n\n\n");
     fprintf(ofh, "/* functions */\n\n");
-    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", app_start);\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
+    fprintf(ofh, "SETCGLOB(0x%08"PRIX32", OriginalCRTStartup);\n", (nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.AddressOfEntryPoint));
     
     if (strcmp(argv[0], "gensym") == 0 && 
         nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 1 && 

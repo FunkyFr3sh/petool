@@ -5,5 +5,5 @@
 
 int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow)
 {
-    return app_start();
+    return OriginalCRTStartup();
 }

@@ -16,7 +16,7 @@ extern "C" {
 
 // ### Functions ###
 
-int app_start(void);
+int OriginalCRTStartup(void);
 
 
 #ifdef __cplusplus
