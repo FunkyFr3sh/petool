@@ -76,7 +76,7 @@ int genfiles(char *dir)
     snprintf(buf, sizeof buf, "%s/src", dir);
     _mkdir(buf);
 
-    snprintf(buf, sizeof buf, "%s/src/winmain.c", dir);
+    snprintf(buf, sizeof buf, "%s/src/winmain.cpp", dir);
     printf("Generating %s...\n", buf);
     extract_resource(res_src_winmain_c, buf);
 

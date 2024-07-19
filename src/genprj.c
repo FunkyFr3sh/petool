@@ -89,9 +89,9 @@ int genprj(int argc, char **argv)
     printf("Generating %s...\n", buf);
     FAIL_IF(genlds(3, cmd_argv) != EXIT_SUCCESS, "Failed to create linker script\n");
 
-    FAIL_IF(snprintf(buf, sizeof buf, "%s/sym.c", dir) < 0, "Failed to create sym.c - Path truncated\n");
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/sym.cpp", dir) < 0, "Failed to create sym.cpp - Path truncated\n");
     printf("Generating %s...\n", buf);
-    FAIL_IF(gensym(3, cmd_argv) != EXIT_SUCCESS, "Failed to create sym.c\n");
+    FAIL_IF(gensym(3, cmd_argv) != EXIT_SUCCESS, "Failed to create sym.cpp\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/Makefile", dir) < 0, "Failed to create makefile - Path truncated\n");
     printf("Generating %s...\n", buf);

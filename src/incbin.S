@@ -49,7 +49,7 @@ res_readme_md:
 
 _res_src_winmain_c:
 res_src_winmain_c:
-    .incbin "res/src/winmain.c"
+    .incbin "res/src/winmain.cpp"
     .byte 0
 
 _res_inc_app_h:

@@ -52,7 +52,7 @@ void help(char *progname)
             "    import -- dump the import table as assembly"                   "\n"
             "    re2obj -- convert the resource section into COFF object"       "\n"
             "    genmak -- generate project Makefile"                           "\n"
-            "    gensym -- generate full sym.c with all imports"                "\n"
+            "    gensym -- generate full sym.cpp with all imports"              "\n"
             "    genprj -- generate full project directory"                     "\n"
             "    help   -- this information"                                    "\n"
     );
