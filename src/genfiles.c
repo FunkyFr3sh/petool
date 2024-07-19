@@ -163,7 +163,7 @@ int genfiles(char *dir)
         extract_resource(res_src_imports_dummy_c, buf);
     }
 
-    snprintf(buf, sizeof buf, "%s/src/start.c", dir);
+    snprintf(buf, sizeof buf, "%s/src/start.cpp", dir);
     printf("Generating %s...\n", buf);
     extract_resource(res_src_start_c, buf);
 

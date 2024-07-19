@@ -17,7 +17,7 @@ Tool to help rebuild and patch 32-bit Windows applications.
  - `import` - dump the import table as assembly
  - `re2obj` - convert the resource section into COFF object
  - `genmak` - generate project Makefile
- - `gensym` - generate full sym.c with all imports
+ - `gensym` - generate full sym.cpp with all imports
  - `genprj` - generate full project directory (default)
 
 Building
@@ -116,7 +116,7 @@ Example:
        /* call the orginal function that was replaced by the patch (optional) */
        original(arg1, arg2, arg3);
 
-       /* Note: you will have to insert "original" into sym.c and app.h to be able to call it */
+       /* Note: you will have to insert "original" into sym.cpp and app.h to be able to call it */
     }
 
     /* Same as above, but for functions using the watcom register calling convention */
@@ -130,7 +130,7 @@ Example:
        /* call the orginal function that was replaced by the patch (optional) */
        original(arg1, arg2, arg3);
 
-       /* Note: you will have to insert "original" into sym.c and app.h to be able to call it */
+       /* Note: you will have to insert "original" into sym.cpp and app.h to be able to call it */
     }
 
 Note: the `CALL` macro is also available for `NASM` and `GNU as` under the name `@CALL`
@@ -170,7 +170,7 @@ Example:
 
 You can also keep the original function intact by clearing only the first 
 instructions (just to make enough space for the 5 byte jump to fit) and afterwards 
-create a trampoline in sym.c to restore the instructions that were removed.
+create a trampoline in sym.cpp to restore the instructions that were removed.
 
     /* Clear first two instructions AND do a (far) jump from 0x410000 to label doMagic */`
     DETOUR(0x410000, 0x410007, _doMagic);
@@ -184,7 +184,7 @@ create a trampoline in sym.c to restore the instructions that were removed.
        original(arg1, arg2, arg3);
     }
 
-    /* sym.c - Create trampoline to restore the two instructions removed by DETOUR */
+    /* sym.cpp - Create trampoline to restore the two instructions removed by DETOUR */
     TRAMPOLINE(0x410007, original, "sub esp, 8; mov eax, [esp+0x1C]");
 
     /* Same as above, but for functions using the watcom register calling convention */
@@ -312,14 +312,14 @@ Example:
 
 Note: These macros are NOT available for `NASM` and `GNU as` but the same can be done via `@SET` instead
 
-### Existing symbols in original executable (sym.c)
+### Existing symbols in original executable (sym.cpp)
 
     SETCGLOB(0x004D2A80, WinMain);
 
 When you need to refer to existing symbols inside the executable, you can export
 global symbols from assembly source via the `SETCGLOB` macro. Symbols can be any named 
 memory address: function, data, uninitialized variable. As long as you define 
-them in sym.c, you can use them anywhere.
+them in sym.cpp, you can use them anywhere.
 
 Note: For functions using the watcom register calling convention you will need 
 to pass the additional <arg_count> arg.
