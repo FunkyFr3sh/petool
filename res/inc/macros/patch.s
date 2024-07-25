@@ -15,6 +15,10 @@
     .if __patch == 0
         .error "no corresponding `@PATCH'"
     .endif
+    
+    .ifndef __patch
+        .error "no corresponding `@PATCH'"
+    .endif
 
     .set __patch, 0
 9:
