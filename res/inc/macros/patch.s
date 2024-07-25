@@ -1,51 +1,65 @@
 
+.macro @PATCH patchaddr:req
+    .if __patch == 1
+        .error "can't nest patches"
+    .endif
+    
+    .set __patch, 1
+    .section .patch,"d0"
+    .long (\patchaddr)
+    .long (9f - 8f)
+8:
+.endm
+
+.macro @ENDPATCH
+    .if __patch == 0
+        .error "no corresponding `@PATCH'"
+    .endif
+
+    .set __patch, 0
+9:
+    .section .text
+.endm
+
 .macro @SET addr:req, inst:req
-    .section .patch,"d0" 
-    .long (\addr)
-    .long (_patchset_end_\@ - _patchset_start_\@)
-_patchset_start_\@:
+    @PATCH (\addr)
     \inst
-_patchset_end_\@:
+    @ENDPATCH
 .endm
 
 .macro @CLEAR start:req, value:req, end:req
-    .section .patch,"d0"
-    .long (\start)
-    .long (\end) - (\start)
+    @PATCH (\start)
     .fill (\end) - (\start), 1, (\value)
+    @ENDPATCH
 .endm
 
 .macro @SJMP src:req, dst:req
-    .section .patch,"d0"
-    .long (\src)
-    .long 2
+    @PATCH (\src)
     .byte 0xEB
     .byte (\dst) - (\src) - 2
+    @ENDPATCH
 .endm
 
 .macro @LJMP src:req, dst:req
-    .section .patch,"d0"
-    .long (\src)
-    .long 5
+    @PATCH (\src)
     .byte 0xE9
     .long (\dst) - (\src) - 5
+    @ENDPATCH
 .endm
 
 .macro @CALL src:req, dst:req
-    .section .patch,"d0" 
-    .long (\src)
-    .long 5
+    @PATCH (\src)
     .byte 0xE8
     .long (\dst) - (\src) - 5
+    @ENDPATCH
 .endm
 
 .macro @CALL_NOP src:req, dst:req
-    .section .patch,"d0" 
-    .long (\src)
-    .long 6
+    @PATCH (\src)
     .byte 0xE8
     .long (\dst) - (\src) - 5
     .byte 0x90 
+    @ENDPATCH
 .endm
 
 .macro @HOOK addr:req, end
@@ -59,12 +73,11 @@ _patchset_end_\@:
             .error "end must be at least 5 bytes (the size of a long jump) after start (\end)"
         .endif
     
-        .section .patch,"d0"
-        .long (\addr)
-        .long 5 + ((\end) - ((\addr) + 5))
+        @PATCH (\addr)
         .byte 0xE9
         .long (_dest\addr) - (\addr) - 5
         .fill (\end) - ((\addr) + 5), 1, 0xCC
+        @ENDPATCH
     .endif
     
     .section .text
@@ -85,12 +98,11 @@ _patchset_end_\@:
         .error "end must be at least 5 bytes (the size of a long jump) after start (\end)"
     .endif
 
-    .section .patch,"d0"
-    .long (\start)
-    .long 5 + ((\end) - ((\start) + 5))
+    @PATCH (\start)
     .byte 0xE9
     .long (\dst) - (\start) - 5
     .fill (\end) - ((\start) + 5), 1, 0x90
+    @ENDPATCH
 .endm
 
 .macro @LJMP_INT start:req, end:req, dst:req
@@ -98,10 +110,9 @@ _patchset_end_\@:
         .error "end must be at least 5 bytes (the size of a long jump) after start (\end)"
     .endif
 
-    .section .patch,"d0"
-    .long (\start)
-    .long 5 + ((\end) - ((\start) + 5))
+    @PATCH (\start)
     .byte 0xE9
     .long (\dst) - (\start) - 5
     .fill (\end) - ((\start) + 5), 1, 0xCC
+    @ENDPATCH
 .endm
