@@ -96,27 +96,3 @@
 .macro @CLEAR_INT start:req, end:req
     @CLEAR (\start), 0xCC, (\end)
 .endm
-
-.macro @LJMP_NOP start:req, end:req, dst:req
-    .if (\end) - ((\start) + 5) < 0
-        .error "end must be at least 5 bytes (the size of a long jump) after start (\end)"
-    .endif
-
-    @PATCH (\start)
-    .byte 0xE9
-    .long (\dst) - (\start) - 5
-    .fill (\end) - ((\start) + 5), 1, 0x90
-    @ENDPATCH
-.endm
-
-.macro @LJMP_INT start:req, end:req, dst:req
-    .if (\end) - ((\start) + 5) < 0
-        .error "end must be at least 5 bytes (the size of a long jump) after start (\end)"
-    .endif
-
-    @PATCH (\start)
-    .byte 0xE9
-    .long (\dst) - (\start) - 5
-    .fill (\end) - ((\start) + 5), 1, 0xCC
-    @ENDPATCH
-.endm
