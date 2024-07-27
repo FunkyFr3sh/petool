@@ -96,24 +96,6 @@
 #define CLEAR_NOP(start, end) CLEAR(start, 0x90, end)
 #define CLEAR_INT(start, end) CLEAR(start, 0xCC, end)
 
-#define LJMP_NOP(start, end, dst)                   \
-    __asm (                                         \
-        PATCH_START(start)                          \
-        ".byte 0xE9;"                               \
-        ".long (" #dst ") - (" #start ") - 5;"      \
-        ".fill (" #end ") - ((" #start ") + 5), 1, 0x90;" \
-        PATCH_END                                   \
-    )
-
-#define LJMP_INT(start, end, dst)                   \
-    __asm (                                         \
-        PATCH_START(start)                          \
-        ".byte 0xE9;"                               \
-        ".long (" #dst ") - (" #start ") - 5;"      \
-        ".fill (" #end ") - ((" #start ") + 5), 1, 0xCC;" \
-        PATCH_END                                   \
-    )
-
 #define WATCALL_TO_CDECL(dst, arg_count)            \
         ".align 8, 0xCC;"                           \
         ".if " #arg_count " == 0;"                  \

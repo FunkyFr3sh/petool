@@ -235,24 +235,19 @@ Example:
 Note: the `SETINST` macro is also available for `NASM` and `GNU as` under the name `@SET`
 
 ### Jump
-Both short (near) and long (far) variants are included. No overflow
+Both short and long variants are included. No overflow
 checks are done so do pre-calculate which one you need.
 
     LJMP(<from>, <to>);
-    LJMP_NOP(<from>, <end>, <to>);
-    LJMP_INT(<from>, <end>, <to>);
     SJMP(<from>, <to>);
 
 Example:
 
-    /* Do a (far) jump from 0x410000 to label doMagic */`
+    /* Do a long jump from 0x410000 to label doMagic */`
     LJMP(0x410000, _doMagic);
-
-    /* NOP all bytes starting from 0x410000 up to 0x410009 AND do a (far) jump from 0x410000 to label doMagic */`
-    LJMP_NOP(0x410000, 0x410009, _doMagic);
-
-    /* Same as LJMP_NOP, just that it clears with INT3 instead of NOP */
-    LJMP_INT(0x410000, 0x410009, _doMagic);
+    
+    /* Do a short jump from 0x410000 to 0x41000F */`
+    SJMP(0x410000, 0x41000F);
 
 Note: the `LJMP` macro is also available for `NASM` and `GNU as` under the name `@LJMP`
 
