@@ -97,7 +97,7 @@
 #define CLEAR_INT(start, end) CLEAR(start, 0xCC, end)
 
 #define WATCALL_TO_CDECL(dst, arg_count)            \
-        ".align 8, 0xCC;"                           \
+        ".align 16, 0xCC;"                          \
         ".if " #arg_count " == 0;"                  \
             "1:;"                                   \
             "push ecx;"                             \

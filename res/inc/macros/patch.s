@@ -85,7 +85,7 @@
     .endif
     
     .section .text
-    .align 8, 0xCC
+    .align 16, 0xCC
     _dest\addr\():
 .endm
 
