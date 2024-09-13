@@ -15,8 +15,8 @@ ifeq ($(DESTDIR)$(PREFIX),)
 	PREFIX := /usr/local
 endif
 
-SRCS   := $(wildcard src/*.c)
-OBJS   := $(SRCS:c=o) src/incbin.o
+SRCS   := $(wildcard src/*.c) src/incbin.S
+OBJS   := $(addsuffix .o, $(basename $(SRCS)))
 
 .PHONY: clean all install
 all: $(TARGET)
