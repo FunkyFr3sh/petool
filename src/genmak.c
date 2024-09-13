@@ -77,7 +77,7 @@ int genmak(int argc, char **argv)
         fprintf(ofh, " -Wl,--section-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.SectionAlignment);
 
     //if (nt_hdr->OptionalHeader.FileAlignment != 0x200)
-        fprintf(ofh, " -Wl,--file-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.FileAlignment);
+    fprintf(ofh, " -Wl,--file-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.FileAlignment);
 
     if (nt_hdr->OptionalHeader.ImageBase != 0x00400000)
         fprintf(ofh, " -Wl,--image-base=0x%08"PRIX32"", nt_hdr->OptionalHeader.ImageBase);
