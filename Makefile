@@ -25,7 +25,7 @@ $(TARGET): $(OBJS)
 	$(CC) -o $@ $^
 
 clean:
-	$(RM) $(TARGET) $(OBJS)
+	$(RM) $(TARGET) $(OBJS) || del $(TARGET) $(subst /,\\,$(OBJS))
 
 install: $(TARGET)
 	install $(TARGET) $(DESTDIR)$(PREFIX)/bin/
