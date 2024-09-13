@@ -1,7 +1,7 @@
 -include config.mk
 
 TARGET  ?= petool
-REV     := $(shell git rev-parse --short @{0})
+REV     := $(shell git describe --match=NeVeRmAtCh --always --dirty)
 STRIP   ?= strip
 CFLAGS  ?= -std=c99 -pedantic -Wall -Wextra -DREV=\"$(REV)\"
 
