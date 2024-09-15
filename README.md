@@ -149,7 +149,7 @@ Example:
 
     /* 
         Clear all bytes from the start of the function (0x410000) up to the end of the function (0x410200) 
-        AND do a (far) jump from 0x410000 to label doMagic 
+        AND do a long jump from 0x410000 to label doMagic 
     */`
     DETOUR(0x410000, 0x410200, _doMagic);
 
@@ -172,7 +172,7 @@ You can also keep the original function intact by clearing only the first
 instructions (just to make enough space for the 5 byte jump to fit) and afterwards 
 create a trampoline in sym.cpp to restore the instructions that were removed.
 
-    /* Clear first two instructions AND do a (far) jump from 0x410000 to label doMagic */`
+    /* Clear first two instructions AND do a long jump from 0x410000 to label doMagic */`
     DETOUR(0x410000, 0x410007, _doMagic);
 
     EXTERN_C void doMagic(int arg1, int arg2, int arg3)
@@ -261,7 +261,7 @@ When you make a `LJMP` or anything else over the original code that would
 leave some instructions broken or a dead code block, consider clearing the area
 before writing the jump. It ensures when you or someone else is following the
 code in a disassembler or a debugger that they will not get confused by sudden
-far jumps which have broken instructions just after them.
+long jumps which have broken instructions just after them.
 
     CLEAR(<from>, <byte>, <to>);
     CLEAR_NOP(<from>, <to>);
@@ -287,6 +287,8 @@ Change values at a given location.
     SETWORD(<addr>, <value>);
     SETBYTE(<addr>, <value>);
     SETBYTES(<addr>, <value>);
+    SETFLOAT(<addr>, <value>);
+    SETDOUBLE(<addr>, <value>);
 
 Example:
 
@@ -304,6 +306,12 @@ Example:
 
     /* Change string at 0x410000 to HelloWorld */`
     SETBYTES(0x410000, "HelloWorld\0");
+    
+    /* Change float value at 0x410000 to 1.2 */`
+    SETFLOAT(0x410000, 1.2);
+    
+    /* Change double value at 0x410000 to 1.2 */`
+    SETDOUBLE(0x410000, 1.2);
 
 Note: These macros are NOT available for `NASM` and `GNU as` but the same can be done via `@SET` instead
 
