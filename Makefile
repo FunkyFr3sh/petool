@@ -3,6 +3,7 @@
 TARGET  ?= petool
 REV     := $(shell git describe --match=NeVeRmAtCh --always --dirty)
 CFLAGS  ?= -O2 -std=c99 -pedantic -Wall -Wextra -DREV=\"$(REV)\"
+LDFLAGS ?= -s
 
 ifeq ($(DESTDIR)$(PREFIX),)
 	PREFIX := /usr/local
@@ -21,7 +22,7 @@ OBJS   := $(addsuffix .o, $(basename $(SRCS)))
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $^
+	$(CC) $(LDFLAGS) -o $@ $^
 
 clean:
 	$(RM) $(TARGET) $(OBJS) || del $(TARGET) $(subst /,\\,$(OBJS))
