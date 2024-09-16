@@ -15,6 +15,12 @@ ifeq ($(DESTDIR)$(PREFIX),)
 	PREFIX := /usr/local
 endif
 
+ifneq ($(CROSS_COMPILE),)
+CC       = $(CROSS_COMPILE)gcc
+AS       = $(CROSS_COMPILE)as
+STRIP    = $(CROSS_COMPILE)strip
+endif
+
 SRCS   := $(wildcard src/*.c) src/incbin.S
 OBJS   := $(addsuffix .o, $(basename $(SRCS)))
 
