@@ -19,6 +19,10 @@
 #include <string.h>
 #include "common.h"
 
+#if !defined(REV)
+#define REV ""
+#endif
+
 int dump(int argc, char **argv);
 int genlds(int argc, char **argv);
 int pe2obj(int argc, char **argv);

@@ -2,14 +2,7 @@
 
 TARGET  ?= petool
 REV     := $(shell git describe --match=NeVeRmAtCh --always --dirty)
-STRIP   ?= strip
-CFLAGS  ?= -std=c99 -pedantic -Wall -Wextra -DREV=\"$(REV)\"
-
-ifdef DEBUG
-	CFLAGS  += -ggdb
-else
-	CFLAGS  += -O2
-endif
+CFLAGS  ?= -O2 -std=c99 -pedantic -Wall -Wextra -DREV=\"$(REV)\"
 
 ifeq ($(DESTDIR)$(PREFIX),)
 	PREFIX := /usr/local
