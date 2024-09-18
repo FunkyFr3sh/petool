@@ -19,10 +19,6 @@
 #include <string.h>
 #include "common.h"
 
-#if !defined(REV)
-#define REV ""
-#endif
-
 int dump(int argc, char **argv);
 int genlds(int argc, char **argv);
 int pe2obj(int argc, char **argv);
@@ -40,7 +36,7 @@ int genprj(int argc, char **argv);
 
 void help(char *progname)
 {
-    fprintf(stderr, "petool git~%s (c) 2013 - 2024 Toni Spets, Ericson2314, FunkyFr3sh\n", REV);
+    fprintf(stderr, "petool git~%s (c) 2013 - 2024 Toni Spets, Ericson2314, FunkyFr3sh\n", GIT_COMMIT);
     fprintf(stderr, "https://github.com/FunkyFr3sh/petool\n\n");
     fprintf(stderr, "usage: %s <command> [args ...]\n\n", progname);
     fprintf(stderr, "commands:"                                                 "\n"

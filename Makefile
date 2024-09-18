@@ -1,12 +1,14 @@
 -include config.mk
 
 TARGET  ?= petool
-REV     := $(shell git describe --match=NeVeRmAtCh --always --dirty)
-CFLAGS  ?= -O2 -std=c99 -pedantic -Wall -Wextra -DREV=\"$(REV)\"
+CFLAGS  ?= -O2 -std=c99 -pedantic -Wall -Wextra
 LDFLAGS ?= -s
 
+COMMIT  := $(shell git describe --match=NeVeRmAtCh --always --dirty)
+CFLAGS  += -DGIT_COMMIT=\"$(COMMIT)\"
+
 ifeq ($(DESTDIR)$(PREFIX),)
-PREFIX  := /usr/local
+PREFIX   = /usr/local
 endif
 
 ifneq ($(CROSS_COMPILE),)
