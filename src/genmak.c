@@ -71,13 +71,13 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "LDFLAGS     =");
+    fprintf(ofh, "LDFLAGS    ?=");
 
     if (nt_hdr->OptionalHeader.SectionAlignment != 0x1000)
         fprintf(ofh, " -Wl,--section-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.SectionAlignment);
 
-    //if (nt_hdr->OptionalHeader.FileAlignment != 0x200)
-    fprintf(ofh, " -Wl,--file-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.FileAlignment);
+    if (nt_hdr->OptionalHeader.FileAlignment != 0x200)
+        fprintf(ofh, " -Wl,--file-alignment=0x%"PRIX32"", nt_hdr->OptionalHeader.FileAlignment);
 
     if (nt_hdr->OptionalHeader.ImageBase != 0x00400000)
         fprintf(ofh, " -Wl,--image-base=0x%08"PRIX32"", nt_hdr->OptionalHeader.ImageBase);
@@ -92,10 +92,10 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "\n");
 
-    fprintf(ofh, "ASFLAGS     = -Iinc\n");
-    fprintf(ofh, "NFLAGS      = -Iinc -f elf\n");
-    fprintf(ofh, "CFLAGS      = -Iinc -O2 -march=pentium4 -Wall -masm=intel\n");
-    fprintf(ofh, "CXXFLAGS    = -Iinc -O2 -march=pentium4 -Wall -masm=intel\n");
+    fprintf(ofh, "ASFLAGS    ?= -Iinc\n");
+    fprintf(ofh, "NFLAGS     ?= -Iinc -f elf\n");
+    fprintf(ofh, "CFLAGS     ?= -Iinc -O2 -Wall -masm=intel\n");
+    fprintf(ofh, "CXXFLAGS   ?= -Iinc -O2 -Wall -masm=intel\n");
 
     fprintf(ofh, "\n");
 
