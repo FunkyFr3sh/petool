@@ -94,8 +94,8 @@ int genmak(int argc, char **argv)
 
     fprintf(ofh, "ASFLAGS    ?= -Iinc\n");
     fprintf(ofh, "NFLAGS     ?= -Iinc -f elf\n");
-    fprintf(ofh, "CFLAGS     ?= -Iinc -O2 -Wall -masm=intel\n");
-    fprintf(ofh, "CXXFLAGS   ?= -Iinc -O2 -Wall -masm=intel\n");
+    fprintf(ofh, "CFLAGS     ?= -Iinc -O2 -march=pentium4 -Wall -masm=intel\n");
+    fprintf(ofh, "CXXFLAGS   ?= -Iinc -O2 -march=pentium4 -Wall -masm=intel\n");
 
     fprintf(ofh, "\n");
 
