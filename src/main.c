@@ -33,6 +33,7 @@ int re2obj(int argc, char **argv);
 int genmak(int argc, char **argv);
 int gensym(int argc, char** argv);
 int genprj(int argc, char **argv);
+int genpatch(int argc, char** argv);
 
 void help(char *progname)
 {
@@ -40,21 +41,22 @@ void help(char *progname)
     fprintf(stderr, "https://github.com/FunkyFr3sh/petool\n\n");
     fprintf(stderr, "usage: %s <command> [args ...]\n\n", progname);
     fprintf(stderr, "commands:"                                                 "\n"
-            "    dump   -- dump information about section of executable"        "\n"
-            "    genlds -- generate GNU ld script for re-linking executable"    "\n"
-            "    pe2obj -- convert PE executable into win32 object file"        "\n"
-            "    patch  -- apply a patch set from the .patch section"           "\n"
-            "    setdd  -- set any DataDirectory in PE header"                  "\n"
-            "    setvs  -- set VirtualSize for a section"                       "\n"
-            "    setsc  -- set Characteristics for a section"                   "\n"
-            "    setts  -- set TimeDateStamp in FileHeader"                     "\n"
-            "    export -- export section data as raw binary"                   "\n"
-            "    import -- dump the import table as assembly"                   "\n"
-            "    re2obj -- convert the resource section into COFF object"       "\n"
-            "    genmak -- generate project Makefile"                           "\n"
-            "    gensym -- generate full sym.cpp with all imports"              "\n"
-            "    genprj -- generate full project directory"                     "\n"
-            "    help   -- this information"                                    "\n"
+            "    dump     -- dump information about section of executable"        "\n"
+            "    genlds   -- generate GNU ld script for re-linking executable"    "\n"
+            "    pe2obj   -- convert PE executable into win32 object file"        "\n"
+            "    patch    -- apply a patch set from the .patch section"           "\n"
+            "    setdd    -- set any DataDirectory in PE header"                  "\n"
+            "    setvs    -- set VirtualSize for a section"                       "\n"
+            "    setsc    -- set Characteristics for a section"                   "\n"
+            "    setts    -- set TimeDateStamp in FileHeader"                     "\n"
+            "    export   -- export section data as raw binary"                   "\n"
+            "    import   -- dump the import table as assembly"                   "\n"
+            "    re2obj   -- convert the resource section into COFF object"       "\n"
+            "    genmak   -- generate project Makefile"                           "\n"
+            "    gensym   -- generate full sym.cpp with all imports"              "\n"
+            "    genprj   -- generate full project directory"                     "\n"
+            "    genpatch -- compare 2 executable files and generate patch macros""\n"
+            "    help     -- this information"                                    "\n"
     );
 }
 
@@ -81,10 +83,16 @@ int main(int argc, char **argv)
     else if (strcmp(argv[1], "genmak") == 0) return genmak (argc - 1, argv + 1);
     else if (strcmp(argv[1], "gensym") == 0) return gensym (argc - 1, argv + 1);
     else if (strcmp(argv[1], "genprj") == 0) return genprj (argc - 1, argv + 1);
+    else if (strcmp(argv[1], "genpatch") == 0) return genpatch(argc - 1, argv + 1);
     else if (strcmp(argv[1], "help")   == 0)
     {
         help(argv[0]);
         return EXIT_SUCCESS;
+    }
+    else if (argc == 3 && file_exists(argv[1]) && file_exists(argv[2]))
+    {
+        char* cmd_argv[3] = { "genpatch", argv[1], argv[2] };
+        return genpatch(3, cmd_argv);
     }
     else
     {
