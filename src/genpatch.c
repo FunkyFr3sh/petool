@@ -121,7 +121,7 @@ int genpatch(int argc, char** argv)
     else
     {
         static char path[MAX_PATH];
-        FAIL_IF(_snprintf(path, sizeof(path) -1, "%s-diff.txt", argv[1]) < 0, "Fail - Path truncated\n");
+        FAIL_IF(_snprintf(path, sizeof(path) -1, "%s-patch.txt", argv[1]) < 0, "Fail - Path truncated\n");
 
         ofh = fopen(path, "w");
         FAIL_IF_PERROR(ofh == NULL, "%s");
@@ -152,16 +152,14 @@ int genpatch(int argc, char** argv)
         }
         else if (len != 0)
         {
-            fprintf(
-                ofh, "  SETBYTES(0x%08X + 0x%08X, \"", nt_hdr1->OptionalHeader.ImageBase, offset_to_rva(i - len, nt_hdr1));
+            fprintf(ofh, "  SETBYTES(0x%08X, \"", nt_hdr1->OptionalHeader.ImageBase + offset_to_rva(i - len, nt_hdr1));
             for (uint32_t x = 0; x < len; x++)
             {
                 fprintf(ofh, "\\x%02X", image1[i - (len - x)]);
             }
             fprintf(ofh, "\");\n");
 
-            fprintf(
-                ofh, "  SETBYTES(0x%08X + 0x%08X, \"", nt_hdr2->OptionalHeader.ImageBase, offset_to_rva(i - len, nt_hdr2));
+            fprintf(ofh, "  SETBYTES(0x%08X, \"", nt_hdr2->OptionalHeader.ImageBase + offset_to_rva(i - len, nt_hdr2));
             for (uint32_t x = 0; x < len; x++)
             {
                 fprintf(ofh, "\\x%02X", image2[i - (len - x)]);
