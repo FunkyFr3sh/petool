@@ -5,20 +5,21 @@ Tool to help rebuild and patch 32-bit Windows applications.
 
 ### Tools
 
- - `dump`   - dump information about section of executable
- - `genlds` - generate GNU ld script for re-linking executable
- - `pe2obj` - convert PE executable into win32 object file
- - `patch`  - apply a patch set from the .patch section
- - `setdd`  - set any DataDirectory in PE header
- - `setvs`  - set VirtualSize for a section
- - `setsc`  - set Characteristics for a section
- - `setts`  - set TimeDateStamp in FileHeader
- - `export` - export section data as raw binary
- - `import` - dump the import table as assembly
- - `re2obj` - convert the resource section into COFF object
- - `genmak` - generate project Makefile
- - `gensym` - generate full sym.cpp with all imports
- - `genprj` - generate full project directory (default)
+ - `dump`     - dump information about section of executable
+ - `genlds`   - generate GNU ld script for re-linking executable
+ - `pe2obj`   - convert PE executable into win32 object file
+ - `patch`    - apply a patch set from the .patch section
+ - `setdd`    - set any DataDirectory in PE header
+ - `setvs`    - set VirtualSize for a section
+ - `setsc`    - set Characteristics for a section
+ - `setts`    - set TimeDateStamp in FileHeader
+ - `export`   - export section data as raw binary
+ - `import`   - dump the import table as assembly
+ - `re2obj`   - convert the resource section into COFF object
+ - `genmak`   - generate project Makefile
+ - `gensym`   - generate full sym.cpp with all imports
+ - `genprj`   - generate full project directory (default)
+ - `genpatch` - compare 2 executable files and generate patch macros
 
 Building
 --------------------------------------------------------------------------------
