@@ -127,7 +127,7 @@ int genpatch(int argc, char** argv)
         FAIL_IF_PERROR(ofh == NULL, "%s");
     }
 
-    uint32_t unknown = 0;
+    uint32_t ignored = 0;
 
     fprintf(ofh, "Comparing files %s and %s\n\n", argv[1], argv[2]);
 
@@ -141,7 +141,7 @@ int genpatch(int argc, char** argv)
                 if (!section_from_offset(i, nt_hdr1, section, sizeof(section)))
                 {
                     // Not within a section (fileheader/debuginfo/cert etc...) - ignored
-                    unknown++;
+                    ignored++;
                     continue;
                 }
 
@@ -177,9 +177,9 @@ int genpatch(int argc, char** argv)
         fprintf(ofh, "\nWARNING: file1 size does not match file2 size\n");
     }
 
-    if (unknown > 0)
+    if (ignored > 0)
     {
-        fprintf(ofh, "\nWARNING: %u bytes ignored (bytes not within a valid section)\n", unknown);
+        fprintf(ofh, "\nWARNING: %u bytes ignored (data not within a section)\n", ignored);
     }
 
 cleanup:
