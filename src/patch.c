@@ -128,7 +128,7 @@ int patch(int argc, char **argv)
         }
         else
         {
-            //hack for bug in binutils - make sure vsize equals rawsize so we don't lose any data
+            //hack for bug in binutils - make sure vsize is not less than rawsize so we don't lose any data on strip
             if (sct_hdr->Misc.VirtualSize && sct_hdr->SizeOfRawData > sct_hdr->Misc.VirtualSize)
             {
                 sct_hdr->Misc.VirtualSize = sct_hdr->SizeOfRawData;
