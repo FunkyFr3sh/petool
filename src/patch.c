@@ -125,10 +125,15 @@ int patch(int argc, char **argv)
         {
             patch = image + sct_hdr->PointerToRawData;
             patch_len = sct_hdr->Misc.VirtualSize;
-            break;
         }
-
-        sct_hdr++;
+        else
+        {
+            //hack for bug in binutils - make sure vsize equals rawsize so we don't lose any data
+            if (sct_hdr->Misc.VirtualSize && sct_hdr->SizeOfRawData > sct_hdr->Misc.VirtualSize)
+            {
+                sct_hdr->Misc.VirtualSize = sct_hdr->SizeOfRawData;
+            }
+        }
     }
 
     if (patch == NULL)
