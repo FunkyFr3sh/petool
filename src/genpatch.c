@@ -89,15 +89,16 @@ int genpatch(int argc, char** argv)
     uint8_t* image1 = NULL;
     FILE* fh2 = NULL;
     uint8_t* image2 = NULL;
-    FILE* ofh = NULL;
+    FILE* ofh1 = NULL;
+    FILE* ofh2 = NULL;
 
-    FAIL_IF(argc < 3, "usage: petool genpatch <image1> <image2> [ofile]\n");
+    FAIL_IF(argc < 3, "usage: petool genpatch <image1> <image2> [ofile1] [ofile2]\n");
 
     uint32_t length1;
     FAIL_IF_SILENT(open_and_read(&fh1, (int8_t**)&image1, &length1, argv[1], "rb"));
 
-    PIMAGE_DOS_HEADER dos_hdr1 = (void *)image1;
-    PIMAGE_NT_HEADERS nt_hdr1 = (void *)(image1 + dos_hdr1->e_lfanew);
+    PIMAGE_DOS_HEADER dos_hdr1 = (void*)image1;
+    PIMAGE_NT_HEADERS nt_hdr1 = (void*)(image1 + dos_hdr1->e_lfanew);
 
     FAIL_IF(length1 < 512, "File1 too small.\n");
     FAIL_IF(dos_hdr1->e_magic != IMAGE_DOS_SIGNATURE, "File1 DOS signature invalid.\n");
@@ -113,23 +114,36 @@ int genpatch(int argc, char** argv)
     FAIL_IF(dos_hdr2->e_magic != IMAGE_DOS_SIGNATURE, "File2 DOS signature invalid.\n");
     FAIL_IF(nt_hdr2->Signature != IMAGE_NT_SIGNATURE, "File2 NT signature invalid.\n");
 
-    if (argc > 3)
+    if (argc > 4)
     {
-        ofh = fopen(argv[3], "w");
-        FAIL_IF_PERROR(ofh == NULL, "%s");
+        ofh1 = fopen(argv[3], "w");
+        FAIL_IF_PERROR(ofh1 == NULL, "%s");
+
+        ofh2 = fopen(argv[4], "w");
+        FAIL_IF_PERROR(ofh2 == NULL, "%s");
     }
     else
     {
         static char path[MAX_PATH];
-        FAIL_IF(_snprintf(path, sizeof(path) -1, "%s-patch.txt", argv[1]) < 0, "Fail - Path truncated\n");
+        FAIL_IF(_snprintf(path, sizeof(path) - 1, "%s-patch.cpp", argv[1]) < 0, "Fail - Path1 truncated\n");
 
-        ofh = fopen(path, "w");
-        FAIL_IF_PERROR(ofh == NULL, "%s");
+        ofh1 = fopen(path, "w");
+        FAIL_IF_PERROR(ofh1 == NULL, "%s");
+
+        FAIL_IF(_snprintf(path, sizeof(path) - 1, "%s-patch.cpp", argv[2]) < 0, "Fail - Path2 truncated\n");
+
+        ofh2 = fopen(path, "w");
+        FAIL_IF_PERROR(ofh2 == NULL, "%s");
     }
 
     uint32_t ignored = 0;
+    char section[12] = { 0 };
 
-    fprintf(ofh, "Comparing files %s and %s\n\n", argv[1], argv[2]);
+    fprintf(ofh1, "#include \"macros/patch.h\"\n\n");
+    fprintf(ofh1, "//%s -> %s\n\n", argv[1], argv[2]);
+
+    fprintf(ofh2, "#include \"macros/patch.h\"\n\n");
+    fprintf(ofh2, "//%s -> %s\n\n", argv[2], argv[1]);
 
     for (uint32_t i = 0, len = 0; i < length1 && i < length2; i++)
     {
@@ -137,34 +151,31 @@ int genpatch(int argc, char** argv)
         {
             if (len == 0)
             {
-                char section[12] = { 0 };
                 if (!section_from_offset(i, nt_hdr1, section, sizeof(section)))
                 {
                     // Not within a section (fileheader/debuginfo/cert etc...) - ignored
                     ignored++;
                     continue;
                 }
-
-                fprintf(ofh, "%08X (%s):\n", i, section);
             }
 
             len++;
         }
         else if (len != 0)
         {
-            fprintf(ofh, "    SETBYTES(0x%08X, \"", nt_hdr1->OptionalHeader.ImageBase + offset_to_rva(i - len, nt_hdr1));
+            fprintf(ofh1, "SETBYTES(0x%08X, \"", nt_hdr1->OptionalHeader.ImageBase + offset_to_rva(i - len, nt_hdr1));
             for (uint32_t x = 0; x < len; x++)
             {
-                fprintf(ofh, "\\x%02X", image1[i - (len - x)]);
+                fprintf(ofh1, "\\x%02X", image2[i - (len - x)]);
             }
-            fprintf(ofh, "\");\n");
+            fprintf(ofh1, "\"); //%08X (%s)\n", i - len, section);
 
-            fprintf(ofh, "    SETBYTES(0x%08X, \"", nt_hdr2->OptionalHeader.ImageBase + offset_to_rva(i - len, nt_hdr2));
+            fprintf(ofh2, "SETBYTES(0x%08X, \"", nt_hdr2->OptionalHeader.ImageBase + offset_to_rva(i - len, nt_hdr2));
             for (uint32_t x = 0; x < len; x++)
             {
-                fprintf(ofh, "\\x%02X", image2[i - (len - x)]);
+                fprintf(ofh2, "\\x%02X", image1[i - (len - x)]);
             }
-            fprintf(ofh, "\");\n");
+            fprintf(ofh2, "\"); //%08X (%s)\n", i - len, section);
 
             len = 0;
         }
@@ -172,12 +183,16 @@ int genpatch(int argc, char** argv)
 
     if (length1 != length2)
     {
-        fprintf(ofh, "\nWARNING: file1 size does not match file2 size\n");
+        char s[] = "\n//WARNING: file1 size does not match file2 size\n";
+        fprintf(ofh1, s);
+        fprintf(ofh2, s);
     }
 
     if (ignored > 0)
     {
-        fprintf(ofh, "\nWARNING: %u bytes ignored (data not within a section)\n", ignored);
+        char s[] = "\n//WARNING: %u bytes ignored (data not within a section)\n";
+        fprintf(ofh1, s, ignored);
+        fprintf(ofh2, s, ignored);
     }
 
 cleanup:
@@ -185,6 +200,7 @@ cleanup:
     if (fh1) fclose(fh1);
     if (image2) free(image2);
     if (fh2) fclose(fh2);
-    if (ofh) fclose(ofh);
+    if (ofh1) fclose(ofh1);
+    if (ofh2) fclose(ofh2);
     return ret;
 }
