@@ -90,6 +90,26 @@ static inline void patch_setbytes(char *dst, char *buf, size_t size)
 
 #define PATCH_SET(a,b) patch_setbytes(a,b,sizeof(b)-1)
 
+static inline float patch_setfloat(float *dst, float value)
+{
+    DWORD op = PAGE_EXECUTE_READ;
+    VirtualProtect(dst, sizeof(float), PAGE_EXECUTE_READWRITE, &op);
+    float org = *dst;
+    *dst = value; 
+    VirtualProtect(dst, sizeof(float), op, &op);
+    return org;
+}
+
+static inline double patch_setdouble(double *dst, double value)
+{
+    DWORD op = PAGE_EXECUTE_READ;
+    VirtualProtect(dst, sizeof(double), PAGE_EXECUTE_READWRITE, &op);
+    double org = *dst;
+    *dst = value; 
+    VirtualProtect(dst, sizeof(double), op, &op);
+    return org;
+}
+
 static inline void patch_clear_nop(char *start, char *end)
 {
     patch_clear(start, '\x90', end);
