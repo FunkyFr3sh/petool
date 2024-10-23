@@ -57,7 +57,7 @@ uint32_t offset_to_rva(uint32_t address, PIMAGE_NT_HEADERS nt_hdr)
         }
     }
 
-    return address;
+    return (1 << 31);
 }
 
 bool section_from_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr, char* section, uint32_t size)
