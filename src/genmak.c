@@ -233,7 +233,7 @@ int genmak(int argc, char **argv)
         nt_hdr->OptionalHeader.DataDirectory[1].Size)
     {
         /* IAT must be set or PE loader will fail to initialize the imports when they're in a read-only section */
-        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
+        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
         IMAGE_IMPORT_DESCRIPTOR* i = (void*)(image + offset);
 
         uint32_t iat_start = UINT32_MAX;
@@ -249,7 +249,7 @@ int genmak(int argc, char **argv)
         if (iat_end)
         {
             PIMAGE_THUNK_DATA32 ft =
-                (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + iat_end, nt_hdr));
+                (PIMAGE_THUNK_DATA32)(image + rva_to_offset(iat_end, nt_hdr));
 
             while (ft->u1.Function)
             {

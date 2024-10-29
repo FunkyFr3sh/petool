@@ -326,12 +326,12 @@ int genlds(int argc, char **argv)
     {
         fprintf(ofh, "\n");
 
-        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
+        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
         IMAGE_IMPORT_DESCRIPTOR* i = (void*)(image + offset);
 
         while (i->FirstThunk) {
             if (i->Name != 0) {
-                char* name = (char*)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->Name, nt_hdr));
+                char* name = (char*)(image + rva_to_offset(i->Name, nt_hdr));
                 fprintf(ofh, "    /* %s */\n", name);
             }
 

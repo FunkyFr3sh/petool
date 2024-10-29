@@ -64,7 +64,7 @@ int gensym(int argc, char** argv)
     {
         fprintf(ofh, "/* imports */\n\n");
 
-        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
+        uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
         IMAGE_IMPORT_DESCRIPTOR* i = (void*)(image + offset);
 
         while (i->FirstThunk) {
@@ -73,7 +73,7 @@ int gensym(int argc, char** argv)
             if (i->Name != 0) {
                 strncpy(
                     name,
-                    (char*)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->Name, nt_hdr)),
+                    (char*)(image + rva_to_offset(i->Name, nt_hdr)),
                     sizeof name - 1
                 );
                 
@@ -83,14 +83,14 @@ int gensym(int argc, char** argv)
             uint32_t thunk = i->OriginalFirstThunk ? i->OriginalFirstThunk : i->FirstThunk;
 
             PIMAGE_THUNK_DATA32 ft =
-                (PIMAGE_THUNK_DATA32)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + thunk, nt_hdr));
+                (PIMAGE_THUNK_DATA32)(image + rva_to_offset(thunk, nt_hdr));
 
             uint32_t function = nt_hdr->OptionalHeader.ImageBase + i->FirstThunk;
 
             while (ft->u1.AddressOfData)
             {
                 PIMAGE_IMPORT_BY_NAME import =
-                    (PIMAGE_IMPORT_BY_NAME)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + ft->u1.AddressOfData, nt_hdr));
+                    (PIMAGE_IMPORT_BY_NAME)(image + rva_to_offset(ft->u1.AddressOfData, nt_hdr));
 
                 if ((ft->u1.Ordinal & IMAGE_ORDINAL_FLAG32) == 0)
                 {

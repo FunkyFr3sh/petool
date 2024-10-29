@@ -33,13 +33,13 @@ uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr)
     {
         PIMAGE_SECTION_HEADER sct_hdr = IMAGE_FIRST_SECTION(nt_hdr) + i;
 
-        if (sct_hdr->VirtualAddress + nt_hdr->OptionalHeader.ImageBase <= address && address < sct_hdr->VirtualAddress + nt_hdr->OptionalHeader.ImageBase + sct_hdr->SizeOfRawData)
+        if (sct_hdr->VirtualAddress <= address && address < sct_hdr->VirtualAddress + sct_hdr->SizeOfRawData)
         {
-            return sct_hdr->PointerToRawData + (address - (sct_hdr->VirtualAddress + nt_hdr->OptionalHeader.ImageBase));
+            return sct_hdr->PointerToRawData + (address - sct_hdr->VirtualAddress);
         }
     }
 
-    return 0;
+    return address;
 }
 
 int import(int argc, char **argv)
@@ -68,7 +68,7 @@ int import(int argc, char **argv)
     FAIL_IF (nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 2, "Not enough DataDirectories.\n");
     FAIL_IF (!nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, "No import directory in executable.\n");
 
-    uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.ImageBase + nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
+    uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
     IMAGE_IMPORT_DESCRIPTOR *i = (void *)(image + offset);
 
     if (argc > 2 && toupper(argv[2][0]) == 'N') {
@@ -79,7 +79,7 @@ int import(int argc, char **argv)
 
         while (1) {
             if (i->Name != 0) {
-                char *name = (char *)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->Name, nt_hdr));
+                char *name = (char *)(image + rva_to_offset(i->Name, nt_hdr));
                 fprintf(ofh, "; %s\n", name);
             } else {
                 fprintf(ofh, "; END\n");
@@ -105,7 +105,7 @@ int import(int argc, char **argv)
 
         while (1) {
             if (i->Name != 0) {
-                char *name = (char *)(image + rva_to_offset(nt_hdr->OptionalHeader.ImageBase + i->Name, nt_hdr));
+                char *name = (char *)(image + rva_to_offset(i->Name, nt_hdr));
                 fprintf(ofh, "/* %s */\n", name);
             } else {
                 fprintf(ofh, "/* END */\n");
