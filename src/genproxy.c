@@ -256,7 +256,7 @@ int genproxy_def(int argc, char** argv, bool forward)
             {
                 if (forward)
                 {
-                    fprintf(ofh, "    %-40s = %s.%-40s PRIVATE\n", name, base, name);
+                    fprintf(ofh, "    %-40s = %sx.%-40s PRIVATE\n", name, base, name);
                 }
                 else
                 {
@@ -267,7 +267,7 @@ int genproxy_def(int argc, char** argv, bool forward)
             {
                 if (forward)
                 {
-                    fprintf(ofh, "    %-40s = %s.%-40s @%u\n", name, base, name, export_dir->Base + i);
+                    fprintf(ofh, "    %-40s = %sx.%-40s @%u\n", name, base, name, export_dir->Base + i);
                 }
                 else
                 {
@@ -280,7 +280,7 @@ int genproxy_def(int argc, char** argv, bool forward)
             if (forward)
             {
                 // forwaring to ordinal is not supported by GNU ld right now
-                //fprintf(ofh, "    %-40s = %s.#%-40u @%u NONAME\n", name, base, export_dir->Base + i, export_dir->Base + i);
+                //fprintf(ofh, "    %-40s = %sx.#%-40u @%u NONAME\n", name, base, export_dir->Base + i, export_dir->Base + i);
             }
             else
             {
@@ -506,17 +506,17 @@ int genproxy_dllmain(int argc, char** argv)
 
             if (is_private)
             {
-                fprintf(ofh, "#pragma comment(linker, \"/export:%s=%s.%s,PRIVATE\")\n", name, base, name);
+                fprintf(ofh, "#pragma comment(linker, \"/export:%s=%sx.%s,PRIVATE\")\n", name, base, name);
             }
             else
             {
-                fprintf(ofh, "#pragma comment(linker, \"/export:%s=%s.%s,@%u\")\n", name, base, name, export_dir->Base + i);
+                fprintf(ofh, "#pragma comment(linker, \"/export:%s=%sx.%s,@%u\")\n", name, base, name, export_dir->Base + i);
             }
         }
         else
         {
             uint32_t ord = export_dir->Base + i;
-            fprintf(ofh, "#pragma comment(linker, \"/export:__export_%u=%s.#%u,@%u,NONAME\")\n", i, base, ord, ord);
+            fprintf(ofh, "#pragma comment(linker, \"/export:__export_%u=%sx.#%u,@%u,NONAME\")\n", i, base, ord, ord);
         }
     }
 
