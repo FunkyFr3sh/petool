@@ -1,3 +1,5 @@
+// LICENSE = BSD0 - https://github.com/FunkyFr3sh/petool
+
 %include "macros/extern.inc"
 
 %assign true 1

@@ -1,3 +1,5 @@
+// LICENSE = BSD0 - https://github.com/FunkyFr3sh/petool
+
 #define CDECL_TO_WATCALL(addr, arg_count)            \
         "push ebx;"                                  \
         "push ebp;"                                  \

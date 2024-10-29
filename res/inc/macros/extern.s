@@ -1,3 +1,4 @@
+// LICENSE = BSD0 - https://github.com/FunkyFr3sh/petool
 
 .macro cglobal name
     .global _\name

@@ -1,3 +1,4 @@
+// LICENSE = BSD0 - https://github.com/FunkyFr3sh/petool
 
 #define PATCH_START(patchaddr)                      \
         ".section .patch,\"d0\";"                   \
