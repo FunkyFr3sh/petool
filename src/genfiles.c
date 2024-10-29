@@ -36,6 +36,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "cleanup.h"
+
 extern const char res_gitignore[];
 extern const char res_build_cmd[];
 extern const char res_readme_md[];
@@ -52,7 +54,7 @@ extern const char res_inc_macros_patch_inc[];
 extern const char res_inc_macros_setsym_h[];
 extern const char res_inc_macros_patch_s[];
 
-void extract_resource(const char* src, char* file_path);
+int extract_resource(const char* src, char* file_path);
 
 int genfiles(char *dir)
 {
@@ -63,82 +65,94 @@ int genfiles(char *dir)
     /* Optional files and examples - No error checking required here*/
     snprintf(buf, sizeof buf, "%s/.gitignore", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_gitignore, buf);
+    FAIL_IF(extract_resource(res_gitignore, buf) != EXIT_SUCCESS, "Failed to create .gitignore\n");
 
     snprintf(buf, sizeof buf, "%s/build.cmd", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_build_cmd, buf);
+    FAIL_IF(extract_resource(res_build_cmd, buf) != EXIT_SUCCESS, "Failed to create build.cmd\n");
 
     snprintf(buf, sizeof buf, "%s/README.md", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_readme_md, buf);
+    FAIL_IF(extract_resource(res_readme_md, buf) != EXIT_SUCCESS, "Failed to create README.md\n");
 
     snprintf(buf, sizeof buf, "%s/src", dir);
     _mkdir(buf);
 
     snprintf(buf, sizeof buf, "%s/src/winmain.cpp", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_src_winmain_c, buf);
+    FAIL_IF(extract_resource(res_src_winmain_c, buf) != EXIT_SUCCESS, "Failed to create winmain.cpp\n");
 
     snprintf(buf, sizeof buf, "%s/inc", dir);
     _mkdir(buf);
 
     snprintf(buf, sizeof buf, "%s/inc/app.h", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_app_h, buf);
+    FAIL_IF(extract_resource(res_inc_app_h, buf) != EXIT_SUCCESS, "Failed to create app.h\n");
 
     snprintf(buf, sizeof buf, "%s/inc/app.inc", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_app_inc, buf);
+    FAIL_IF(extract_resource(res_inc_app_inc, buf) != EXIT_SUCCESS, "Failed to create app.inc\n");
 
     snprintf(buf, sizeof buf, "%s/inc/patch.h", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_patch_h, buf);
+    FAIL_IF(extract_resource(res_inc_patch_h, buf) != EXIT_SUCCESS, "Failed to create patch.h\n");
 
     snprintf(buf, sizeof buf, "%s/inc/macros", dir);
     _mkdir(buf);
 
     snprintf(buf, sizeof buf, "%s/inc/macros/datatypes.inc", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_datatypes_inc, buf);
+    FAIL_IF(extract_resource(res_inc_macros_datatypes_inc, buf) != EXIT_SUCCESS, "Failed to create datatypes.inc\n");
 
     snprintf(buf, sizeof buf, "%s/inc/macros/datatypes.s", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_datatypes_s, buf);
+    FAIL_IF(extract_resource(res_inc_macros_datatypes_s, buf) != EXIT_SUCCESS, "Failed to create datatypes.s\n");
 
     snprintf(buf, sizeof buf, "%s/inc/macros/extern.inc", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_extern_inc, buf);
+    FAIL_IF(extract_resource(res_inc_macros_extern_inc, buf) != EXIT_SUCCESS, "Failed to create extern.inc\n");
 
     snprintf(buf, sizeof buf, "%s/inc/macros/extern.s", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_extern_s, buf);
+    FAIL_IF(extract_resource(res_inc_macros_extern_s, buf) != EXIT_SUCCESS, "Failed to create extern.s\n");
 
     snprintf(buf, sizeof buf, "%s/inc/macros/patch.h", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_patch_h, buf);
+    FAIL_IF(extract_resource(res_inc_macros_patch_h, buf) != EXIT_SUCCESS, "Failed to create patch.h\n");
 
     snprintf(buf, sizeof buf, "%s/inc/macros/patch.inc", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_patch_inc, buf);
+    FAIL_IF(extract_resource(res_inc_macros_patch_inc, buf) != EXIT_SUCCESS, "Failed to create patch.inc\n");
 
     snprintf(buf, sizeof buf, "%s/inc/macros/setsym.h", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_setsym_h, buf);
+    FAIL_IF(extract_resource(res_inc_macros_setsym_h, buf) != EXIT_SUCCESS, "Failed to create setsym.h\n");
 
     snprintf(buf, sizeof buf, "%s/inc/macros/patch.s", dir);
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_macros_patch_s, buf);
+    FAIL_IF(extract_resource(res_inc_macros_patch_s, buf) != EXIT_SUCCESS, "Failed to create patch.s\n");
 
+cleanup:
     return ret;
 }
 
-void extract_resource(const char* src, char* file_path)
+int extract_resource(const char* src, char* file_path)
 {
-    FILE* fp = fopen(file_path, "wb");
-    if (fp)
+    // decleration before more meaningful initialization for cleanup
+    int     ret = EXIT_SUCCESS;
+
+    FILE* fh = fopen(file_path, "wb");
+    FAIL_IF_SILENT(fh == NULL);
+
+    fputs(src, fh);
+
+    if (ferror(fh))
     {
-        fputs(src, fp);
-        fclose(fp);
+        ret = EXIT_FAILURE;
     }
+
+    fclose(fh);
+
+cleanup:
+    return ret;
 }

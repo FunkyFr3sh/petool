@@ -46,7 +46,7 @@ int genproxy_def(int argc, char** argv, bool forward);
 int genproxy_exports(int argc, char** argv);
 int genproxy_dllmain(int argc, char** argv);
 int genproxy_make(int argc, char** argv, bool forward);
-void extract_resource(const char* src, char* file_path);
+int extract_resource(const char* src, char* file_path);
 uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
 
 extern const char res_proxy_dllmain_cpp[];
@@ -110,23 +110,23 @@ int genproxy(int argc, char **argv)
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/build.cmd", subdir) < 0, "Failed to create build.cmd - Path truncated\n");
     printf("Generating %s...\n", buf);
-    extract_resource(res_build_cmd, buf);
+    FAIL_IF(extract_resource(res_build_cmd, buf) != EXIT_SUCCESS, "Failed to create build.cmd\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/patch.h", subdir) < 0, "Failed to create patch.h - Path truncated\n");
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_patch_h, buf);
+    FAIL_IF(extract_resource(res_inc_patch_h, buf) != EXIT_SUCCESS, "Failed to create patch.h\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/dllmain.cpp", subdir) < 0, "Failed to create dllmain.cpp - Path truncated\n");
     printf("Generating %s...\n", buf);
-    extract_resource(res_proxy_dllmain_cpp, buf);
+    FAIL_IF(extract_resource(res_proxy_dllmain_cpp, buf) != EXIT_SUCCESS, "Failed to create dllmain.cpp\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/%s.vcxproj", subdir, base) < 0, "Failed to create .vcxproj - Path truncated\n");
     printf("Generating %s...\n", buf);
-    extract_resource(res_proxy_vcxproj, buf);
+    FAIL_IF(extract_resource(res_proxy_vcxproj, buf) != EXIT_SUCCESS, "Failed to create .vcxproj\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/res.rc", subdir) < 0, "Failed to create res.rc - Path truncated\n");
     printf("Generating %s...\n", buf);
-    extract_resource(res_proxy_res_rc, buf);
+    FAIL_IF(extract_resource(res_proxy_res_rc, buf) != EXIT_SUCCESS, "Failed to create res.rc\n");
 
 
 
@@ -148,19 +148,19 @@ int genproxy(int argc, char **argv)
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/build.cmd", subdir) < 0, "Failed to create build.cmd - Path truncated\n");
     printf("Generating %s...\n", buf);
-    extract_resource(res_build_cmd, buf);
+    FAIL_IF(extract_resource(res_build_cmd, buf) != EXIT_SUCCESS, "Failed to create build.cmd\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/patch.h", subdir) < 0, "Failed to create patch.h - Path truncated\n");
     printf("Generating %s...\n", buf);
-    extract_resource(res_inc_patch_h, buf);
+    FAIL_IF(extract_resource(res_inc_patch_h, buf) != EXIT_SUCCESS, "Failed to create patch.h\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/%s.vcxproj", subdir, base) < 0, "Failed to create .vcxproj - Path truncated\n");
     printf("Generating %s...\n", buf);
-    extract_resource(res_proxy_vcxproj, buf);
+    FAIL_IF(extract_resource(res_proxy_vcxproj, buf) != EXIT_SUCCESS, "Failed to create .vcxproj\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/res.rc", subdir) < 0, "Failed to create res.rc - Path truncated\n");
     printf("Generating %s...\n", buf);
-    extract_resource(res_proxy_res_rc, buf);
+    FAIL_IF(extract_resource(res_proxy_res_rc, buf) != EXIT_SUCCESS, "Failed to create res.rc\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/%sx.dll", subdir, base) < 0, "Failed to copy original dll - Path truncated\n");
     printf("Copying %s -> %s...\n", argv[1], buf);
