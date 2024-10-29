@@ -140,7 +140,7 @@ int genproxy(int argc, char **argv)
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/dllmain.cpp", subdir) < 0, "Failed to create dllmain.cpp - Path truncated\n");
     printf("Generating %s...\n", buf);
-    FAIL_IF(genproxy_dllmain(3, cmd_argv) != EXIT_SUCCESS, "Failed to create exports.cpp\n");
+    FAIL_IF(genproxy_dllmain(3, cmd_argv) != EXIT_SUCCESS, "Failed to create dllmain.cpp\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/Makefile", subdir) < 0, "Failed to create makefile - Path truncated\n");
     printf("Generating %s...\n", buf);
