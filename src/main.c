@@ -19,6 +19,10 @@
 #include <string.h>
 #include "common.h"
 
+#if !defined(_WIN32)
+#define strcmpi strcasecmp
+#endif
+
 int dump(int argc, char **argv);
 int genlds(int argc, char **argv);
 int pe2obj(int argc, char **argv);
@@ -34,6 +38,7 @@ int genmak(int argc, char **argv);
 int gensym(int argc, char** argv);
 int genprj(int argc, char **argv);
 int genpatch(int argc, char** argv);
+int genproxy(int argc, char** argv);
 
 void help(char *progname)
 {
@@ -56,6 +61,7 @@ void help(char *progname)
             "    gensym   -- generate full sym.cpp with all imports"              "\n"
             "    genprj   -- generate full project directory"                     "\n"
             "    genpatch -- compare 2 executable files and generate patch macros""\n"
+            "    genproxy -- generate proxy dll project directory"                "\n"
             "    help     -- this information"                                    "\n"
     );
 }
@@ -84,6 +90,7 @@ int main(int argc, char **argv)
     else if (strcmp(argv[1], "gensym") == 0) return gensym (argc - 1, argv + 1);
     else if (strcmp(argv[1], "genprj") == 0) return genprj (argc - 1, argv + 1);
     else if (strcmp(argv[1], "genpatch") == 0) return genpatch(argc - 1, argv + 1);
+    else if (strcmp(argv[1], "genproxy") == 0) return genproxy(argc - 1, argv + 1);
     else if (strcmp(argv[1], "help")   == 0)
     {
         help(argv[0]);
@@ -93,6 +100,11 @@ int main(int argc, char **argv)
     {
         char* cmd_argv[3] = { "genpatch", argv[1], argv[2] };
         return genpatch(3, cmd_argv);
+    }
+    else if (argc == 2 && file_exists(argv[1]) && strlen(argv[1]) >= 4 && !strcmpi(argv[1] + strlen(argv[1]) - 4, ".dll"))
+    {
+        char* cmd_argv[2] = { "genproxy", argv[1] };
+        return genproxy(2, cmd_argv);
     }
     else
     {

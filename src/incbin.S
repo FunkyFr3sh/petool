@@ -1,4 +1,9 @@
-
+    .global _res_proxy_dllmain_cpp
+    .global res_proxy_dllmain_cpp
+    .global _res_proxy_res_rc
+    .global res_proxy_res_rc
+    .global _res_proxy_vcxproj
+    .global res_proxy_vcxproj
     .global _res_gitignore
     .global res_gitignore
     .global _res_build_cmd
@@ -31,6 +36,21 @@
     .global res_inc_macros_patch_s
 
     .data
+
+_res_proxy_dllmain_cpp:
+res_proxy_dllmain_cpp:
+    .incbin "res/proxy/dllmain.cpp"
+    .byte 0
+
+_res_proxy_res_rc:
+res_proxy_res_rc:
+    .incbin "res/proxy/res.rc"
+    .byte 0
+
+_res_proxy_vcxproj:
+res_proxy_vcxproj:
+    .incbin "res/proxy/proxy.vcxproj"
+    .byte 0
 
 _res_gitignore:
 res_gitignore:
