@@ -279,7 +279,7 @@ int genproxy_def(int argc, char** argv, bool forward)
         {
             if (forward)
             {
-                // forwaring from ordinal to ordinal is not supported by GNU ld right now
+                // forwaring to ordinal is not supported by GNU ld right now
                 //fprintf(ofh, "    %-40s = %s.#%-40u @%u NONAME\n", name, base, export_dir->Base + i, export_dir->Base + i);
             }
             else
