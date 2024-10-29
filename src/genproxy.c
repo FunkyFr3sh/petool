@@ -42,12 +42,12 @@
 #include "cleanup.h"
 #include "common.h"
 
-int genproxy_def(int argc, char** argv);
+int genproxy_def(int argc, char** argv, bool forward);
 int genproxy_exports(int argc, char** argv);
-int genproxy_make(int argc, char** argv);
+int genproxy_dllmain(int argc, char** argv);
+int genproxy_make(int argc, char** argv, bool forward);
 void extract_resource(const char* src, char* file_path);
 uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
-
 
 extern const char res_proxy_dllmain_cpp[];
 extern const char res_proxy_res_rc[];
@@ -98,7 +98,7 @@ int genproxy(int argc, char **argv)
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/exports.def", subdir) < 0, "Failed to create exports.def - Path truncated\n");
     printf("Generating %s...\n", buf);
-    FAIL_IF(genproxy_def(3, cmd_argv) != EXIT_SUCCESS, "Failed to create exports.def\n");
+    FAIL_IF(genproxy_def(3, cmd_argv, false) != EXIT_SUCCESS, "Failed to create exports.def\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/exports.cpp", subdir) < 0, "Failed to create exports.cpp - Path truncated\n");
     printf("Generating %s...\n", buf);
@@ -106,7 +106,7 @@ int genproxy(int argc, char **argv)
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/Makefile", subdir) < 0, "Failed to create makefile - Path truncated\n");
     printf("Generating %s...\n", buf);
-    FAIL_IF(genproxy_make(3, cmd_argv) != EXIT_SUCCESS, "Failed to create Makefile\n");
+    FAIL_IF(genproxy_make(3, cmd_argv, false) != EXIT_SUCCESS, "Failed to create Makefile\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/build.cmd", subdir) < 0, "Failed to create build.cmd - Path truncated\n");
     printf("Generating %s...\n", buf);
@@ -128,17 +128,56 @@ int genproxy(int argc, char **argv)
     printf("Generating %s...\n", buf);
     extract_resource(res_proxy_res_rc, buf);
 
+
+
+    snprintf(subdir, sizeof subdir, "%s/local", dir);
+
+    FAIL_IF_PERROR(_mkdir(subdir) == -1, "Failed to create output subdirectory");
+
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/exports.def", subdir) < 0, "Failed to create exports.def - Path truncated\n");
+    printf("Generating %s...\n", buf);
+    FAIL_IF(genproxy_def(3, cmd_argv, true) != EXIT_SUCCESS, "Failed to create exports.def\n");
+
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/dllmain.cpp", subdir) < 0, "Failed to create dllmain.cpp - Path truncated\n");
+    printf("Generating %s...\n", buf);
+    FAIL_IF(genproxy_dllmain(3, cmd_argv) != EXIT_SUCCESS, "Failed to create exports.cpp\n");
+
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/Makefile", subdir) < 0, "Failed to create makefile - Path truncated\n");
+    printf("Generating %s...\n", buf);
+    FAIL_IF(genproxy_make(3, cmd_argv, true) != EXIT_SUCCESS, "Failed to create Makefile\n");
+
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/build.cmd", subdir) < 0, "Failed to create build.cmd - Path truncated\n");
+    printf("Generating %s...\n", buf);
+    extract_resource(res_build_cmd, buf);
+
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/patch.h", subdir) < 0, "Failed to create patch.h - Path truncated\n");
+    printf("Generating %s...\n", buf);
+    extract_resource(res_inc_patch_h, buf);
+
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/%s.vcxproj", subdir, base) < 0, "Failed to create .vcxproj - Path truncated\n");
+    printf("Generating %s...\n", buf);
+    extract_resource(res_proxy_vcxproj, buf);
+
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/res.rc", subdir) < 0, "Failed to create res.rc - Path truncated\n");
+    printf("Generating %s...\n", buf);
+    extract_resource(res_proxy_res_rc, buf);
+
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/%sx.dll", subdir, base) < 0, "Failed to copy original dll - Path truncated\n");
+    printf("Copying %s -> %s...\n", argv[1], buf);
+    FAIL_IF(file_copy(argv[1], buf) != EXIT_SUCCESS, "Failed to copy original dll\n");
+
 cleanup:
     return ret;
 }
 
-int genproxy_def(int argc, char** argv)
+int genproxy_def(int argc, char** argv, bool forward)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret = EXIT_SUCCESS;
     FILE* fh = NULL;
     int8_t* image = NULL;
     FILE* ofh = NULL;
+    static char base[MAX_PATH];
 
     FAIL_IF(argc < 3, "usage: genproxy_exports <image> [ofile]\n");
 
@@ -148,6 +187,14 @@ int genproxy_def(int argc, char** argv)
     FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
     ofh = fopen(argv[2], "w");
     FAIL_IF_PERROR(ofh == NULL, "%s");
+
+    memset(base, 0, sizeof base);
+    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
+    char* p = strrchr(base, '.');
+    if (p)
+    {
+        *p = '\0';
+    }
 
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
     PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
@@ -202,16 +249,38 @@ int genproxy_def(int argc, char** argv)
 
             if (is_private)
             {
-                fprintf(ofh, "    %-40s = __export_%-3u PRIVATE\n", name, i);
+                if (forward)
+                {
+                    fprintf(ofh, "    %-40s = %s.%-40s PRIVATE\n", name, base, name);
+                }
+                else
+                {
+                    fprintf(ofh, "    %-40s = __export_%-3u PRIVATE\n", name, i);
+                }
             }
             else
             {
-                fprintf(ofh, "    %-40s = __export_%-3u @%u\n", name, i, export_dir->Base + i);
+                if (forward)
+                {
+                    fprintf(ofh, "    %-40s = %s.%-40s @%u\n", name, base, name, export_dir->Base + i);
+                }
+                else
+                {
+                    fprintf(ofh, "    %-40s = __export_%-3u @%u\n", name, i, export_dir->Base + i);
+                }
             }
         }
         else
         {
-            fprintf(ofh, "    %-40s = __export_%-3u @%u NONAME\n", name, i, export_dir->Base + i);
+            if (forward)
+            {
+                // forwaring from ordinal to ordinal is not supported by GNU ld right now
+                //fprintf(ofh, "    %-40s = %s.#%-40u @%u NONAME\n", name, base, export_dir->Base + i, export_dir->Base + i);
+            }
+            else
+            {
+                fprintf(ofh, "    %-40s = __export_%-3u @%u NONAME\n", name, i, export_dir->Base + i);
+            }
         }
     }
 
@@ -340,13 +409,128 @@ cleanup:
     return ret;
 }
 
-int genproxy_make(int argc, char** argv)
+int genproxy_dllmain(int argc, char** argv)
+{
+    // decleration before more meaningful initialization for cleanup
+    int     ret = EXIT_SUCCESS;
+    FILE* fh = NULL;
+    int8_t* image = NULL;
+    FILE* ofh = NULL;
+    static char base[MAX_PATH];
+
+    FAIL_IF(argc < 3, "usage: genproxy_dllmain <image> [ofile]\n");
+
+    uint32_t length;
+    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
+
+    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
+    ofh = fopen(argv[2], "w");
+    FAIL_IF_PERROR(ofh == NULL, "%s");
+
+    memset(base, 0, sizeof base);
+    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
+    char* p = strrchr(base, '.');
+    if (p)
+    {
+        *p = '\0';
+    }
+
+    PIMAGE_DOS_HEADER dos_hdr = (void*)image;
+    PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
+
+    FAIL_IF(length < 512, "File too small.\n");
+    FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE, "File DOS signature invalid.\n");
+    FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE, "File NT signature invalid.\n");
+    FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 1, "Not enough DataDirectories.\n");
+    FAIL_IF(!nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, "No export directory in dll\n");
+
+    uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, nt_hdr);
+    IMAGE_EXPORT_DIRECTORY* export_dir = (void*)(image + offset);
+
+    fprintf(ofh, "#include <windows.h>\n");
+    fprintf(ofh, "#include \"patch.h\"\n");
+    fprintf(ofh, "\n");
+    fprintf(ofh, "BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)\n");
+    fprintf(ofh, "{\n");
+    fprintf(ofh, "    switch(fdwReason)\n");
+    fprintf(ofh, "    {\n");
+    fprintf(ofh, "    case DLL_PROCESS_ATTACH:\n");
+    fprintf(ofh, "        break;\n");
+    fprintf(ofh, "    case DLL_PROCESS_DETACH:\n");
+    fprintf(ofh, "        break;\n");
+    fprintf(ofh, "    }\n");
+    fprintf(ofh, "    return TRUE;\n");
+    fprintf(ofh, "}\n");
+    fprintf(ofh, "\n");
+    fprintf(ofh, "#if defined(_MSC_VER)\n");
+
+    uint32_t* names = (uint32_t*)(image + rva_to_offset(export_dir->AddressOfNames, nt_hdr));
+    uint16_t* ordinals = (uint16_t*)(image + rva_to_offset(export_dir->AddressOfNameOrdinals, nt_hdr));
+
+    for (uint32_t i = 0; i < export_dir->NumberOfFunctions; i++)
+    {
+        char* name = NULL;
+
+        for (uint32_t x = 0; x < export_dir->NumberOfNames; x++)
+        {
+            if (ordinals[x] == i)
+            {
+                name = (char*)(image + rva_to_offset(names[x], nt_hdr));
+                break;
+            }
+        }
+
+        if (name)
+        {
+            bool is_private =
+                strcmp(name, "DllCanUnloadNow") == 0 ||
+                strcmp(name, "DllGetClassObject") == 0 ||
+                strcmp(name, "DllGetClassFactoryFromClassString") == 0 ||
+                strcmp(name, "DllGetDocumentation") == 0 ||
+                strcmp(name, "DllInitialize") == 0 ||
+                strcmp(name, "DllInstall") == 0 ||
+                strcmp(name, "DllRegisterServer") == 0 ||
+                strcmp(name, "DllRegisterServerEx") == 0 ||
+                strcmp(name, "DllRegisterServerExW") == 0 ||
+                strcmp(name, "DllUnload") == 0 ||
+                strcmp(name, "DllUnregisterServer") == 0 ||
+                strcmp(name, "RasCustomDeleteEntryNotify") == 0 ||
+                strcmp(name, "RasCustomDial") == 0 ||
+                strcmp(name, "RasCustomDialDlg") == 0 ||
+                strcmp(name, "RasCustomEntryDlg") == 0;
+
+            if (is_private)
+            {
+                fprintf(ofh, "#pragma comment(linker, \"/export:%s=%s.%s,PRIVATE\")\n", name, base, name);
+            }
+            else
+            {
+                fprintf(ofh, "#pragma comment(linker, \"/export:%s=%s.%s,@%u\")\n", name, base, name, export_dir->Base + i);
+            }
+        }
+        else
+        {
+            uint32_t ord = export_dir->Base + i;
+            fprintf(ofh, "#pragma comment(linker, \"/export:__export_%u=%s.#%u,@%u,NONAME\")\n", i, base, ord, ord);
+        }
+    }
+
+    fprintf(ofh, "#endif\n");
+
+cleanup:
+    if (image) free(image);
+    if (fh) fclose(fh);
+    if (ofh) fclose(ofh);
+    return ret;
+}
+
+int genproxy_make(int argc, char** argv, bool forward)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret = EXIT_SUCCESS;
     FILE* ofh = NULL;
 
-    FAIL_IF(argc < 3, "usage: genproxy_def <image> [ofile]\n");
+    FAIL_IF(argc < 3, "usage: genproxy_make <image> [ofile]\n");
 
     FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
     ofh = fopen(argv[2], "w");
@@ -366,7 +550,16 @@ int genproxy_make(int argc, char** argv)
     fprintf(ofh, "STRIP       ?= i686-w64-mingw32-strip\n");
     fprintf(ofh, "WINDRES     ?= i686-w64-mingw32-windres\n");
     fprintf(ofh, "\n");
-    fprintf(ofh, "OBJS = dllmain.o exports.o res.o\n");
+
+    if (forward)
+    {
+        fprintf(ofh, "OBJS = dllmain.o res.o\n");
+    }
+    else
+    {
+        fprintf(ofh, "OBJS = dllmain.o exports.o res.o\n");
+    }
+
     fprintf(ofh, "\n");
     fprintf(ofh, ".PHONY: all clean\n");
     fprintf(ofh, "all: $(TARGET)\n");
