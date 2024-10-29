@@ -49,6 +49,7 @@ int genproxy_make(int argc, char** argv, bool forward);
 int extract_resource(const char* src, char* file_path);
 uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
 
+extern const char res_proxy_readme_txt[];
 extern const char res_proxy_dllmain_cpp[];
 extern const char res_proxy_res_rc[];
 extern const char res_proxy_vcxproj[];
@@ -89,6 +90,10 @@ int genproxy(int argc, char **argv)
     printf("Output directory: %s\n", dir);
 
     FAIL_IF_PERROR(_mkdir(dir) == -1, "Failed to create output directory");
+
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/readme.txt", dir) < 0, "Failed to create readme.txt - Path truncated\n");
+    printf("Generating %s...\n", buf);
+    FAIL_IF(extract_resource(res_proxy_readme_txt, buf) != EXIT_SUCCESS, "Failed to create readme.txt\n");
 
 
 
