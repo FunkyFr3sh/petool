@@ -83,7 +83,7 @@ int genproxy(int argc, char **argv)
     }
     else
     {
-        snprintf(dir, sizeof dir, "%s-proxy", base);
+        FAIL_IF(snprintf(dir, sizeof dir, "%s-proxy", base) < 0, "Failed to create output directory - Path truncated\n")
     }
 
     printf("Input file      : %s\n", argv[1]);
@@ -97,8 +97,7 @@ int genproxy(int argc, char **argv)
 
 
 
-    snprintf(subdir, sizeof subdir, "%s/system", dir);
-
+    FAIL_IF(snprintf(subdir, sizeof subdir, "%s/system", dir) < 0, "Failed to create output subdirectory - Path truncated\n");
     FAIL_IF_PERROR(_mkdir(subdir) == -1, "Failed to create output subdirectory");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/exports.def", subdir) < 0, "Failed to create exports.def - Path truncated\n");
@@ -135,8 +134,7 @@ int genproxy(int argc, char **argv)
 
 
 
-    snprintf(subdir, sizeof subdir, "%s/local", dir);
-
+    FAIL_IF(snprintf(subdir, sizeof subdir, "%s/local", dir) < 0, "Failed to create output subdirectory - Path truncated\n");
     FAIL_IF_PERROR(_mkdir(subdir) == -1, "Failed to create output subdirectory");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/exports.def", subdir) < 0, "Failed to create exports.def - Path truncated\n");
