@@ -63,8 +63,9 @@ int genlds(int argc, char **argv)
     if (nt_hdr->Signature != IMAGE_NT_SIGNATURE)
     {
         nt_hdr = (void *)(image - 4);
-        FAIL_IF(nt_hdr->FileHeader.Machine != 0x014C, "No valid signatures found.\n");
     }
+
+    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type not supported.\n");
 
     strncpy(inputname, file_basename(argv[1]), sizeof(inputname) - 1);
     char* p = strrchr(inputname, '.');

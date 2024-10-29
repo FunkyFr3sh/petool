@@ -80,12 +80,9 @@ int dump(int argc, char **argv)
     {
         // a hack for raw COFF object files
         nt_hdr = (void *)(image - 4);
-        if (nt_hdr->FileHeader.Machine != 0x014C)
-        {
-            fprintf(stderr, "No valid signatures found in input file.\n");
-            goto cleanup;
-        }
     }
+
+    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type not supported.\n");
 
     printf(" section     start       end    length     vaddr     vsize  flags   align\n");
     printf("-------------------------------------------------------------------------\n");

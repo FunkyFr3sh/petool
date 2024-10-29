@@ -59,6 +59,8 @@
 #define IMAGE_NUMBEROF_DIRECTORY_ENTRIES 16
 #define IMAGE_FIRST_SECTION(h) ((PIMAGE_SECTION_HEADER) ((intptr_t)h+FIELD_OFFSET(IMAGE_NT_HEADERS,OptionalHeader)+((PIMAGE_NT_HEADERS)(h))->FileHeader.SizeOfOptionalHeader))
 
+#define IMAGE_FILE_MACHINE_I386 0x014C
+
 #pragma pack(push,2)
 typedef struct _IMAGE_DOS_HEADER {
     uint16_t e_magic;

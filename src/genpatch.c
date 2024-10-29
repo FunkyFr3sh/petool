@@ -103,6 +103,7 @@ int genpatch(int argc, char** argv)
     FAIL_IF(length1 < 512, "File1 too small.\n");
     FAIL_IF(dos_hdr1->e_magic != IMAGE_DOS_SIGNATURE, "File1 DOS signature invalid.\n");
     FAIL_IF(nt_hdr1->Signature != IMAGE_NT_SIGNATURE, "File1 NT signature invalid.\n");
+    FAIL_IF(nt_hdr1->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "File1 Machine type not supported.\n");
 
     uint32_t length2;
     FAIL_IF_SILENT(open_and_read(&fh2, (int8_t**)&image2, &length2, argv[2], "rb"));
@@ -113,6 +114,7 @@ int genpatch(int argc, char** argv)
     FAIL_IF(length2 < 512, "File2 too small.\n");
     FAIL_IF(dos_hdr2->e_magic != IMAGE_DOS_SIGNATURE, "File2 DOS signature invalid.\n");
     FAIL_IF(nt_hdr2->Signature != IMAGE_NT_SIGNATURE, "File2 NT signature invalid.\n");
+    FAIL_IF(nt_hdr2->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "File2 Machine type not supported.\n");
 
     if (argc > 4)
     {

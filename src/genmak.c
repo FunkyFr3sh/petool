@@ -56,6 +56,7 @@ int genmak(int argc, char **argv)
     FAIL_IF(length < 512,                            "File too small.\n");
     FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE, "File DOS signature invalid.\n");
     FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE, "File NT signature invalid.\n");
+    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type not supported.\n");
 
     strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
     char *p = strrchr(base, '.');

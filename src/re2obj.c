@@ -101,13 +101,16 @@ int re2obj(int argc, char **argv)
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
 
+    FAIL_IF(length < 512, "File too small.\n");
+
     // quick COFF hack
     if (nt_hdr->Signature != IMAGE_NT_SIGNATURE)
     {
         // nasty trick but we're careful, right?
         nt_hdr = (void *)(image - 4);
-        FAIL_IF(nt_hdr->FileHeader.Machine != 0x014C, "No valid signatures found.\n");
     }
+
+    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type not supported.\n");
 
     char *section = ".rsrc";
     void *data = NULL;
@@ -138,7 +141,7 @@ int re2obj(int argc, char **argv)
 
     IMAGE_FILE_HEADER FileHeader;
     memset(&FileHeader, 0, sizeof FileHeader);
-    FileHeader.Machine = 0x014C;
+    FileHeader.Machine = IMAGE_FILE_MACHINE_I386;
     FileHeader.NumberOfSections = 1;
     FileHeader.Characteristics = 0x0104;
 
