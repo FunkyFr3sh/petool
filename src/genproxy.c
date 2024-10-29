@@ -284,7 +284,7 @@ int genproxy_def(int argc, char** argv, bool forward)
             }
             else
             {
-                fprintf(ofh, "    %-40s = __export_%-3u @%u NONAME\n", name, i, export_dir->Base + i);
+                fprintf(ofh, "    __export_%-31u = __export_%-3u @%u NONAME\n", i, i, export_dir->Base + i);
             }
         }
     }
