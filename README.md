@@ -20,7 +20,7 @@ Tool to help rebuild and patch 32-bit Windows applications.
  - `gensym`   - generate full sym.cpp with all imports
  - `genprj`   - generate full project directory (Supports drag and drop of 1 Executable)
  - `genpatch` - compare 2 executables and generate patch macros (Supports drag and drop of 2 Executables)
- - `genproxy` - generate proxy dll project directory (Supports drag and drop 1 dll)
+ - `genproxy` - generate proxy dll project directory (Supports drag and drop of 1 dll)
 
 Building
 --------------------------------------------------------------------------------
