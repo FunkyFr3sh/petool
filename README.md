@@ -52,6 +52,11 @@ subdirectory.
 You should be able to re-link the executable now by executing `make` without any
 modifications.
 
+Note: 
+You can port old byte patches to your new repo by dragging and dropping 
+the original executable and the patched one on `petool.exe`, this will generate 
+the needed macros (Or use `genpatch`).
+
 Patching
 --------------------------------------------------------------------------------
 
