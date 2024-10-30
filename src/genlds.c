@@ -53,7 +53,7 @@ int genlds(int argc, char **argv)
     PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
 
     FAIL_IF(length < sizeof(IMAGE_DOS_HEADER), "File too small.\n");
-    FAIL_IF(dos_hdr->e_lfanew > length - 4, "NT headers not found.\n");
+    FAIL_IF(dos_hdr->e_lfanew > length - 4 || dos_hdr->e_lfanew < sizeof(IMAGE_DOS_HEADER), "NT headers not found.\n");
 
     if (nt_hdr->Signature != IMAGE_NT_SIGNATURE)
     {
