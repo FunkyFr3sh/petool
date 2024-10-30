@@ -41,9 +41,6 @@ int genmak(int argc, char **argv)
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
 
-    fclose(fh);
-    fh = NULL; // for cleanup
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;

@@ -33,15 +33,13 @@ int pe2obj(int argc, char **argv)
     // decleration before more meaningful initialization for cleanup
     int     ret   = EXIT_SUCCESS;
     FILE   *fh    = NULL;
+    FILE   *ofh   = NULL;
     int8_t *image = NULL;
 
     FAIL_IF(argc != 3, "usage: petool pe2obj <in> <out>\n");
 
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
-
-    fclose(fh);
-    fh = NULL; // for cleanup
 
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
@@ -63,17 +61,18 @@ int pe2obj(int argc, char **argv)
         }
     }
 
-    fh = fopen(argv[2], "wb");
-    FAIL_IF_PERROR(!fh, "Error opening output file");
+    ofh = fopen(argv[2], "wb");
+    FAIL_IF_PERROR(!ofh, "Error opening output file");
 
     FAIL_IF_PERROR(fwrite((char *)image + (dos_hdr->e_lfanew + 4),
                          length - (dos_hdr->e_lfanew + 4),
                          1,
-                         fh) != 1,
+                         ofh) != 1,
                   "Failed to write object file to output file\n");
 
 cleanup:
     if (image) free(image);
     if (fh)    fclose(fh);
+    if (ofh)   fclose(ofh);
     return ret;
 }
