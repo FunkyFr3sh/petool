@@ -41,17 +41,10 @@ int setsc(int argc, char **argv)
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
 
+    FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
+
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr  = (void *)(image + dos_hdr->e_lfanew);
-
-    FAIL_IF(length < 512,                               "File too small.\n");
-    FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE,    "File DOS signature invalid.\n");
-    FAIL_IF(dos_hdr->e_lfanew == 0,                     "NT header missing.\n");
-    FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE,    "File NT signature invalid.\n");
-    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type is not i386.\n");
-
-    bool is_clr = nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress;
-    FAIL_IF(is_clr, ".NET assembly not supported\n");
 
     FAIL_IF(flags == 0,                                 "Characteristics can't be zero.\n");
 

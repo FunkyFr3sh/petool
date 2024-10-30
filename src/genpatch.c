@@ -61,30 +61,18 @@ int genpatch(int argc, char** argv)
     uint32_t length1;
     FAIL_IF_SILENT(open_and_read(&fh1, (int8_t**)&image1, &length1, argv[1], "rb"));
 
+    FAIL_IF(!is_supported_pe_image((int8_t*)image1, length1), "File1 is not a valid i386 Portable Executable (PE) image.\n");
+
     PIMAGE_DOS_HEADER dos_hdr1 = (void*)image1;
     PIMAGE_NT_HEADERS nt_hdr1 = (void*)(image1 + dos_hdr1->e_lfanew);
-
-    FAIL_IF(length1 < 512, "File1 too small.\n");
-    FAIL_IF(dos_hdr1->e_magic != IMAGE_DOS_SIGNATURE, "File1 DOS signature invalid.\n");
-    FAIL_IF(nt_hdr1->Signature != IMAGE_NT_SIGNATURE, "File1 NT signature invalid.\n");
-    FAIL_IF(nt_hdr1->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type is not i386.\n");
-
-    bool is_clr1 = nt_hdr1->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr1->OptionalHeader.DataDirectory[14].VirtualAddress;
-    FAIL_IF(is_clr1, ".NET assembly not supported\n");
 
     uint32_t length2;
     FAIL_IF_SILENT(open_and_read(&fh2, (int8_t**)&image2, &length2, argv[2], "rb"));
 
+    FAIL_IF(!is_supported_pe_image((int8_t*)image2, length2), "File2 is not a valid i386 Portable Executable (PE) image.\n");
+
     PIMAGE_DOS_HEADER dos_hdr2 = (void*)image2;
     PIMAGE_NT_HEADERS nt_hdr2 = (void*)(image2 + dos_hdr2->e_lfanew);
-
-    FAIL_IF(length2 < 512, "File2 too small.\n");
-    FAIL_IF(dos_hdr2->e_magic != IMAGE_DOS_SIGNATURE, "File2 DOS signature invalid.\n");
-    FAIL_IF(nt_hdr2->Signature != IMAGE_NT_SIGNATURE, "File2 NT signature invalid.\n");
-    FAIL_IF(nt_hdr2->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type is not i386.\n");
-
-    bool is_clr2 = nt_hdr2->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr2->OptionalHeader.DataDirectory[14].VirtualAddress;
-    FAIL_IF(is_clr2, ".NET assembly not supported\n");
 
     if (argc > 4)
     {
