@@ -61,7 +61,7 @@ int help(char *progname)
             "    genmak   -- generate project Makefile"                           "\n"
             "    gensym   -- generate full sym.cpp with all imports"              "\n"
             "    genprj   -- generate full project directory"                     "\n"
-            "    genpatch -- compare 2 executable files and generate patch macros""\n"
+            "    genpatch -- compare 2 executables and generate patch macros"     "\n"
             "    genproxy -- generate proxy dll project directory"                "\n"
             "    help     -- this information"                                    "\n"
     );
@@ -76,7 +76,9 @@ int main(int argc, char **argv)
     if (argc < 2)
     {
         help(argv[0]);
-        fprintf(stderr, "\nNo command given: please give valid command name as first argument\n\n");
+        fprintf(stderr, "\nNo command given:\n");
+        fprintf(stderr, "    please give valid command name as first argument or\n");
+        fprintf(stderr, "    drag and drop a Portable Executable (PE) image on petool\n\n");
         ret = EXIT_FAILURE;
     }
     else if (strcmp(argv[1], "dump")   == 0) return dump   (argc - 1, argv + 1);
