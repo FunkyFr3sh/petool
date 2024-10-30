@@ -44,7 +44,7 @@
 
 int genproxy_def(int argc, char** argv, bool forward);
 int genproxy_exports(int argc, char** argv);
-int genproxy_dllmain(int argc, char** argv);
+int genproxy_dllmain(int argc, char** argv, bool forward);
 int genproxy_make(int argc, char** argv, bool forward);
 
 extern const char res_proxy_readme_txt[];
@@ -122,6 +122,10 @@ int genproxy(int argc, char **argv)
     printf("Generating %s...\n", buf);
     FAIL_IF(genproxy_def(3, cmd_argv, false) != EXIT_SUCCESS, "Failed to create exports.def\n");
 
+    FAIL_IF(snprintf(buf, sizeof buf, "%s/dllmain.cpp", subdir) < 0, "Failed to create dllmain.cpp - Path truncated\n");
+    printf("Generating %s...\n", buf);
+    FAIL_IF(genproxy_dllmain(3, cmd_argv, false) != EXIT_SUCCESS, "Failed to create dllmain.cpp\n");
+
     FAIL_IF(snprintf(buf, sizeof buf, "%s/exports.cpp", subdir) < 0, "Failed to create exports.cpp - Path truncated\n");
     printf("Generating %s...\n", buf);
     FAIL_IF(genproxy_exports(3, cmd_argv) != EXIT_SUCCESS, "Failed to create exports.cpp\n");
@@ -137,10 +141,6 @@ int genproxy(int argc, char **argv)
     FAIL_IF(snprintf(buf, sizeof buf, "%s/patch.h", subdir) < 0, "Failed to create patch.h - Path truncated\n");
     printf("Generating %s...\n", buf);
     FAIL_IF(extract_resource(res_inc_patch_h, buf) != EXIT_SUCCESS, "Failed to create patch.h\n");
-
-    FAIL_IF(snprintf(buf, sizeof buf, "%s/dllmain.cpp", subdir) < 0, "Failed to create dllmain.cpp - Path truncated\n");
-    printf("Generating %s...\n", buf);
-    FAIL_IF(extract_resource(res_proxy_dllmain_cpp, buf) != EXIT_SUCCESS, "Failed to create dllmain.cpp\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/%s.vcxproj", subdir, base) < 0, "Failed to create .vcxproj - Path truncated\n");
     printf("Generating %s...\n", buf);
@@ -161,7 +161,7 @@ int genproxy(int argc, char **argv)
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/dllmain.cpp", subdir) < 0, "Failed to create dllmain.cpp - Path truncated\n");
     printf("Generating %s...\n", buf);
-    FAIL_IF(genproxy_dllmain(3, cmd_argv) != EXIT_SUCCESS, "Failed to create dllmain.cpp\n");
+    FAIL_IF(genproxy_dllmain(3, cmd_argv, true) != EXIT_SUCCESS, "Failed to create dllmain.cpp\n");
 
     FAIL_IF(snprintf(buf, sizeof buf, "%s/Makefile", subdir) < 0, "Failed to create makefile - Path truncated\n");
     printf("Generating %s...\n", buf);
@@ -442,7 +442,7 @@ cleanup:
     return ret;
 }
 
-int genproxy_dllmain(int argc, char** argv)
+int genproxy_dllmain(int argc, char** argv, bool forward)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret = EXIT_SUCCESS;
@@ -499,6 +499,12 @@ int genproxy_dllmain(int argc, char** argv)
     fprintf(ofh, "    }\n");
     fprintf(ofh, "    return TRUE;\n");
     fprintf(ofh, "}\n");
+
+    if (!forward)
+    {
+        goto cleanup;
+    }
+
     fprintf(ofh, "\n");
     fprintf(ofh, "#if defined(_MSC_VER)\n");
 

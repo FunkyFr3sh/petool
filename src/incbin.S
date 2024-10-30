@@ -1,7 +1,5 @@
     .global _res_proxy_readme_txt
     .global res_proxy_readme_txt
-    .global _res_proxy_dllmain_cpp
-    .global res_proxy_dllmain_cpp
     .global _res_proxy_res_rc
     .global res_proxy_res_rc
     .global _res_proxy_vcxproj
@@ -42,11 +40,6 @@
 _res_proxy_readme_txt:
 res_proxy_readme_txt:
     .incbin "res/proxy/readme.txt"
-    .byte 0
-
-_res_proxy_dllmain_cpp:
-res_proxy_dllmain_cpp:
-    .incbin "res/proxy/dllmain.cpp"
     .byte 0
 
 _res_proxy_res_rc:
