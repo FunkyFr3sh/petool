@@ -38,11 +38,7 @@ int genmak(int argc, char **argv)
     FAIL_IF(argc < 2, "usage: petool genmak <image> [ofile]\n");
 
     if (argc > 2)
-    {
-        FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
-        ofh = fopen(argv[2], "w");
-        FAIL_IF_PERROR(ofh == NULL, "%s");
-    }
+        ofh = NULL;
 
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
@@ -60,6 +56,13 @@ int genmak(int argc, char **argv)
 
     bool is_clr = nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress;
     FAIL_IF(is_clr, ".NET assembly not supported\n");
+
+    if (argc > 2)
+    {
+        FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
+        ofh = fopen(argv[2], "w");
+        FAIL_IF_PERROR(ofh == NULL, "%s");
+    }
 
     strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
     char *p = strrchr(base, '.');

@@ -89,14 +89,11 @@ int re2obj(int argc, char **argv)
 
     FAIL_IF(argc < 2, "usage: petool re2obj <image> [ofile]\n");
 
+    if (argc > 2)
+        ofh = NULL;
+
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
-
-    if (argc > 2)
-    {
-        ofh = fopen(argv[2], "wb");
-        FAIL_IF_PERROR(ofh == NULL, "%s");
-    }
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
@@ -115,6 +112,12 @@ int re2obj(int argc, char **argv)
 
     bool is_clr = nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress;
     FAIL_IF(is_clr, ".NET assembly not supported\n");
+
+    if (argc > 2)
+    {
+        ofh = fopen(argv[2], "wb");
+        FAIL_IF_PERROR(ofh == NULL, "%s");
+    }
 
     char *section = ".rsrc";
     void *data = NULL;

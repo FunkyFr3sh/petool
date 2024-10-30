@@ -52,15 +52,11 @@ int import(int argc, char **argv)
 
     FAIL_IF(argc < 2, "usage: petool import <image> [nasm] [ofile]\n");
 
+    if (argc > 3)
+        ofh = NULL;
+
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
-
-    if (argc > 3)
-    {
-        FAIL_IF(file_exists(argv[3]), "%s: output file already exists.\n", argv[3]);
-        ofh = fopen(argv[3], "w");
-        FAIL_IF_PERROR(ofh == NULL, "%s");
-    }
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
@@ -75,6 +71,13 @@ int import(int argc, char **argv)
 
     FAIL_IF (nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 2, "Not enough DataDirectories.\n");
     FAIL_IF (!nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, "No import directory in executable.\n");
+
+    if (argc > 3)
+    {
+        FAIL_IF(file_exists(argv[3]), "%s: output file already exists.\n", argv[3]);
+        ofh = fopen(argv[3], "w");
+        FAIL_IF_PERROR(ofh == NULL, "%s");
+    }
 
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
     IMAGE_IMPORT_DESCRIPTOR *i = (void *)(image + offset);

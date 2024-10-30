@@ -50,6 +50,8 @@ int genfiles(char* dir);
 int genprj(int argc, char **argv)
 {
     int ret = EXIT_SUCCESS;
+    FILE* fh = NULL;
+    int8_t* image = NULL;
     static char base[MAX_PATH];
     static char buf[MAX_PATH];
     static char dir[MAX_PATH];
@@ -76,6 +78,24 @@ int genprj(int argc, char **argv)
         snprintf(dir, sizeof dir, "%s", base);
     }
 
+    uint32_t length;
+    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
+
+    PIMAGE_DOS_HEADER dos_hdr = (void*)image;
+    PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
+
+    FAIL_IF(length < 512, "File too small.\n");
+    FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE, "File DOS signature invalid.\n");
+    FAIL_IF(dos_hdr->e_lfanew == 0, "NT header missing.\n");
+    FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE, "File NT signature invalid.\n");
+    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type is not i386.\n");
+
+    bool is_clr = nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress;
+    FAIL_IF(is_clr, ".NET assembly not supported\n");
+
+    fclose(fh);
+    fh = NULL; // for cleanup
+
     printf("Input file      : %s\n", argv[1]);
     printf("Output directory: %s\n", dir);
 
@@ -101,5 +121,7 @@ int genprj(int argc, char **argv)
     FAIL_IF(genfiles(dir) != EXIT_SUCCESS, "Failed to extract optional files and examples\n");
 
 cleanup:
+    if (image) free(image);
+    if (fh)    fclose(fh);
     return ret;
 }

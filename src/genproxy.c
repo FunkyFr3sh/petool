@@ -59,6 +59,8 @@ extern const char res_inc_patch_h[];
 int genproxy(int argc, char **argv)
 {
     int ret = EXIT_SUCCESS;
+    FILE* fh = NULL;
+    int8_t* image = NULL;
     static char base[MAX_PATH];
     static char buf[MAX_PATH];
     static char dir[MAX_PATH];
@@ -85,6 +87,24 @@ int genproxy(int argc, char **argv)
     {
         FAIL_IF(snprintf(dir, sizeof dir, "%s-proxy", base) < 0, "Failed to create output directory - Path truncated\n")
     }
+
+    uint32_t length;
+    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
+
+    PIMAGE_DOS_HEADER dos_hdr = (void*)image;
+    PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
+
+    FAIL_IF(length < 512, "File too small.\n");
+    FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE, "File DOS signature invalid.\n");
+    FAIL_IF(dos_hdr->e_lfanew == 0, "NT header missing.\n");
+    FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE, "File NT signature invalid.\n");
+    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type is not i386.\n");
+
+    bool is_clr = nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress;
+    FAIL_IF(is_clr, ".NET assembly not supported\n");
+
+    fclose(fh);
+    fh = NULL; // for cleanup
 
     printf("Input file      : %s\n", argv[1]);
     printf("Output directory: %s\n", dir);
@@ -170,6 +190,8 @@ int genproxy(int argc, char **argv)
     FAIL_IF(file_copy(argv[1], buf) != EXIT_SUCCESS, "Failed to copy original dll\n");
 
 cleanup:
+    if (image) free(image);
+    if (fh)    fclose(fh);
     return ret;
 }
 
@@ -186,10 +208,6 @@ int genproxy_def(int argc, char** argv, bool forward)
 
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
-
-    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
-    ofh = fopen(argv[2], "w");
-    FAIL_IF_PERROR(ofh == NULL, "%s");
 
     memset(base, 0, sizeof base);
     strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
@@ -212,6 +230,10 @@ int genproxy_def(int argc, char** argv, bool forward)
 
     FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 1, "Not enough DataDirectories.\n");
     FAIL_IF(!nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, "No export directory in dll\n");
+
+    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
+    ofh = fopen(argv[2], "w");
+    FAIL_IF_PERROR(ofh == NULL, "%s");
 
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, nt_hdr);
     IMAGE_EXPORT_DIRECTORY* export_dir = (void*)(image + offset);
@@ -312,10 +334,6 @@ int genproxy_exports(int argc, char** argv)
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
 
-    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
-    ofh = fopen(argv[2], "w");
-    FAIL_IF_PERROR(ofh == NULL, "%s");
-
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
     PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
 
@@ -329,6 +347,10 @@ int genproxy_exports(int argc, char** argv)
 
     FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 1, "Not enough DataDirectories.\n");
     FAIL_IF(!nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, "No export directory in dll\n");
+
+    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
+    ofh = fopen(argv[2], "w");
+    FAIL_IF_PERROR(ofh == NULL, "%s");
 
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, nt_hdr);
     IMAGE_EXPORT_DIRECTORY* export_dir = (void*)(image + offset);
@@ -436,10 +458,6 @@ int genproxy_dllmain(int argc, char** argv)
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
 
-    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
-    ofh = fopen(argv[2], "w");
-    FAIL_IF_PERROR(ofh == NULL, "%s");
-
     memset(base, 0, sizeof base);
     strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
     char* p = strrchr(base, '.');
@@ -461,6 +479,10 @@ int genproxy_dllmain(int argc, char** argv)
 
     FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 1, "Not enough DataDirectories.\n");
     FAIL_IF(!nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, "No export directory in dll\n");
+
+    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
+    ofh = fopen(argv[2], "w");
+    FAIL_IF_PERROR(ofh == NULL, "%s");
 
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, nt_hdr);
     IMAGE_EXPORT_DIRECTORY* export_dir = (void*)(image + offset);
