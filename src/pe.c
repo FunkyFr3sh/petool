@@ -34,7 +34,7 @@ bool is_supported_pe_image(int8_t* image, uint32_t length)
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
     PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
 
-    FAIL_IF(length < 512, "File too small.\n");
+    FAIL_IF(length < sizeof(IMAGE_DOS_HEADER), "File too small.\n");
     FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE, "File DOS signature invalid.\n");
     FAIL_IF(dos_hdr->e_lfanew > length - 4, "NT headers not found.\n");
     FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE, "File NT signature invalid.\n");
