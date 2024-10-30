@@ -111,7 +111,10 @@ int re2obj(int argc, char **argv)
         nt_hdr = (void *)(image - 4);
     }
 
-    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type not supported.\n");
+    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type is not i386.\n");
+
+    bool is_clr = nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress;
+    FAIL_IF(is_clr, ".NET assembly not supported\n");
 
     char *section = ".rsrc";
     void *data = NULL;

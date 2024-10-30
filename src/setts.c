@@ -48,7 +48,10 @@ int setts(int argc, char **argv)
     FAIL_IF(dos_hdr->e_magic != IMAGE_DOS_SIGNATURE,          "File DOS signature invalid.\n");
     FAIL_IF(dos_hdr->e_lfanew == 0,                           "NT header missing.\n");
     FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE,          "File NT signature invalid.\n");
-    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type not supported.\n");
+    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type is not i386.\n");
+
+    bool is_clr = nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress;
+    FAIL_IF(is_clr, ".NET assembly not supported\n");
 
     nt_hdr->FileHeader.TimeDateStamp = timeDateStamp;
 

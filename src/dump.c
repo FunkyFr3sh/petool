@@ -83,7 +83,7 @@ int dump(int argc, char **argv)
         nt_hdr = (void *)(image - 4);
     }
 
-    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type not supported.\n");
+    FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "Machine type is not i386.\n");
 
     printf(" section     start       end    length     vaddr     vsize  flags   align\n");
     printf("-------------------------------------------------------------------------\n");
