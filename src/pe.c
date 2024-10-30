@@ -40,8 +40,10 @@ bool is_supported_pe_image(int8_t* image, uint32_t length)
     FAIL_IF(nt_hdr->Signature != IMAGE_NT_SIGNATURE, "File NT signature invalid.\n");
     FAIL_IF(nt_hdr->FileHeader.Machine != IMAGE_FILE_MACHINE_I386, "File machine type is not i386.\n");
 
-    bool is_clr = nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14 && nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress;
-    FAIL_IF(is_clr, "File type unsupported (.NET assembly).\n");
+    if (nt_hdr->OptionalHeader.NumberOfRvaAndSizes > 14)
+    {
+        FAIL_IF(nt_hdr->OptionalHeader.DataDirectory[14].VirtualAddress, "File type unsupported (.NET assembly).\n");
+    }
 
 cleanup:
     return ret == EXIT_SUCCESS;

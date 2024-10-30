@@ -60,9 +60,17 @@ int genprj(int argc, char **argv)
     FAIL_IF(argc < 2, "usage: petool genprj <image> [directory]\n");
     FAIL_IF(!file_exists(argv[1]), "input file missing\n");
 
+    uint32_t length;
+    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
+
+    FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
+
+    fclose(fh);
+    fh = NULL; // for cleanup
+
     memset(base, 0, sizeof base);
     strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
-    char *p = strrchr(base, '.');
+    char* p = strrchr(base, '.');
     if (p)
     {
         *p = '\0';
@@ -77,14 +85,6 @@ int genprj(int argc, char **argv)
     {
         snprintf(dir, sizeof dir, "%s", base);
     }
-
-    uint32_t length;
-    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
-
-    FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
-
-    fclose(fh);
-    fh = NULL; // for cleanup
 
     printf("Input file      : %s\n", argv[1]);
     printf("Output directory: %s\n", dir);

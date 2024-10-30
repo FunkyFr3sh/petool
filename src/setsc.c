@@ -36,8 +36,6 @@ int setsc(int argc, char **argv)
 
     FAIL_IF(argc != 4, "usage: petool setsc <image> <section> <Characteristics>\n");
 
-    uint32_t flags   = strtoul(argv[3], NULL, 0);
-
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
 
@@ -46,7 +44,9 @@ int setsc(int argc, char **argv)
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr  = (void *)(image + dos_hdr->e_lfanew);
 
-    FAIL_IF(flags == 0,                                 "Characteristics can't be zero.\n");
+    uint32_t flags = strtoul(argv[3], NULL, 0);
+
+    FAIL_IF(flags == 0, "Characteristics can't be zero.\n");
 
     for (int32_t i = 0; i < nt_hdr->FileHeader.NumberOfSections; i++)
     {

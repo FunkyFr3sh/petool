@@ -36,8 +36,6 @@ int setts(int argc, char **argv)
 
     FAIL_IF(argc != 3, "usage: petool setts <image> <TimeDateStamp>\n");
 
-    uint32_t timeDateStamp = strtoul(argv[2], NULL, 0);
-
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
 
@@ -46,7 +44,7 @@ int setts(int argc, char **argv)
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
 
-    nt_hdr->FileHeader.TimeDateStamp = timeDateStamp;
+    nt_hdr->FileHeader.TimeDateStamp = strtoul(argv[2], NULL, 0);
 
     /* FIXME: implement checksum calculation */
     nt_hdr->OptionalHeader.CheckSum = 0;

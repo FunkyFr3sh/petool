@@ -197,14 +197,6 @@ int genproxy_def(int argc, char** argv, bool forward)
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
 
-    memset(base, 0, sizeof base);
-    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
-    char* p = strrchr(base, '.');
-    if (p)
-    {
-        *p = '\0';
-    }
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
@@ -216,6 +208,14 @@ int genproxy_def(int argc, char** argv, bool forward)
     FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
     ofh = fopen(argv[2], "w");
     FAIL_IF_PERROR(ofh == NULL, "%s");
+
+    memset(base, 0, sizeof base);
+    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
+    char* p = strrchr(base, '.');
+    if (p)
+    {
+        *p = '\0';
+    }
 
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, nt_hdr);
     IMAGE_EXPORT_DIRECTORY* export_dir = (void*)(image + offset);
@@ -434,14 +434,6 @@ int genproxy_dllmain(int argc, char** argv, bool forward)
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
 
-    memset(base, 0, sizeof base);
-    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
-    char* p = strrchr(base, '.');
-    if (p)
-    {
-        *p = '\0';
-    }
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
@@ -453,6 +445,14 @@ int genproxy_dllmain(int argc, char** argv, bool forward)
     FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
     ofh = fopen(argv[2], "w");
     FAIL_IF_PERROR(ofh == NULL, "%s");
+
+    memset(base, 0, sizeof base);
+    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
+    char* p = strrchr(base, '.');
+    if (p)
+    {
+        *p = '\0';
+    }
 
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, nt_hdr);
     IMAGE_EXPORT_DIRECTORY* export_dir = (void*)(image + offset);

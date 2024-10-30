@@ -36,8 +36,6 @@ int setvs(int argc, char **argv)
 
     FAIL_IF(argc != 4, "usage: petool setvs <image> <section> <VirtualSize>\n");
 
-    uint32_t vs   = strtol(argv[3], NULL, 0);
-
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
 
@@ -45,6 +43,8 @@ int setvs(int argc, char **argv)
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr  = (void *)(image + dos_hdr->e_lfanew);
+
+    uint32_t vs = strtoul(argv[3], NULL, 0);
 
     FAIL_IF(vs == 0,                                    "VirtualSize can't be zero.\n");
 

@@ -36,8 +36,6 @@ int setdd(int argc, char **argv)
 
     FAIL_IF(argc != 5, "usage: petool setdd <image> <#DataDirectory> <VirtualAddress> <Size>\n");
 
-    uint32_t dd   = strtol(argv[2], NULL, 0);
-
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
 
@@ -45,6 +43,8 @@ int setdd(int argc, char **argv)
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
+
+    uint32_t dd = strtol(argv[2], NULL, 0);
 
     FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes <= dd, "Data directory #%"PRIu32" is missing.\n", dd);
 

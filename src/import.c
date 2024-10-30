@@ -116,6 +116,7 @@ int import(int argc, char **argv)
     }
 
 cleanup:
+    if (fh) fclose(fh);
     if (image) free(image);
     if (argc > 3)
     {
