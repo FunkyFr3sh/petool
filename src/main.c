@@ -69,11 +69,13 @@ void help(char *progname)
 
 int main(int argc, char **argv)
 {
+    int ret = EXIT_SUCCESS;
+
     if (argc < 2)
     {
         help(argv[0]);
         fprintf(stderr, "\nNo command given: please give valid command name as first argument\n\n");
-        return EXIT_FAILURE;
+        ret = EXIT_FAILURE;
     }
     else if (strcmp(argv[1], "dump")   == 0) return dump   (argc - 1, argv + 1);
     else if (strcmp(argv[1], "genlds") == 0) return genlds (argc - 1, argv + 1);
@@ -95,28 +97,39 @@ int main(int argc, char **argv)
     else if (strcmp(argv[1], "help")   == 0)
     {
         help(argv[0]);
-        return EXIT_SUCCESS;
+        ret = EXIT_SUCCESS;
     }
     else if (argc == 3 && file_exists(argv[1]) && file_exists(argv[2]))
     {
         char* cmd_argv[3] = { "genpatch", argv[1], argv[2] };
-        return genpatch(3, cmd_argv);
+        ret = genpatch(3, cmd_argv);
     }
     else if (argc == 2 && file_exists(argv[1]) && strlen(argv[1]) >= 4 && !strcmpi(argv[1] + strlen(argv[1]) - 4, ".dll"))
     {
         char* cmd_argv[2] = { "genproxy", argv[1] };
-        return genproxy(2, cmd_argv);
+        ret = genproxy(2, cmd_argv);
     }
     else
     {
         if (file_exists(argv[1]))
         {
             char *cmd_argv[2] = { "genprj", argv[1] };
-            return genprj(2, cmd_argv);
+            ret = genprj(2, cmd_argv);
         }
-
-        fprintf(stderr, "Unknown command: %s\n", argv[1]);
-        help(argv[0]);
-        return EXIT_FAILURE;
+        else
+        {
+            fprintf(stderr, "Unknown command: %s\n", argv[1]);
+            help(argv[0]);
+            ret = EXIT_FAILURE;
+        }
     }
+
+#if defined(_WIN32)
+    if (ret != EXIT_SUCCESS)
+    {
+        system("pause");
+    }
+#endif
+
+    return ret;
 }

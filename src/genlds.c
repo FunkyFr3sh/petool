@@ -59,6 +59,7 @@ int genlds(int argc, char **argv)
     PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
 
     FAIL_IF(length < 512,                            "File too small.\n");
+    FAIL_IF(dos_hdr->e_lfanew > length - 4,          "Unknown file type.\n");
 
     if (nt_hdr->Signature != IMAGE_NT_SIGNATURE)
     {

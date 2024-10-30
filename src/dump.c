@@ -44,10 +44,11 @@ int dump(int argc, char **argv)
     fclose(fh);
     fh = NULL; // for cleanup
 
-    FAIL_IF(length < 512, "File too small.\n");
-
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
+
+    FAIL_IF(length < 512, "File too small.\n");
+    FAIL_IF(dos_hdr->e_lfanew > length - 4, "Unknown file type.\n");
 
     if (dos_hdr->e_magic == IMAGE_DOS_SIGNATURE)
     {
