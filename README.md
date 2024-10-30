@@ -18,9 +18,9 @@ Tool to help rebuild and patch 32-bit Windows applications.
  - `re2obj`   - convert the resource section into COFF object
  - `genmak`   - generate project Makefile
  - `gensym`   - generate full sym.cpp with all imports
- - `genprj`   - generate full project directory (default)
- - `genpatch` - compare 2 executable files and generate patch macros
- - `genproxy` - generate proxy dll project directory
+ - `genprj`   - generate full project directory - Supports drag and drop (Drop 1 Executable)
+ - `genpatch` - compare 2 executable files and generate patch macros - Supports drag and drop (Drop 2 Executables)
+ - `genproxy` - generate proxy dll project directory - Supports drag and drop (Drop 1 dll)
 
 Building
 --------------------------------------------------------------------------------
