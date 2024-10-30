@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "common.h"
 #include "cleanup.h"
 
 extern const char res_gitignore[];
@@ -53,8 +54,6 @@ extern const char res_inc_macros_patch_h[];
 extern const char res_inc_macros_patch_inc[];
 extern const char res_inc_macros_setsym_h[];
 extern const char res_inc_macros_patch_s[];
-
-int extract_resource(const char* src, char* file_path);
 
 int genfiles(char *dir)
 {
@@ -130,27 +129,6 @@ int genfiles(char *dir)
     snprintf(buf, sizeof buf, "%s/inc/macros/patch.s", dir);
     printf("Generating %s...\n", buf);
     FAIL_IF(extract_resource(res_inc_macros_patch_s, buf) != EXIT_SUCCESS, "Failed to create patch.s\n");
-
-cleanup:
-    return ret;
-}
-
-int extract_resource(const char* src, char* file_path)
-{
-    // decleration before more meaningful initialization for cleanup
-    int     ret = EXIT_SUCCESS;
-
-    FILE* fh = fopen(file_path, "wb");
-    FAIL_IF_SILENT(fh == NULL);
-
-    fputs(src, fh);
-
-    if (ferror(fh))
-    {
-        ret = EXIT_FAILURE;
-    }
-
-    fclose(fh);
 
 cleanup:
     return ret;

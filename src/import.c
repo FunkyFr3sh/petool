@@ -27,21 +27,6 @@
 #include "cleanup.h"
 #include "common.h"
 
-uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr)
-{
-    for (int i = 0; i < nt_hdr->FileHeader.NumberOfSections; i++)
-    {
-        PIMAGE_SECTION_HEADER sct_hdr = IMAGE_FIRST_SECTION(nt_hdr) + i;
-
-        if (sct_hdr->VirtualAddress <= address && address < sct_hdr->VirtualAddress + sct_hdr->SizeOfRawData)
-        {
-            return sct_hdr->PointerToRawData + (address - sct_hdr->VirtualAddress);
-        }
-    }
-
-    return address;
-}
-
 int import(int argc, char **argv)
 {
     // decleration before more meaningful initialization for cleanup

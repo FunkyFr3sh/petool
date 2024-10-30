@@ -40,7 +40,6 @@ int pe2obj(int argc, char **argv)
     uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
 
-
     fclose(fh);
     fh = NULL; // for cleanup
 

@@ -29,8 +29,6 @@
 #include "cleanup.h"
 #include "common.h"
 
-uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
-
 int genlds(int argc, char **argv)
 {
     // decleration before more meaningful initialization for cleanup

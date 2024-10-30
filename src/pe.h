@@ -17,6 +17,7 @@
 // based on MingW headers converted to stdint
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define IMAGE_DOS_SIGNATURE    0x5A4D     /* MZ   */
 #define IMAGE_OS2_SIGNATURE    0x454E     /* NE   */
@@ -217,3 +218,7 @@ typedef struct _IMAGE_IMPORT_BY_NAME {
 } IMAGE_IMPORT_BY_NAME, * PIMAGE_IMPORT_BY_NAME;
 
 #pragma pack(pop)
+
+uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
+uint32_t offset_to_rva(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
+bool section_from_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr, char* section, uint32_t size);

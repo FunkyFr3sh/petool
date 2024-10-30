@@ -146,3 +146,26 @@ cleanup:
     if (to_fh) fclose(to_fh);
     return ret;
 }
+
+int extract_resource(const char* src, char* file_path)
+{
+    int     ret = EXIT_SUCCESS;
+    FILE* fh = NULL;
+
+    FAIL_IF(file_exists(file_path), "Output file already exists.\n");
+
+    fh = fopen(file_path, "wb");
+    FAIL_IF_PERROR(!fh, "Could not open output file");
+
+    fputs(src, fh);
+
+    if (ferror(fh))
+    {
+        ret = EXIT_FAILURE;
+    }
+
+    fclose(fh);
+
+cleanup:
+    return ret;
+}

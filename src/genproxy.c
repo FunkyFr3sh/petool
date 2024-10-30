@@ -46,8 +46,6 @@ int genproxy_def(int argc, char** argv, bool forward);
 int genproxy_exports(int argc, char** argv);
 int genproxy_dllmain(int argc, char** argv);
 int genproxy_make(int argc, char** argv, bool forward);
-int extract_resource(const char* src, char* file_path);
-uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
 
 extern const char res_proxy_readme_txt[];
 extern const char res_proxy_dllmain_cpp[];
