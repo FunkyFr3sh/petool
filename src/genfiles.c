@@ -62,7 +62,6 @@ int genfiles(char *dir)
 
     static char buf[MAX_PATH];
 
-    /* Optional files and examples - No error checking required here*/
     snprintf(buf, sizeof buf, "%s/.gitignore", dir);
     printf("Generating %s...\n", buf);
     FAIL_IF(extract_resource(res_gitignore, buf) != EXIT_SUCCESS, "Failed to create .gitignore\n");
@@ -76,14 +75,14 @@ int genfiles(char *dir)
     FAIL_IF(extract_resource(res_readme_md, buf) != EXIT_SUCCESS, "Failed to create README.md\n");
 
     snprintf(buf, sizeof buf, "%s/src", dir);
-    _mkdir(buf);
+    FAIL_IF_PERROR(_mkdir(buf) == -1, "Failed to create src subdirectory");
 
     snprintf(buf, sizeof buf, "%s/src/winmain.cpp", dir);
     printf("Generating %s...\n", buf);
     FAIL_IF(extract_resource(res_src_winmain_c, buf) != EXIT_SUCCESS, "Failed to create winmain.cpp\n");
 
     snprintf(buf, sizeof buf, "%s/inc", dir);
-    _mkdir(buf);
+    FAIL_IF_PERROR(_mkdir(buf) == -1, "Failed to create inc subdirectory");
 
     snprintf(buf, sizeof buf, "%s/inc/app.h", dir);
     printf("Generating %s...\n", buf);
@@ -98,7 +97,7 @@ int genfiles(char *dir)
     FAIL_IF(extract_resource(res_inc_patch_h, buf) != EXIT_SUCCESS, "Failed to create patch.h\n");
 
     snprintf(buf, sizeof buf, "%s/inc/macros", dir);
-    _mkdir(buf);
+    FAIL_IF_PERROR(_mkdir(buf) == -1, "Failed to create macros subdirectory");
 
     snprintf(buf, sizeof buf, "%s/inc/macros/datatypes.inc", dir);
     printf("Generating %s...\n", buf);
