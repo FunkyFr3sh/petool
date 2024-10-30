@@ -41,7 +41,7 @@ int genprj(int argc, char **argv);
 int genpatch(int argc, char** argv);
 int genproxy(int argc, char** argv);
 
-void help(char *progname)
+int help(char *progname)
 {
     fprintf(stderr, "petool git~%s (c) 2013 - 2024 Toni Spets, Ericson2314, FunkyFr3sh\n", GIT_COMMIT);
     fprintf(stderr, "https://github.com/FunkyFr3sh/petool\n\n");
@@ -65,6 +65,8 @@ void help(char *progname)
             "    genproxy -- generate proxy dll project directory"                "\n"
             "    help     -- this information"                                    "\n"
     );
+
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char **argv)
@@ -94,11 +96,7 @@ int main(int argc, char **argv)
     else if (strcmp(argv[1], "genprj") == 0) return genprj (argc - 1, argv + 1);
     else if (strcmp(argv[1], "genpatch") == 0) return genpatch(argc - 1, argv + 1);
     else if (strcmp(argv[1], "genproxy") == 0) return genproxy(argc - 1, argv + 1);
-    else if (strcmp(argv[1], "help")   == 0)
-    {
-        help(argv[0]);
-        ret = EXIT_SUCCESS;
-    }
+    else if (strcmp(argv[1], "help")   == 0) return help(argv[0]);
     else if (argc == 3 && file_exists(argv[1]) && file_exists(argv[2]))
     {
         char* cmd_argv[3] = { "genpatch", argv[1], argv[2] };
