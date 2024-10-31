@@ -51,17 +51,14 @@ int genprj(int argc, char **argv)
 {
     int ret = EXIT_SUCCESS;
     int8_t* image = NULL;
+    uint32_t length;
     static char base[MAX_PATH];
     static char buf[MAX_PATH];
     static char dir[MAX_PATH];
     char *cmd_argv[3] = { argv[0], argv[1], buf };
 
     FAIL_IF(argc < 2, "usage: petool genprj <image> [directory]\n");
-    FAIL_IF(!file_exists(argv[1]), "input file missing\n");
-
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     memset(base, 0, sizeof base);

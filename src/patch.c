@@ -104,12 +104,10 @@ int patch(int argc, char **argv)
     int     ret   = EXIT_FAILURE;
     FILE   *fh    = NULL;
     int8_t *image = NULL;
+    uint32_t length;
 
     FAIL_IF(argc < 2, "usage: petool patch <image> [section]\n");
-
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;

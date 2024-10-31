@@ -34,10 +34,9 @@ int dump(int argc, char **argv)
     // decleration before more meaningful initialization for cleanup
     int     ret   = EXIT_SUCCESS;
     int8_t *image = NULL;
+    uint32_t length;
 
     FAIL_IF(argc < 2, "usage: petool dump <image>\n");
-
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;

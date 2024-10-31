@@ -29,17 +29,12 @@ int genmak(int argc, char **argv)
 {
     int     ret   = EXIT_SUCCESS;
     int8_t *image = NULL;
-    FILE   *ofh   = stdout;
+    FILE   *ofh   = argc > 2 ? NULL : stdout;
+    uint32_t length;
     char   base[256] = { '\0' };
 
     FAIL_IF(argc < 2, "usage: petool genmak <image> [ofile]\n");
-
-    if (argc > 2)
-        ofh = NULL;
-
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;

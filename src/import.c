@@ -32,16 +32,11 @@ int import(int argc, char **argv)
     // decleration before more meaningful initialization for cleanup
     int     ret   = EXIT_SUCCESS;
     int8_t *image = NULL;
-    FILE   *ofh   = stdout;
+    FILE   *ofh   = argc > 3 ? NULL : stdout;
+    uint32_t length;
 
     FAIL_IF(argc < 2, "usage: petool import <image> [nasm] [ofile]\n");
-
-    if (argc > 3)
-        ofh = NULL;
-
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;

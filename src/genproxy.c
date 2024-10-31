@@ -58,6 +58,7 @@ int genproxy(int argc, char **argv)
 {
     int ret = EXIT_SUCCESS;
     int8_t* image = NULL;
+    uint32_t length;
     static char base[MAX_PATH];
     static char buf[MAX_PATH];
     static char dir[MAX_PATH];
@@ -85,9 +86,7 @@ int genproxy(int argc, char **argv)
         FAIL_IF(snprintf(dir, sizeof dir, "%s-proxy", base) < 0, "Failed to create output directory - Path truncated\n")
     }
 
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     printf("Input file      : %s\n", argv[1]);
@@ -98,7 +97,6 @@ int genproxy(int argc, char **argv)
     FAIL_IF(snprintf(buf, sizeof buf, "%s/readme.txt", dir) < 0, "Failed to create readme.txt - Path truncated\n");
     printf("Generating %s...\n", buf);
     FAIL_IF(extract_resource(res_proxy_readme_txt, buf) != EXIT_SUCCESS, "Failed to create readme.txt\n");
-
 
 
     FAIL_IF(snprintf(subdir, sizeof subdir, "%s/system", dir) < 0, "Failed to create output subdirectory - Path truncated\n");
@@ -135,7 +133,6 @@ int genproxy(int argc, char **argv)
     FAIL_IF(snprintf(buf, sizeof buf, "%s/res.rc", subdir) < 0, "Failed to create res.rc - Path truncated\n");
     printf("Generating %s...\n", buf);
     FAIL_IF(extract_resource(res_proxy_res_rc, buf) != EXIT_SUCCESS, "Failed to create res.rc\n");
-
 
 
     FAIL_IF(snprintf(subdir, sizeof subdir, "%s/local", dir) < 0, "Failed to create output subdirectory - Path truncated\n");
@@ -184,13 +181,11 @@ int genproxy_def(int argc, char** argv, bool forward)
     int     ret = EXIT_SUCCESS;
     int8_t* image = NULL;
     FILE* ofh = NULL;
+    uint32_t length;
     static char base[MAX_PATH];
 
     FAIL_IF(argc < 3, "usage: genproxy_exports <image> [ofile]\n");
-
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
@@ -302,12 +297,10 @@ int genproxy_exports(int argc, char** argv)
     int     ret = EXIT_SUCCESS;
     int8_t* image = NULL;
     FILE* ofh = NULL;
+    uint32_t length;
 
     FAIL_IF(argc < 3, "usage: genproxy_exports <image> [ofile]\n");
-
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
@@ -417,13 +410,11 @@ int genproxy_dllmain(int argc, char** argv, bool forward)
     int     ret = EXIT_SUCCESS;
     int8_t* image = NULL;
     FILE* ofh = NULL;
+    uint32_t length;
     static char base[MAX_PATH];
 
     FAIL_IF(argc < 3, "usage: genproxy_dllmain <image> [ofile]\n");
-
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;

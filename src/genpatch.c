@@ -53,20 +53,17 @@ int genpatch(int argc, char** argv)
     uint8_t* image2 = NULL;
     FILE* ofh1 = NULL;
     FILE* ofh2 = NULL;
+    uint32_t length1;
+    uint32_t length2;
 
     FAIL_IF(argc < 3, "usage: petool genpatch <image1> <image2> [ofile1] [ofile2]\n");
-
-    uint32_t length1;
     FAIL_IF_SILENT(open_and_read(NULL, (int8_t**)&image1, &length1, argv[1], NULL));
-
     FAIL_IF(!is_supported_pe_image((int8_t*)image1, length1), "File1 is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr1 = (void*)image1;
     PIMAGE_NT_HEADERS nt_hdr1 = (void*)(image1 + dos_hdr1->e_lfanew);
 
-    uint32_t length2;
     FAIL_IF_SILENT(open_and_read(NULL, (int8_t**)&image2, &length2, argv[2], NULL));
-
     FAIL_IF(!is_supported_pe_image((int8_t*)image2, length2), "File2 is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr2 = (void*)image2;

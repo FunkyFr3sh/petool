@@ -33,19 +33,16 @@ int setdd(int argc, char **argv)
     int     ret   = EXIT_SUCCESS;
     FILE   *fh    = NULL;
     int8_t *image = NULL;
+    uint32_t length;
 
     FAIL_IF(argc != 5, "usage: petool setdd <image> <#DataDirectory> <VirtualAddress> <Size>\n");
-
-    uint32_t length;
     FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
-
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
 
     uint32_t dd = strtol(argv[2], NULL, 0);
-
     FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes <= dd, "Data directory #%"PRIu32" is missing.\n", dd);
 
     nt_hdr->OptionalHeader.DataDirectory[dd].VirtualAddress = strtol(argv[3], NULL, 0);
