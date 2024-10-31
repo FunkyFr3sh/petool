@@ -10,35 +10,41 @@
 #include "common.h"
 
 
-// Caller cleans up fh and image, length is optional
-int open_and_read(FILE **fh, int8_t **image, uint32_t *length,
+// Caller cleans up fh and image, length and fh_out are optional
+int open_and_read(FILE **fh_out, int8_t **image, uint32_t *length,
                   const char* executable, const char *fopen_attr)
 {
     int ret = EXIT_SUCCESS;
+    FILE* fh = NULL;
 
-    *fh = fopen(executable, fopen_attr);
-
-    if (!*fh) {
+    fh = fopen(executable, fopen_attr ? fopen_attr : "rb");
+    if (!fh) {
         // Somehow this does fail a lot on windows - retry after 1 second does fix it
         sleep(1);
-        *fh = fopen(executable, fopen_attr);
+        fh = fopen(executable, fopen_attr ? fopen_attr : "rb");
     }
-    FAIL_IF_PERROR(!*fh, "Could not open executable");
+    FAIL_IF_PERROR(!fh, "Could not open executable");
 
-    FAIL_IF_PERROR(fseek(*fh, 0L, SEEK_END),
+    FAIL_IF_PERROR(fseek(fh, 0L, SEEK_END),
                    "Need seekable file for executable, not stream");
 
-    uint32_t len = ftell(*fh);
-    rewind(*fh);
+    uint32_t len = ftell(fh);
+    rewind(fh);
 
     *image = malloc(len);
     FAIL_IF(!*image, "Failed to allocate memory to read executable with\n");
 
-    FAIL_IF_PERROR(fread(*image, len, 1, *fh) != 1, "Error reading executable");
+    FAIL_IF_PERROR(fread(*image, len, 1, fh) != 1, "Error reading executable");
 
     if (length) *length = len;
+    if (fh_out) *fh_out = fh;
 
 cleanup:
+    if (!fh_out)
+    {
+        if (fh) fclose(fh);
+    }
+
     return ret;
 }
 

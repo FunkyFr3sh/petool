@@ -80,7 +80,6 @@ int re2obj(int argc, char **argv)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret   = EXIT_SUCCESS;
-    FILE   *fh    = NULL;
     int8_t *image = NULL;
     FILE   *ofh   = stdout;
     re2obj_s state;
@@ -93,7 +92,7 @@ int re2obj(int argc, char **argv)
         ofh = NULL;
 
     uint32_t length;
-    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
+    FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
 
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
@@ -170,7 +169,6 @@ int re2obj(int argc, char **argv)
 
 cleanup:
     if (image) free(image);
-    if (fh)    fclose(fh);
     if (argc > 2)
     {
         if (ofh) fclose(ofh);

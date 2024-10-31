@@ -50,7 +50,6 @@ int genfiles(char* dir);
 int genprj(int argc, char **argv)
 {
     int ret = EXIT_SUCCESS;
-    FILE* fh = NULL;
     int8_t* image = NULL;
     static char base[MAX_PATH];
     static char buf[MAX_PATH];
@@ -61,12 +60,9 @@ int genprj(int argc, char **argv)
     FAIL_IF(!file_exists(argv[1]), "input file missing\n");
 
     uint32_t length;
-    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
+    FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
 
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
-
-    fclose(fh);
-    fh = NULL; // for cleanup
 
     memset(base, 0, sizeof base);
     strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
@@ -112,6 +108,5 @@ int genprj(int argc, char **argv)
 
 cleanup:
     if (image) free(image);
-    if (fh)    fclose(fh);
     return ret;
 }

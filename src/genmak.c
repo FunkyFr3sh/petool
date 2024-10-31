@@ -28,7 +28,6 @@
 int genmak(int argc, char **argv)
 {
     int     ret   = EXIT_SUCCESS;
-    FILE   *fh    = NULL;
     int8_t *image = NULL;
     FILE   *ofh   = stdout;
     char   base[256] = { '\0' };
@@ -39,7 +38,7 @@ int genmak(int argc, char **argv)
         ofh = NULL;
 
     uint32_t length;
-    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
+    FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
 
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
@@ -382,6 +381,5 @@ cleanup:
     }
 
     if (image) free(image);
-    if (fh)    fclose(fh);
     return ret;
 }

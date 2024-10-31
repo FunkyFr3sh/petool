@@ -49,9 +49,7 @@ int genpatch(int argc, char** argv)
 {
     // decleration before more meaningful initialization for cleanup
     int ret = EXIT_SUCCESS;
-    FILE* fh1 = NULL;
     uint8_t* image1 = NULL;
-    FILE* fh2 = NULL;
     uint8_t* image2 = NULL;
     FILE* ofh1 = NULL;
     FILE* ofh2 = NULL;
@@ -59,7 +57,7 @@ int genpatch(int argc, char** argv)
     FAIL_IF(argc < 3, "usage: petool genpatch <image1> <image2> [ofile1] [ofile2]\n");
 
     uint32_t length1;
-    FAIL_IF_SILENT(open_and_read(&fh1, (int8_t**)&image1, &length1, argv[1], "rb"));
+    FAIL_IF_SILENT(open_and_read(NULL, (int8_t**)&image1, &length1, argv[1], NULL));
 
     FAIL_IF(!is_supported_pe_image((int8_t*)image1, length1), "File1 is not a valid i386 Portable Executable (PE) image.\n");
 
@@ -67,7 +65,7 @@ int genpatch(int argc, char** argv)
     PIMAGE_NT_HEADERS nt_hdr1 = (void*)(image1 + dos_hdr1->e_lfanew);
 
     uint32_t length2;
-    FAIL_IF_SILENT(open_and_read(&fh2, (int8_t**)&image2, &length2, argv[2], "rb"));
+    FAIL_IF_SILENT(open_and_read(NULL, (int8_t**)&image2, &length2, argv[2], NULL));
 
     FAIL_IF(!is_supported_pe_image((int8_t*)image2, length2), "File2 is not a valid i386 Portable Executable (PE) image.\n");
 
@@ -157,9 +155,7 @@ int genpatch(int argc, char** argv)
 
 cleanup:
     if (image1) free(image1);
-    if (fh1) fclose(fh1);
     if (image2) free(image2);
-    if (fh2) fclose(fh2);
     if (ofh1) fclose(ofh1);
     if (ofh2) fclose(ofh2);
     return ret;

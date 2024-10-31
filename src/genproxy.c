@@ -57,7 +57,6 @@ extern const char res_inc_patch_h[];
 int genproxy(int argc, char **argv)
 {
     int ret = EXIT_SUCCESS;
-    FILE* fh = NULL;
     int8_t* image = NULL;
     static char base[MAX_PATH];
     static char buf[MAX_PATH];
@@ -87,12 +86,9 @@ int genproxy(int argc, char **argv)
     }
 
     uint32_t length;
-    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "r+b"));
+    FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
 
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
-
-    fclose(fh);
-    fh = NULL; // for cleanup
 
     printf("Input file      : %s\n", argv[1]);
     printf("Output directory: %s\n", dir);
@@ -179,7 +175,6 @@ int genproxy(int argc, char **argv)
 
 cleanup:
     if (image) free(image);
-    if (fh)    fclose(fh);
     return ret;
 }
 
@@ -187,7 +182,6 @@ int genproxy_def(int argc, char** argv, bool forward)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret = EXIT_SUCCESS;
-    FILE* fh = NULL;
     int8_t* image = NULL;
     FILE* ofh = NULL;
     static char base[MAX_PATH];
@@ -195,7 +189,7 @@ int genproxy_def(int argc, char** argv, bool forward)
     FAIL_IF(argc < 3, "usage: genproxy_exports <image> [ofile]\n");
 
     uint32_t length;
-    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
+    FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
 
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
@@ -298,7 +292,6 @@ int genproxy_def(int argc, char** argv, bool forward)
 
 cleanup:
     if (image) free(image);
-    if (fh) fclose(fh);
     if (ofh) fclose(ofh);
     return ret;
 }
@@ -307,14 +300,13 @@ int genproxy_exports(int argc, char** argv)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret = EXIT_SUCCESS;
-    FILE* fh = NULL;
     int8_t* image = NULL;
     FILE* ofh = NULL;
 
     FAIL_IF(argc < 3, "usage: genproxy_exports <image> [ofile]\n");
 
     uint32_t length;
-    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
+    FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
 
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
@@ -415,7 +407,6 @@ int genproxy_exports(int argc, char** argv)
 
 cleanup:
     if (image) free(image);
-    if (fh) fclose(fh);
     if (ofh) fclose(ofh);
     return ret;
 }
@@ -424,7 +415,6 @@ int genproxy_dllmain(int argc, char** argv, bool forward)
 {
     // decleration before more meaningful initialization for cleanup
     int     ret = EXIT_SUCCESS;
-    FILE* fh = NULL;
     int8_t* image = NULL;
     FILE* ofh = NULL;
     static char base[MAX_PATH];
@@ -432,7 +422,7 @@ int genproxy_dllmain(int argc, char** argv, bool forward)
     FAIL_IF(argc < 3, "usage: genproxy_dllmain <image> [ofile]\n");
 
     uint32_t length;
-    FAIL_IF_SILENT(open_and_read(&fh, &image, &length, argv[1], "rb"));
+    FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
 
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
@@ -535,7 +525,6 @@ int genproxy_dllmain(int argc, char** argv, bool forward)
 
 cleanup:
     if (image) free(image);
-    if (fh) fclose(fh);
     if (ofh) fclose(ofh);
     return ret;
 }
