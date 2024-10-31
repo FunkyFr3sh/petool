@@ -31,7 +31,6 @@ int genmak(int argc, char **argv)
     int8_t *image = NULL;
     FILE   *ofh   = argc > 2 ? NULL : stdout;
     uint32_t length;
-    char   base[256] = { '\0' };
 
     FAIL_IF(argc < 2, "usage: petool genmak <image> [ofile]\n");
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
@@ -47,17 +46,10 @@ int genmak(int argc, char **argv)
     PIMAGE_DOS_HEADER dos_hdr = (void *)image;
     PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
 
-    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
-    char *p = strrchr(base, '.');
-    if (p)
-    {
-        *p = '\0';
-    }
-
     fprintf(ofh, "-include config.mk\n\n");
-    fprintf(ofh, "INPUT       = %s.dat\n", base);
+    fprintf(ofh, "INPUT       = %s.dat\n", file_basename_no_ext(argv[1]));
     fprintf(ofh, "OUTPUT      = %s\n", file_escaped_basename(argv[1]));
-    fprintf(ofh, "LDS         = %s.lds\n", base);
+    fprintf(ofh, "LDS         = %s.lds\n", file_basename_no_ext(argv[1]));
 
     fprintf(ofh, "\n");
 

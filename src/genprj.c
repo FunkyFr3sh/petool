@@ -61,13 +61,7 @@ int genprj(int argc, char **argv)
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
-    memset(base, 0, sizeof base);
-    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
-    char* p = strrchr(base, '.');
-    if (p)
-    {
-        *p = '\0';
-    }
+    strncpy(base, file_basename_no_ext(argv[1]), sizeof(base) - 1);
 
     if (argc > 2)
     {

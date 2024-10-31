@@ -69,13 +69,7 @@ int genproxy(int argc, char **argv)
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
-    memset(base, 0, sizeof base);
-    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
-    char *p = strrchr(base, '.');
-    if (p)
-    {
-        *p = '\0';
-    }
+    strncpy(base, file_basename_no_ext(argv[1]), sizeof(base) - 1);
 
     if (argc > 2)
     {
@@ -196,20 +190,14 @@ int genproxy_def(int argc, char** argv, bool forward)
     FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 1, "Not enough DataDirectories.\n");
     FAIL_IF(!nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, "No export directory in dll\n");
 
-    memset(base, 0, sizeof base);
-    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
-    char* p = strrchr(base, '.');
-    if (p)
-    {
-        *p = '\0';
-    }
-
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, nt_hdr);
     IMAGE_EXPORT_DIRECTORY* export_dir = (void*)(image + offset);
 
     fprintf(ofh, "LIBRARY %s\n", file_basename(argv[1]));
     fprintf(ofh, "\n");
     fprintf(ofh, "EXPORTS\n");
+
+    strncpy(base, file_basename_no_ext(argv[1]), sizeof(base) - 1);
 
     uint32_t* names = (uint32_t*)(image + rva_to_offset(export_dir->AddressOfNames, nt_hdr));
     uint16_t* ordinals = (uint16_t*)(image + rva_to_offset(export_dir->AddressOfNameOrdinals, nt_hdr));
@@ -327,7 +315,7 @@ int genproxy_exports(int argc, char** argv)
     fprintf(ofh, "    if (!GetSystemDirectoryW(sys32_path, _countof(sys32_path)))\n");
     fprintf(ofh, "        return;\n");
     fprintf(ofh, "\n");
-    fprintf(ofh, "    std::wstring dll_path = std::wstring(sys32_path) + L\"\\\\%s\";\n", file_basename(argv[1]));
+    fprintf(ofh, "    std::wstring dll_path(std::wstring(sys32_path) + L\"\\\\%s\");\n", file_basename(argv[1]));
     fprintf(ofh, "\n");
     fprintf(ofh, "    HMODULE dll = LoadLibraryW(dll_path.c_str());\n");
     fprintf(ofh, "    if (!dll)\n");
@@ -424,14 +412,6 @@ int genproxy_dllmain(int argc, char** argv, bool forward)
     FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 1, "Not enough DataDirectories.\n");
     FAIL_IF(!nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, "No export directory in dll\n");
 
-    memset(base, 0, sizeof base);
-    strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
-    char* p = strrchr(base, '.');
-    if (p)
-    {
-        *p = '\0';
-    }
-
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, nt_hdr);
     IMAGE_EXPORT_DIRECTORY* export_dir = (void*)(image + offset);
 
@@ -457,6 +437,8 @@ int genproxy_dllmain(int argc, char** argv, bool forward)
 
     fprintf(ofh, "\n");
     fprintf(ofh, "#if defined(_MSC_VER)\n");
+
+    strncpy(base, file_basename_no_ext(argv[1]), sizeof(base) - 1);
 
     uint32_t* names = (uint32_t*)(image + rva_to_offset(export_dir->AddressOfNames, nt_hdr));
     uint16_t* ordinals = (uint16_t*)(image + rva_to_offset(export_dir->AddressOfNameOrdinals, nt_hdr));
