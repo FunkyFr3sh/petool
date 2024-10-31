@@ -327,8 +327,7 @@ int genproxy_exports(int argc, char** argv)
     fprintf(ofh, "    if (!GetSystemDirectoryW(sys32_path, _countof(sys32_path)))\n");
     fprintf(ofh, "        return;\n");
     fprintf(ofh, "\n");
-    fprintf(ofh, "    std::wstring dll_path(sys32_path);\n");
-    fprintf(ofh, "    dll_path += L\"\\\\%s\";\n", file_basename(argv[1]));
+    fprintf(ofh, "    std::wstring dll_path = std::wstring(sys32_path) + L\"\\\\%s\";\n", file_basename(argv[1]));
     fprintf(ofh, "\n");
     fprintf(ofh, "    HMODULE dll = LoadLibraryW(dll_path.c_str());\n");
     fprintf(ofh, "    if (!dll)\n");
