@@ -90,7 +90,7 @@ static inline void patch_setbytes(char *dst, char *buf, size_t size)
     VirtualProtect(dst, size, op, &op);
 }
 
-#define PATCH_SET(a,b) patch_setbytes(a,b,sizeof(b)-1)
+#define PATCH_SET(a,b) patch_setbytes(a,(char*)b,sizeof(b)-1)
 
 static inline float patch_setfloat(float *dst, float value)
 {
