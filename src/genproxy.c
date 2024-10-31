@@ -302,6 +302,8 @@ int genproxy_exports(int argc, char** argv)
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, nt_hdr);
     IMAGE_EXPORT_DIRECTORY* export_dir = (void*)(image + offset);
 
+    fprintf(ofh, "// petool genproxy - https://github.com/FunkyFr3sh/petool\n");
+    fprintf(ofh, "\n");
     fprintf(ofh, "#include <windows.h>\n");
     fprintf(ofh, "#include <string>\n");
     fprintf(ofh, "#include <mutex>\n");
@@ -436,6 +438,7 @@ int genproxy_dllmain(int argc, char** argv, bool forward)
     }
 
     fprintf(ofh, "\n");
+    fprintf(ofh, "// petool genproxy - https://github.com/FunkyFr3sh/petool\n");
     fprintf(ofh, "#if defined(_MSC_VER)\n");
 
     strncpy(base, file_basename_no_ext(argv[1]), sizeof(base) - 1);
