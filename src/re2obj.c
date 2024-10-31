@@ -91,14 +91,14 @@ int re2obj(int argc, char **argv)
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
-    PIMAGE_DOS_HEADER dos_hdr = (void *)image;
-    PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
-
     if (argc > 2)
     {
         ofh = fopen(argv[2], "wb");
         FAIL_IF_PERROR(ofh == NULL, "%s");
     }
+
+    PIMAGE_DOS_HEADER dos_hdr = (void *)image;
+    PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
 
     char *section = ".rsrc";
     void *data = NULL;

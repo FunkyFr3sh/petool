@@ -66,7 +66,8 @@ int genproxy(int argc, char **argv)
     char *cmd_argv[3] = { argv[0], argv[1], buf };
 
     FAIL_IF(argc < 2, "usage: petool genproxy <image> [directory]\n");
-    FAIL_IF(!file_exists(argv[1]), "input file missing\n");
+    FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
+    FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     memset(base, 0, sizeof base);
     strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
@@ -85,9 +86,6 @@ int genproxy(int argc, char **argv)
     {
         FAIL_IF(snprintf(dir, sizeof dir, "%s-proxy", base) < 0, "Failed to create output directory - Path truncated\n")
     }
-
-    FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
-    FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
     printf("Input file      : %s\n", argv[1]);
     printf("Output directory: %s\n", dir);
@@ -188,15 +186,15 @@ int genproxy_def(int argc, char** argv, bool forward)
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
+    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
+    ofh = fopen(argv[2], "w");
+    FAIL_IF_PERROR(ofh == NULL, "%s");
+
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
     PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
 
     FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 1, "Not enough DataDirectories.\n");
     FAIL_IF(!nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, "No export directory in dll\n");
-
-    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
-    ofh = fopen(argv[2], "w");
-    FAIL_IF_PERROR(ofh == NULL, "%s");
 
     memset(base, 0, sizeof base);
     strncpy(base, file_basename(argv[1]), sizeof(base) - 1);
@@ -303,15 +301,15 @@ int genproxy_exports(int argc, char** argv)
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
+    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
+    ofh = fopen(argv[2], "w");
+    FAIL_IF_PERROR(ofh == NULL, "%s");
+
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
     PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
 
     FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 1, "Not enough DataDirectories.\n");
     FAIL_IF(!nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, "No export directory in dll\n");
-
-    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
-    ofh = fopen(argv[2], "w");
-    FAIL_IF_PERROR(ofh == NULL, "%s");
 
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, nt_hdr);
     IMAGE_EXPORT_DIRECTORY* export_dir = (void*)(image + offset);
@@ -417,15 +415,15 @@ int genproxy_dllmain(int argc, char** argv, bool forward)
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
+    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
+    ofh = fopen(argv[2], "w");
+    FAIL_IF_PERROR(ofh == NULL, "%s");
+
     PIMAGE_DOS_HEADER dos_hdr = (void*)image;
     PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
 
     FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 1, "Not enough DataDirectories.\n");
     FAIL_IF(!nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, "No export directory in dll\n");
-
-    FAIL_IF(file_exists(argv[2]), "%s: output file already exists.\n", argv[2]);
-    ofh = fopen(argv[2], "w");
-    FAIL_IF_PERROR(ofh == NULL, "%s");
 
     memset(base, 0, sizeof base);
     strncpy(base, file_basename(argv[1]), sizeof(base) - 1);

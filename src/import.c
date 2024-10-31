@@ -39,18 +39,18 @@ int import(int argc, char **argv)
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
-    PIMAGE_DOS_HEADER dos_hdr = (void *)image;
-    PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
-
-    FAIL_IF (nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 2, "Not enough DataDirectories.\n");
-    FAIL_IF (!nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, "No import directory in executable.\n");
-
     if (argc > 3)
     {
         FAIL_IF(file_exists(argv[3]), "%s: output file already exists.\n", argv[3]);
         ofh = fopen(argv[3], "w");
         FAIL_IF_PERROR(ofh == NULL, "%s");
     }
+
+    PIMAGE_DOS_HEADER dos_hdr = (void *)image;
+    PIMAGE_NT_HEADERS nt_hdr = (void *)(image + dos_hdr->e_lfanew);
+
+    FAIL_IF (nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 2, "Not enough DataDirectories.\n");
+    FAIL_IF (!nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, "No import directory in executable.\n");
 
     uint32_t offset = rva_to_offset(nt_hdr->OptionalHeader.DataDirectory[1].VirtualAddress, nt_hdr);
     IMAGE_IMPORT_DESCRIPTOR *i = (void *)(image + offset);
