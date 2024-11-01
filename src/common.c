@@ -23,9 +23,9 @@ int open_and_read(FILE **fh_out, int8_t **image, uint32_t *length,
         sleep(1);
         fh = fopen(executable, fopen_attr ? fopen_attr : "rb");
     }
-    FAIL_IF_PERROR(!fh, "Could not open executable");
-
     if (fh_out) *fh_out = fh;
+
+    FAIL_IF_PERROR(!fh, "Could not open executable");
 
     FAIL_IF_PERROR(fseek(fh, 0L, SEEK_END),
                    "Need seekable file for executable, not stream");
