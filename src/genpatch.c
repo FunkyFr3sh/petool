@@ -91,7 +91,11 @@ int genpatch(int argc, char** argv)
         FAIL_IF_PERROR(ofh2 == NULL, "%s");
     }
 
-    uint32_t ignored = 0;
+    uint32_t dos_hdr_diff = 0;
+    uint32_t file_hdr_diff = 0;
+    uint32_t opt_hdr_diff = 0;
+    uint32_t sct_hdr_diff = 0;
+    uint32_t unknown_diff = 0;
     char section[12] = { 0 };
 
     fprintf(ofh1, "#include \"macros/patch.h\"\n\n");
@@ -108,8 +112,36 @@ int genpatch(int argc, char** argv)
             {
                 if (!section_from_offset(i, nt_hdr1, section, sizeof(section)))
                 {
-                    // Not within a section (fileheader/debuginfo/cert etc...) - ignored
-                    ignored++;
+                    // Not within a section (headers/debuginfo/cert etc...) - ignored
+
+                    PIMAGE_NT_HEADERS nt_hdr = (void*)dos_hdr1->e_lfanew;
+                    PIMAGE_FILE_HEADER file_hdr = (void*)&nt_hdr->FileHeader;
+                    PIMAGE_OPTIONAL_HEADER opt_hdr = (void*)&nt_hdr->OptionalHeader;
+                    PIMAGE_SECTION_HEADER sct_hdr = (void*)((uint32_t)opt_hdr + nt_hdr1->FileHeader.SizeOfOptionalHeader);
+
+                    if (i < sizeof(IMAGE_DOS_HEADER))
+                    {
+                        dos_hdr_diff++;
+                    } 
+                    else if (i >= (uint32_t)file_hdr && i < (uint32_t)&nt_hdr->OptionalHeader)
+                    {
+                        file_hdr_diff++;
+                    }
+                    else if (i >= (uint32_t)opt_hdr && i < (uint32_t)opt_hdr + nt_hdr1->FileHeader.SizeOfOptionalHeader)
+                    {
+                        opt_hdr_diff++;
+                    }
+                    else if (
+                        i >= (uint32_t)sct_hdr && 
+                        i < (uint32_t)sct_hdr + (nt_hdr1->FileHeader.NumberOfSections * sizeof(IMAGE_SECTION_HEADER)))
+                    {
+                        sct_hdr_diff++;
+                    }
+                    else
+                    {
+                        unknown_diff++;
+                    }
+
                     continue;
                 }
             }
@@ -143,11 +175,39 @@ int genpatch(int argc, char** argv)
         fprintf(ofh2, "%s", s);
     }
 
-    if (ignored > 0)
+    if (dos_hdr_diff > 0)
     {
-        char s[] = "\n//WARNING: %u bytes ignored (data not within a section)\n";
-        fprintf(ofh1, s, ignored);
-        fprintf(ofh2, s, ignored);
+        char s[] = "\n//WARNING: %u bytes changed in IMAGE_DOS_HEADER\n";
+        fprintf(ofh1, s, dos_hdr_diff);
+        fprintf(ofh2, s, dos_hdr_diff);
+    }
+
+    if (file_hdr_diff > 0)
+    {
+        char s[] = "\n//WARNING: %u bytes changed in IMAGE_FILE_HEADER\n";
+        fprintf(ofh1, s, file_hdr_diff);
+        fprintf(ofh2, s, file_hdr_diff);
+    }
+
+    if (opt_hdr_diff > 0)
+    {
+        char s[] = "\n//WARNING: %u bytes changed in IMAGE_OPTIONAL_HEADER\n";
+        fprintf(ofh1, s, opt_hdr_diff);
+        fprintf(ofh2, s, opt_hdr_diff);
+    }
+
+    if (sct_hdr_diff > 0)
+    {
+        char s[] = "\n//WARNING: %u bytes changed in IMAGE_SECTION_HEADER[]\n";
+        fprintf(ofh1, s, sct_hdr_diff);
+        fprintf(ofh2, s, sct_hdr_diff);
+    }
+
+    if (unknown_diff > 0)
+    {
+        char s[] = "\n//WARNING: %u unknown bytes changed (data not within any section or headers)\n";
+        fprintf(ofh1, s, unknown_diff);
+        fprintf(ofh2, s, unknown_diff);
     }
 
 cleanup:
