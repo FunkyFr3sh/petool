@@ -114,26 +114,24 @@ int genpatch(int argc, char** argv)
                 {
                     // Not within a section (headers/debuginfo/cert etc...) - ignored
 
-                    PIMAGE_NT_HEADERS nt_hdr = (void*)dos_hdr1->e_lfanew;
-                    PIMAGE_FILE_HEADER file_hdr = (void*)&nt_hdr->FileHeader;
-                    PIMAGE_OPTIONAL_HEADER opt_hdr = (void*)&nt_hdr->OptionalHeader;
-                    PIMAGE_SECTION_HEADER sct_hdr = (void*)((uint32_t)opt_hdr + nt_hdr1->FileHeader.SizeOfOptionalHeader);
+                    uint32_t file_hdr = dos_hdr1->e_lfanew + 4;
+                    uint32_t opt_hdr = file_hdr + sizeof(IMAGE_FILE_HEADER);
+                    uint32_t sct_hdr = opt_hdr + nt_hdr1->FileHeader.SizeOfOptionalHeader;
 
                     if (i < sizeof(IMAGE_DOS_HEADER))
                     {
                         dos_hdr_diff++;
                     } 
-                    else if (i >= (uint32_t)file_hdr && i < (uint32_t)opt_hdr)
+                    else if (i >= file_hdr && i < opt_hdr)
                     {
                         file_hdr_diff++;
                     }
-                    else if (i >= (uint32_t)opt_hdr && i < (uint32_t)sct_hdr)
+                    else if (i >= opt_hdr && i < sct_hdr)
                     {
                         opt_hdr_diff++;
                     }
                     else if (
-                        i >= (uint32_t)sct_hdr && 
-                        i < (uint32_t)sct_hdr + (nt_hdr1->FileHeader.NumberOfSections * sizeof(IMAGE_SECTION_HEADER)))
+                        i >= sct_hdr && i < sct_hdr + (nt_hdr1->FileHeader.NumberOfSections * sizeof(IMAGE_SECTION_HEADER)))
                     {
                         sct_hdr_diff++;
                     }
