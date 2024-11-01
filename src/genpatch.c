@@ -80,12 +80,12 @@ int genpatch(int argc, char** argv)
     else
     {
         static char path[MAX_PATH];
-        FAIL_IF(snprintf(path, sizeof(path) - 1, "%s-patch.cpp", argv[1]) < 0, "Fail - Path1 truncated\n");
+        FAIL_IF(snprintf(path, sizeof(path) - 1, "%s-patch.cpp", file_basename(argv[1])) < 0, "Fail - Path1 truncated\n");
 
         ofh1 = fopen(path, "w");
         FAIL_IF_PERROR(ofh1 == NULL, "%s");
 
-        FAIL_IF(snprintf(path, sizeof(path) - 1, "%s-patch.cpp", argv[2]) < 0, "Fail - Path2 truncated\n");
+        FAIL_IF(snprintf(path, sizeof(path) - 1, "%s-patch.cpp", file_basename(argv[2])) < 0, "Fail - Path2 truncated\n");
 
         ofh2 = fopen(path, "w");
         FAIL_IF_PERROR(ofh2 == NULL, "%s");
