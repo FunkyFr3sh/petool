@@ -25,6 +25,8 @@ int open_and_read(FILE **fh_out, int8_t **image, uint32_t *length,
     }
     FAIL_IF_PERROR(!fh, "Could not open executable");
 
+    if (fh_out) *fh_out = fh;
+
     FAIL_IF_PERROR(fseek(fh, 0L, SEEK_END),
                    "Need seekable file for executable, not stream");
 
@@ -37,7 +39,6 @@ int open_and_read(FILE **fh_out, int8_t **image, uint32_t *length,
     FAIL_IF_PERROR(fread(*image, len, 1, fh) != 1, "Error reading executable");
 
     if (length) *length = len;
-    if (fh_out) *fh_out = fh;
 
 cleanup:
     if (!fh_out)
