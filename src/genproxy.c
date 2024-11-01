@@ -357,15 +357,13 @@ int genproxy_exports(int argc, char** argv)
     fprintf(ofh, "}\n");
     fprintf(ofh, "\n");
     fprintf(ofh, "#if defined(_MSC_VER)\n");
-    fprintf(ofh, "#define ASM_JMP(a) _asm jmp g_exports[a*4]\n");
+    fprintf(ofh, "#define ASM_JMP(a) __asm { jmp g_exports[a*4] }\n");
     fprintf(ofh, "#define NAKED __declspec(naked)\n");
     fprintf(ofh, "#define NOINLINE __declspec(noinline)\n");
-    fprintf(ofh, "#define SEMICOLON\n");
     fprintf(ofh, "#else\n");
     fprintf(ofh, "#define ASM_JMP(a) __asm(\"jmp _g_exports[\" #a \"*4]\")\n");
     fprintf(ofh, "#define NAKED __attribute__((naked))\n");
     fprintf(ofh, "#define NOINLINE __attribute__((noinline))\n");
-    fprintf(ofh, "#define SEMICOLON ;\n");
     fprintf(ofh, "#endif\n");
     fprintf(ofh, "\n");
     fprintf(ofh, "static NOINLINE void exports_init_once()\n");
@@ -376,7 +374,7 @@ int genproxy_exports(int argc, char** argv)
     fprintf(ofh, "#define CREATE_EXPORT(a) \\\n");
     fprintf(ofh, "    EXTERN_C NAKED void __export_##a() { \\\n");
     fprintf(ofh, "        exports_init_once(); \\\n");
-    fprintf(ofh, "        ASM_JMP(a) SEMICOLON \\\n");
+    fprintf(ofh, "        ASM_JMP(a); \\\n");
     fprintf(ofh, "    }\n");
     fprintf(ofh, "\n");
 
