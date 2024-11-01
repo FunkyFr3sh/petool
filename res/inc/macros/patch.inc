@@ -1,4 +1,4 @@
-// LICENSE = BSD0 - https://github.com/FunkyFr3sh/petool
+;; LICENSE = BSD0 - https://github.com/FunkyFr3sh/petool
 
 %macro @PATCH 1
     %ifctx __patch
