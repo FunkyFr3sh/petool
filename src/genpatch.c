@@ -123,11 +123,11 @@ int genpatch(int argc, char** argv)
                     {
                         dos_hdr_diff++;
                     } 
-                    else if (i >= (uint32_t)file_hdr && i < (uint32_t)&nt_hdr->OptionalHeader)
+                    else if (i >= (uint32_t)file_hdr && i < (uint32_t)opt_hdr)
                     {
                         file_hdr_diff++;
                     }
-                    else if (i >= (uint32_t)opt_hdr && i < (uint32_t)opt_hdr + nt_hdr1->FileHeader.SizeOfOptionalHeader)
+                    else if (i >= (uint32_t)opt_hdr && i < (uint32_t)sct_hdr)
                     {
                         opt_hdr_diff++;
                     }
