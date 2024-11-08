@@ -104,9 +104,9 @@ int genpatch(int argc, char** argv)
     fprintf(ofh2, "#include \"macros/patch.h\"\n\n");
     fprintf(ofh2, "//%s -> %s\n\n", argv[2], argv[1]);
 
-    for (uint32_t i = 0, len = 0; i < length1 && i < length2; i++)
+    for (uint32_t i = 0, len = 0; i <= length1 && i <= length2; i++)
     {
-        if (image1[i] != image2[i])
+        if (i < length1 && i < length2 && image1[i] != image2[i])
         {
             if (len == 0)
             {
