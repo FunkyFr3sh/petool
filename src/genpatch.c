@@ -95,6 +95,7 @@ int genpatch(int argc, char** argv)
     uint32_t file_hdr_diff = 0;
     uint32_t opt_hdr_diff = 0;
     uint32_t sct_hdr_diff = 0;
+    uint32_t unknown_hdr_diff = 0;
     uint32_t unknown_diff = 0;
     char section[12] = { 0 };
 
@@ -117,6 +118,7 @@ int genpatch(int argc, char** argv)
                     uint32_t file_hdr = dos_hdr1->e_lfanew + 4;
                     uint32_t opt_hdr = file_hdr + sizeof(IMAGE_FILE_HEADER);
                     uint32_t sct_hdr = opt_hdr + nt_hdr1->FileHeader.SizeOfOptionalHeader;
+                    uint32_t sct_hdr_size = nt_hdr1->FileHeader.NumberOfSections * sizeof(IMAGE_SECTION_HEADER);
 
                     if (i < sizeof(IMAGE_DOS_HEADER))
                     {
@@ -130,10 +132,13 @@ int genpatch(int argc, char** argv)
                     {
                         opt_hdr_diff++;
                     }
-                    else if (
-                        i >= sct_hdr && i < sct_hdr + (nt_hdr1->FileHeader.NumberOfSections * sizeof(IMAGE_SECTION_HEADER)))
+                    else if (i >= sct_hdr && i < sct_hdr + sct_hdr_size)
                     {
                         sct_hdr_diff++;
+                    }
+                    else if (i < nt_hdr1->OptionalHeader.SizeOfHeaders)
+                    {
+                        unknown_hdr_diff++;
                     }
                     else
                     {
@@ -199,6 +204,13 @@ int genpatch(int argc, char** argv)
         char s[] = "\n//WARNING: %u bytes changed in IMAGE_SECTION_HEADER[]\n";
         fprintf(ofh1, s, sct_hdr_diff);
         fprintf(ofh2, s, sct_hdr_diff);
+    }
+
+    if (unknown_hdr_diff > 0)
+    {
+        char s[] = "\n//WARNING: %u unknown bytes changed in region OptionalHeader.SizeOfHeaders\n";
+        fprintf(ofh1, s, unknown_hdr_diff);
+        fprintf(ofh2, s, unknown_hdr_diff);
     }
 
     if (unknown_diff > 0)
