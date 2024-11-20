@@ -95,7 +95,7 @@ uint32_t section_from_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr, char* s
 
         if (address >= sct_hdr->PointerToRawData && address < sct_hdr->PointerToRawData + sct_hdr->SizeOfRawData)
         {
-            if (section)
+            if (section && address)
             {
                 memcpy(section, (void*)sct_hdr->Name, 8);
             }
