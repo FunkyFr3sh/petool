@@ -222,4 +222,4 @@ typedef struct _IMAGE_IMPORT_BY_NAME {
 bool is_supported_pe_image(int8_t* image, uint32_t length);
 uint32_t rva_to_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
 uint32_t offset_to_rva(uint32_t address, PIMAGE_NT_HEADERS nt_hdr);
-bool section_from_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr, char* section, uint32_t size);
+uint32_t section_from_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr, char* section, uint32_t size);

@@ -79,12 +79,15 @@ uint32_t offset_to_rva(uint32_t address, PIMAGE_NT_HEADERS nt_hdr)
     return (1 << 31);
 }
 
-bool section_from_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr, char* section, uint32_t size)
+uint32_t section_from_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr, char* section, uint32_t size)
 {
-    if (size < 9)
-        return false;
+    if (section)
+    {
+        if (size < 9)
+            return 0;
 
-    memset(section, 0, size);
+        memset(section, 0, size);
+    }
 
     for (int i = 0; i < nt_hdr->FileHeader.NumberOfSections; i++)
     {
@@ -92,10 +95,14 @@ bool section_from_offset(uint32_t address, PIMAGE_NT_HEADERS nt_hdr, char* secti
 
         if (address >= sct_hdr->PointerToRawData && address < sct_hdr->PointerToRawData + sct_hdr->SizeOfRawData)
         {
-            memcpy(section, (void*)sct_hdr->Name, 8);
-            return true;
+            if (section)
+            {
+                memcpy(section, (void*)sct_hdr->Name, 8);
+            }
+           
+            return sct_hdr->PointerToRawData;
         }
     }
 
-    return false;
+    return 0;
 }

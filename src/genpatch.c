@@ -97,7 +97,7 @@ int genpatch(int argc, char** argv)
     uint32_t sct_hdr_diff = 0;
     uint32_t unknown_hdr_diff = 0;
     uint32_t unknown_diff = 0;
-    char section[12] = { 0 };
+    uint32_t last_section = 0;
 
     fprintf(ofh1, "#include \"macros/patch.h\"\n\n");
     fprintf(ofh1, "//%s -> %s\n\n", argv[1], argv[2]);
@@ -107,11 +107,16 @@ int genpatch(int argc, char** argv)
 
     for (uint32_t i = 0, len = 0; i <= length1 && i <= length2; i++)
     {
-        if (i < length1 && i < length2 && image1[i] != image2[i])
+        uint32_t section = section_from_offset(i, nt_hdr1, NULL, 0);
+
+        bool section_end_reached = last_section && last_section != section && len != 0;
+
+        if (i < length1 && i < length2 && image1[i] != image2[i] && !section_end_reached)
         {
             if (len == 0)
             {
-                if (!section_from_offset(i, nt_hdr1, section, sizeof(section)))
+                last_section = section_from_offset(i, nt_hdr1, NULL, 0);
+                if (!last_section)
                 {
                     // Not within a section (headers/debuginfo/cert etc...) - ignored
 
@@ -153,21 +158,27 @@ int genpatch(int argc, char** argv)
         }
         else if (len != 0)
         {
+            char section_name[12] = { 0 };
+            section_from_offset(i - len, nt_hdr1, section_name, sizeof(section_name));
+
             fprintf(ofh1, "SETBYTES(0x%08X, \"", nt_hdr1->OptionalHeader.ImageBase + offset_to_rva(i - len, nt_hdr1));
             for (uint32_t x = 0; x < len; x++)
             {
                 fprintf(ofh1, "\\x%02X", image2[i - (len - x)]);
             }
-            fprintf(ofh1, "\"); //%08X (%s)\n", i - len, section);
+            fprintf(ofh1, "\"); //%08X (%s)\n", i - len, section_name);
 
             fprintf(ofh2, "SETBYTES(0x%08X, \"", nt_hdr2->OptionalHeader.ImageBase + offset_to_rva(i - len, nt_hdr2));
             for (uint32_t x = 0; x < len; x++)
             {
                 fprintf(ofh2, "\\x%02X", image1[i - (len - x)]);
             }
-            fprintf(ofh2, "\"); //%08X (%s)\n", i - len, section);
+            fprintf(ofh2, "\"); //%08X (%s)\n", i - len, section_name);
 
             len = 0;
+
+            if (section_end_reached)
+                i--;
         }
     }
 
