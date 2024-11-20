@@ -109,14 +109,13 @@ int genpatch(int argc, char** argv)
     {
         uint32_t section = section_from_offset(i, nt_hdr1, NULL, 0);
 
-        bool section_end_reached = last_section && last_section != section && len != 0;
+        bool section_end_reached = len != 0 && last_section != section;
 
         if (i < length1 && i < length2 && image1[i] != image2[i] && !section_end_reached)
         {
             if (len == 0)
             {
-                last_section = section_from_offset(i, nt_hdr1, NULL, 0);
-                if (!last_section)
+                if (!section)
                 {
                     // Not within a section (headers/debuginfo/cert etc...) - ignored
 
@@ -152,6 +151,8 @@ int genpatch(int argc, char** argv)
 
                     continue;
                 }
+
+                last_section = section;
             }
 
             len++;
