@@ -161,7 +161,16 @@ int genlds(int argc, char **argv)
             continue;
         }
 
-        bool is_idata = strcmp(buf, ".idata") == 0;
+        char* o_name = NULL;
+
+        if (strcmp(buf, ".idata") == 0)
+        {
+            o_name = ".o_idata";
+        }
+        else if (strcmp(buf, ".edata") == 0)
+        {
+            o_name = ".o_edata";
+        }
 
         if (cur_sct->Misc.VirtualSize > cur_sct->SizeOfRawData) {
 
@@ -172,7 +181,7 @@ int genlds(int argc, char **argv)
             while (aligned_raw_size % nt_hdr->OptionalHeader.SectionAlignment)
                 aligned_raw_size++;
 
-            fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) . = ALIGN(0x%"PRIX32"); }\n", is_idata ? ".o_idata" : buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf, nt_hdr->OptionalHeader.SectionAlignment);
+            fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) . = ALIGN(0x%"PRIX32"); }\n", o_name ? o_name : buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf, nt_hdr->OptionalHeader.SectionAlignment);
 
             if (cur_sct->Misc.VirtualSize > aligned_raw_size) {
                 if (udatan++ == 0) {
@@ -188,7 +197,7 @@ int genlds(int argc, char **argv)
             continue;
         }
 
-        fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) }\n", is_idata ? ".o_idata" : buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf);
+        fprintf(ofh, "    %-15s   0x%-6"PRIX32" : { %s(%s) }\n", o_name ? o_name : buf, cur_sct->VirtualAddress + nt_hdr->OptionalHeader.ImageBase, inputname, buf);
     }
 
     fprintf(ofh, "\n");
@@ -290,7 +299,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "    *(COMMON)\n");
     fprintf(ofh, "    __bss_end__ = . ;\n");
     fprintf(ofh, "  }\n");
-    fprintf(ofh, "  .p_edata BLOCK(__section_alignment__) :\n");
+    fprintf(ofh, "  .edata BLOCK(__section_alignment__) :\n");
     fprintf(ofh, "  {\n");
     fprintf(ofh, "    *(.edata)\n");
     fprintf(ofh, "  }\n");
@@ -616,7 +625,7 @@ int genlds(int argc, char **argv)
     fprintf(ofh, "  {\n");
     fprintf(ofh, "    *(.zdebug_gdb_scripts)\n");
     fprintf(ofh, "  }\n");
-    fprintf(ofh, "  .patch BLOCK(__section_alignment__) : \n");
+    fprintf(ofh, "  .patch BLOCK(__section_alignment__) (NOLOAD) :\n");
     fprintf(ofh, "  { \n");
     fprintf(ofh, "    *(.patch)\n");
     fprintf(ofh, "  }\n");
