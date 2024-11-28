@@ -69,6 +69,12 @@ int genproxy(int argc, char **argv)
     FAIL_IF_SILENT(open_and_read(NULL, &image, &length, argv[1], NULL));
     FAIL_IF(!is_supported_pe_image(image, length), "File is not a valid i386 Portable Executable (PE) image.\n");
 
+    PIMAGE_DOS_HEADER dos_hdr = (void*)image;
+    PIMAGE_NT_HEADERS nt_hdr = (void*)(image + dos_hdr->e_lfanew);
+
+    FAIL_IF(nt_hdr->OptionalHeader.NumberOfRvaAndSizes < 1, "Not enough DataDirectories.\n");
+    FAIL_IF(!nt_hdr->OptionalHeader.DataDirectory[0].VirtualAddress, "No export directory in dll\n");
+
     strncpy(base, file_basename_no_ext(argv[1]), sizeof(base) - 1);
 
     if (argc > 2)
