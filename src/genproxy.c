@@ -311,7 +311,6 @@ int genproxy_exports(int argc, char** argv)
     fprintf(ofh, "// petool genproxy - https://github.com/FunkyFr3sh/petool\n");
     fprintf(ofh, "\n");
     fprintf(ofh, "#include <windows.h>\n");
-    fprintf(ofh, "#include <string>\n");
     fprintf(ofh, "#include <mutex>\n");
     fprintf(ofh, "\n");
     fprintf(ofh, "FARPROC g_exports[%u];\n", export_dir->NumberOfFunctions);
@@ -323,14 +322,10 @@ int genproxy_exports(int argc, char** argv)
     fprintf(ofh, "    if (!GetSystemDirectoryW(path, _countof(path)))\n");
     fprintf(ofh, "        return;\n");
     fprintf(ofh, "\n");
-    fprintf(ofh, "#if defined(_MSC_VER)\n");
-    fprintf(ofh, "    wcscat_s(path, L\"\\\\%s\");\n", file_basename(argv[1]));
-    fprintf(ofh, "    HMODULE dll = LoadLibraryW(path);\n");
-    fprintf(ofh, "#else\n");
-    fprintf(ofh, "    std::wstring dll_path(std::wstring(path) + L\"\\\\%s\");\n", file_basename(argv[1]));
-    fprintf(ofh, "    HMODULE dll = LoadLibraryW(dll_path.c_str());\n");
-    fprintf(ofh, "#endif\n");
+    fprintf(ofh, "    if (wcscat_s(path, L\"\\\\%s\") != 0)\n", file_basename(argv[1]));
+    fprintf(ofh, "        return;\n");
     fprintf(ofh, "\n");
+    fprintf(ofh, "    HMODULE dll = LoadLibraryW(path);\n");
     fprintf(ofh, "    if (!dll)\n");
     fprintf(ofh, "        return;\n");
     fprintf(ofh, "\n");
