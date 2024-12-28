@@ -311,10 +311,9 @@ int genproxy_exports(int argc, char** argv)
     fprintf(ofh, "// petool genproxy - https://github.com/FunkyFr3sh/petool\n");
     fprintf(ofh, "\n");
     fprintf(ofh, "#include <windows.h>\n");
-    fprintf(ofh, "#include <mutex>\n");
     fprintf(ofh, "\n");
     fprintf(ofh, "FARPROC g_exports[%u];\n", export_dir->NumberOfFunctions);
-    fprintf(ofh, "static std::once_flag g_exports_flag;\n");
+    fprintf(ofh, "static INIT_ONCE g_exports_init_once;\n");
     fprintf(ofh, "\n");
     fprintf(ofh, "static void exports_init()\n");
     fprintf(ofh, "{\n");
@@ -374,7 +373,12 @@ int genproxy_exports(int argc, char** argv)
     fprintf(ofh, "\n");
     fprintf(ofh, "static NOINLINE void exports_init_once()\n");
     fprintf(ofh, "{\n");
-    fprintf(ofh, "    std::call_once(g_exports_flag, exports_init);\n");
+    fprintf(ofh, "    BOOL pending;\n");
+    fprintf(ofh, "    if (InitOnceBeginInitialize(&g_exports_init_once, 0, &pending, 0) && pending)\n");
+    fprintf(ofh, "    {\n");
+    fprintf(ofh, "        exports_init();\n");
+    fprintf(ofh, "        InitOnceComplete(&g_exports_init_once, 0, 0);\n");
+    fprintf(ofh, "    }\n");
     fprintf(ofh, "}\n");
     fprintf(ofh, "\n");
     fprintf(ofh, "#define CREATE_EXPORT(a) \\\n");
@@ -523,8 +527,8 @@ int genproxy_make(int argc, char** argv, bool forward)
     fprintf(ofh, "TARGET      ?= %s\n", file_basename(argv[1]));
     fprintf(ofh, "\n");
     fprintf(ofh, "LDFLAGS     ?= -Wl,--enable-stdcall-fixup -s -shared -static\n");
-    fprintf(ofh, "CFLAGS      ?= -masm=intel -O2 -Wall -march=pentium4\n");
-    fprintf(ofh, "CXXFLAGS    ?= -masm=intel -O2 -Wall -march=pentium4\n");
+    fprintf(ofh, "CFLAGS      ?= -masm=intel -O2 -Wall -march=pentium4 -D _WIN32_WINNT=0x0600\n");
+    fprintf(ofh, "CXXFLAGS    ?= -masm=intel -O2 -Wall -march=pentium4 -D _WIN32_WINNT=0x0600\n");
     fprintf(ofh, "LIBS        ?= \n");
     fprintf(ofh, "\n");
     fprintf(ofh, "CC           = i686-w64-mingw32-gcc\n");
