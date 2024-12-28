@@ -374,10 +374,10 @@ int genproxy_exports(int argc, char** argv)
     fprintf(ofh, "static NOINLINE void exports_init_once()\n");
     fprintf(ofh, "{\n");
     fprintf(ofh, "    BOOL pending;\n");
-    fprintf(ofh, "    if (InitOnceBeginInitialize(&g_exports_init_once, 0, &pending, 0) && pending)\n");
+    fprintf(ofh, "    if (InitOnceBeginInitialize(&g_exports_init_once, 0, &pending, NULL) && pending)\n");
     fprintf(ofh, "    {\n");
     fprintf(ofh, "        exports_init();\n");
-    fprintf(ofh, "        InitOnceComplete(&g_exports_init_once, 0, 0);\n");
+    fprintf(ofh, "        InitOnceComplete(&g_exports_init_once, 0, NULL);\n");
     fprintf(ofh, "    }\n");
     fprintf(ofh, "}\n");
     fprintf(ofh, "\n");
